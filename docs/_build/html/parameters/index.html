@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python3.6">
+  <head>
+    <meta charset="utf-8" />
+    <title>56. Paramater: Effective area &#8212; Optcom 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="52. Layout" href="../others/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="paramater-effective-area">
+<h1>56. Paramater: Effective area<a class="headerlink" href="#paramater-effective-area" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.parameters.fiber.effective_area.EffectiveArea">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.parameters.fiber.effective_area.</code><code class="sig-name descname">EffectiveArea</code><span class="sig-paren">(</span><em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.effective_area.EffectiveArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Effective area, currently only for single mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.parameters.fiber.effective_area.EffectiveArea.calc_effective_area">
+<em class="property">static </em><code class="sig-name descname">calc_effective_area</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=None</em>, <em class="sig-param">n_core=None</em>, <em class="sig-param">n_clad=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.effective_area.EffectiveArea.calc_effective_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the effective area (for now only single mode).
+<a class="footnote-reference brackets" href="#id2" id="id1">4</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>core_radius</strong> -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> -- The numerical aperture.</p></li>
+<li><p><strong>n_core</strong> -- The refractive index of the core.</p></li>
+<li><p><strong>n_clad</strong> -- The refractive index of the cladding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the effective area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Considering:</p>
+<div class="math notranslate nohighlight">
+\[A_{eff} = \pi w^2 = \pi \big(a(0.616
++ 1.66V^{-\frac{2}{3}} + 0.987V^{-6})\big)^2\]</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">4</a></span></dt>
+<dd><p>Govind Agrawal, Chapter 2: Pulse Propagation in Fibers,
+Nonlinear Fiber Optics (Fifth Edition), Academic Press, 2013,
+Page 34.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="parameter-non-linear-coefficient">
+<h1>57. Parameter: Non-linear coefficient<a class="headerlink" href="#parameter-non-linear-coefficient" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.parameters.fiber.nl_coefficient.NLCoefficient">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.parameters.fiber.nl_coefficient.</code><code class="sig-name descname">NLCoefficient</code><span class="sig-paren">(</span><em class="sig-param">nl_index</em>, <em class="sig-param">eff_area</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.nl_coefficient.NLCoefficient" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nl_index</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The non linear index. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>eff_erea</strong> -- The effective area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.parameters.fiber.nl_coefficient.NLCoefficient.calc_nl_coefficient">
+<em class="property">static </em><code class="sig-name descname">calc_nl_coefficient</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">nl_index</em>, <em class="sig-param">eff_area</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.nl_coefficient.NLCoefficient.calc_nl_coefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the non linear parameter. <a class="footnote-reference brackets" href="#id4" id="id3">2</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The center angular frequency.  <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>nl_index</strong> -- The non linear refractive index. <span class="math notranslate nohighlight">\([m^{2}\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>eff_area</strong> -- The effective mode area.  <span class="math notranslate nohighlight">\([\mu m^{2}]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the non linear parameter.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\gamma(\omega_0) = \frac{\omega_0 n_2}{c A_{eff}}\]</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>Govind Agrawal, Chapter 2: Pulse Propaga(omega_0)tion in
+Fibers, Nonlinear Fiber Optics (Fifth Edition), Academic
+Press, 2013, Page 38.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="parameter-overlap-factor">
+<h1>58. Parameter: Overlap factor<a class="headerlink" href="#parameter-overlap-factor" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.parameters.fiber.overlap_factor.OverlapFactor">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.parameters.fiber.overlap_factor.</code><code class="sig-name descname">OverlapFactor</code><span class="sig-paren">(</span><em class="sig-param">doped_area</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.overlap_factor.OverlapFactor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>doped_area</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The doped area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.parameters.fiber.overlap_factor.OverlapFactor.calc_overlap_factor">
+<em class="property">static </em><code class="sig-name descname">calc_overlap_factor</code><span class="sig-paren">(</span><em class="sig-param">doped_area</em>, <em class="sig-param">eff_area</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.overlap_factor.OverlapFactor.calc_overlap_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the overlap factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doped_area</strong> -- The doped area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p></li>
+<li><p><strong>eff_area</strong> -- The effective area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the overlap factor.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Considering:</p>
+<div class="math notranslate nohighlight">
+\[\Gamma  = 1 - e^{-2\frac{A_{doped}}{A_{eff}}}\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="parameter-v-fiber-parameter">
+<h1>59. Parameter: V fiber parameter<a class="headerlink" href="#parameter-v-fiber-parameter" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.parameters.fiber.v_para.V">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.parameters.fiber.v_para.</code><code class="sig-name descname">V</code><span class="sig-paren">(</span><em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=None</em>, <em class="sig-param">n_core=None</em>, <em class="sig-param">n_clad=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.v_para.V" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The numerical aperture.</p></li>
+<li><p><strong>n_core</strong> (<em>float</em><em> or </em><em>numpy.ndarray of float</em>) -- The refractive index of the core.</p></li>
+<li><p><strong>n_clad</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The refractive index of the cladding.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.parameters.fiber.v_para.V.calc_V">
+<em class="property">static </em><code class="sig-name descname">calc_V</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=None</em>, <em class="sig-param">n_core=None</em>, <em class="sig-param">n_clad=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.v_para.V.calc_V" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the V parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>core_radius</strong> -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> -- The numerical aperture.</p></li>
+<li><p><strong>n_core</strong> -- The refractive index of the core.</p></li>
+<li><p><strong>n_clad</strong> -- The refractive index of the cladding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the V parameter.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Considering:</p>
+<div class="math notranslate nohighlight">
+\[V = k_0 a \text{NA} = \frac{\omega_0}{c} a \text{NA}
+= \frac{\omega_0}{c} a
+  (n_{co}^2 - n_{cl}^2)^{\frac{1}{2}}\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Optcom</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html">1. Component: Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-combiner">2. Component: Combiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-continuous-wave">3. Component: Continuous Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-ideal-fiber-coupler">4. Component: Ideal Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-amplifier">5. Component: Fiber Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-coupler">6. Component: Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-divider">7. Component: Divider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber">8. Component: Fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-gaussian">9. Component: Gaussian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-modulator">10. Component: Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-mach-zehnder-modulator">11. Component: Mach-Zehnder Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-sech">12. Component: Sech</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-soliton">13. Component: Soliton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html">14. Equation: Abstract coupled equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-equation">15. Equation: Abstract equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-refractive-index">16. Equation: Abstract refractive index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-non-linear-schrodinger-equation">17. Equation: Abstract non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-approximated-non-linear-schrodinger-equation">18. Equation: Approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-non-linear-schrodinger-equations">19. Equation: Non-linear Schrodinger equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-general-non-linear-schrodinger-equation">20. Equation: General non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-amplifier-non-linear-schrodinger-equation">21. Equation: Abstract amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-approximated-non-linear-schrodinger-equation">22. Equation: Amplifier approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-non-linear-schrodinger-equation">23. Equation: Amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-general-non-linear-schrodinger-equation">24. Equation: Amplifier general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-coupled-non-linear-schrodinger-equation">25. Equation: Abstract coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-approximated-non-linear-schrodinger-equation">26. Equation: Coupled approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-non-linear-schrodinger-equation">27. Equation: Coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-general-non-linear-schrodinger-equation">28. Equation: Coupled general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-fresnel">29. Equation: Fresnel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-mccumber">30. Equation: McCumber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-for-fibers">31. Equation: Rate Equations for fibers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-with-2-levels-for-fiber">32. Equation: Rate Equations with 2 levels for fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-resonant-index-change">33. Equation: Resonant index change</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-sellmeier">34. Equation: Sellmeier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html">35. Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html#stepper">36. Stepper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html">37. Effect: Absorption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-abstract-class-for-effect-object">38. Effect: Abstract class for effect object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-asymmetry">39. Effect: Asymmetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-attenuation">40. Effect: Attenuation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-conversion">41. Effect: Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-correlation">42. Effect: Correlation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-coupling">43. Effect: Coupling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-dispersion">44. Effect: Dispersion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-gain-saturation">45. Effect: Gain saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-kerr">46. Effect: Kerr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-pumping">47. Effect: Pumping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-raman-scattering">48. Effect: Raman Scattering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-relaxation">49. Effect: Relaxation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-self-steepening">50. Effect: Self-steepening</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-stimulated-emission">51. Effect: Stimulated emission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html">52. Layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#taylor">53. Taylor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#domain">54. Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#abstract-component">55. Abstract Component</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">56. Paramater: Effective area</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#parameter-non-linear-coefficient">57. Parameter: Non-linear coefficient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#parameter-overlap-factor">58. Parameter: Overlap factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#parameter-v-fiber-parameter">59. Parameter: V fiber parameter</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../others/index.html" title="previous chapter">52. Layout</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Sacha Medaer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/parameters/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

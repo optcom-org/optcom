@@ -1,0 +1,496 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python3.6">
+  <head>
+    <meta charset="utf-8" />
+    <title>35. Solver &#8212; Optcom 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="37. Effect: Absorption" href="../effects/index.html" />
+    <link rel="prev" title="14. Equation: Abstract coupled equations" href="../equations/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="solver">
+<h1>35. Solver<a class="headerlink" href="#solver" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.solvers.solver.Solver">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.solvers.solver.</code><code class="sig-name descname">Solver</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">method='euler'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><em>AbstractEquation</em></a>) -- The function to compute.</p></li>
+<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The computation method.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.euler">
+<em class="property">static </em><code class="sig-name descname">euler</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">vectors</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.euler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Euler method to solve system of differential equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractEquation</span></code></a>) -- The functions which compute each equation of the system.</p></li>
+<li><p><strong>vectors</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The value of the unknown (waves) at the considered
+time/space step.</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The step size.</p></li>
+<li><p><strong>z</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The current value of the variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The one step euler computation results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Having the initial system of differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases} x'(t) = f(t, x, y, z),
+\quad x(t_0) = x_0 \\
+y'(t) = f(t, x, y, z), \quad y(t_0) = y_0  \\
+z'(t) = f(t, x, y, z), \quad z(t_0) = z_0  \\
+\ldots \\ \end{cases}\end{split}\]</div>
+<p>The Euler method solves it by the following iterative method:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases} x_{k+1} = x_{k} + hf(t_k, x_k, y_k, z_k)\\
+y_{k+1} = y_{k} + hf(t_k, x_{k+1}, y_k, z_k)\\
+z_{k+1} = z_{k} + hf(t_k, x_{k+1}, y_{k+1}, z_k) \\
+\ldots \\ \end{cases}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.f_call">
+<em class="property">static </em><code class="sig-name descname">f_call</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">vectors</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.f_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the __call__ method of the equation f.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.ssfm">
+<em class="property">static </em><code class="sig-name descname">ssfm</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.ssfm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split step Fourier method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractEquation</span></code></a>) -- The function to compute.</p></li>
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The value of the unknown (waves) at the considered
+space step.</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The step size.</p></li>
+<li><p><strong>z</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The current value of the space variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The one step euler computation results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Having the initial system of differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{alignat}{1}
+  A^{L} &amp;= \mathcal{F}^{-1}\big\{\exp
+  \big(h\hat\mathcal{{D}}\big)\mathcal{F}\{A(z,T)\}
+  \big\}\\
+  A(z+h,T) &amp;= \exp\big(h\hat\mathcal{{N}}(A(z,T))
+  \big)A^{L}
+\end{alignat}\end{split}\]</div>
+<p>for <span class="math notranslate nohighlight">\(j = 1, \ldots, K\)</span> where <span class="math notranslate nohighlight">\(K\)</span> is the number of
+channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.ssfm_opti_reduced">
+<em class="property">static </em><code class="sig-name descname">ssfm_opti_reduced</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.ssfm_opti_reduced" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimized reduced split step Fourier method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractEquation</span></code></a>) -- The function to compute.</p></li>
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The value of the unknown (waves) at the considered
+space step.</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The step size.</p></li>
+<li><p><strong>z</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The current value of the space variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The one step euler computation results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Having the initial system of differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{alignat}{1}
+  A_j^{L} &amp;= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+      \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
+  A_j^{N} &amp;= \exp\Big(h\hat\mathcal{{N}}\big(A_1^{N}, \ldots,
+  A_{j-1}^{N}, A_{j}^{L}, \ldots, A_K^{L}\big)\Big)
+  A_j^{L}\\
+  A_j(z+h) &amp;=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+\end{alignat}\end{split}\]</div>
+<p>for <span class="math notranslate nohighlight">\(j = 1, \ldots, K\)</span> where <span class="math notranslate nohighlight">\(K\)</span> is the number of
+channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.ssfm_opti_super_sym">
+<em class="property">static </em><code class="sig-name descname">ssfm_opti_super_sym</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.ssfm_opti_super_sym" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimized super symmetric split step Fourier method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractEquation</span></code></a>) -- The function to compute.</p></li>
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The value of the unknown (waves) at the considered
+space step.</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The step size.</p></li>
+<li><p><strong>z</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The current value of the space variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The one step euler computation results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Having the initial system of differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{alignat}{1}
+  A_j^{L} &amp;= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
+  A_j^{N'} &amp;= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
+  \big(A_1^{N'}, \ldots, A_{j-1}^{N'}, A_{j}^{L},
+  \ldots, A_K^{L}\big)\Big)  A_j^{L}\\
+  A_i^{N} &amp;= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
+  \big(A_1^{N'}, \ldots, A_{i}^{N'}, A_{i+1}^{N},
+  \ldots, A_K^{N}\big)\Big)  A_j^{L} \\
+  A_j(z+h) &amp;=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+\end{alignat}\end{split}\]</div>
+<p>for <span class="math notranslate nohighlight">\(j = 1, \ldots, K\)</span> and <span class="math notranslate nohighlight">\(i = K, \ldots, 1\)</span>
+where <span class="math notranslate nohighlight">\(K\)</span> is the number of channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.ssfm_reduced">
+<em class="property">static </em><code class="sig-name descname">ssfm_reduced</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.ssfm_reduced" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduced split step Fourier method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractEquation</span></code></a>) -- The function to compute.</p></li>
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The value of the unknown (waves) at the considered
+space step.</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The step size.</p></li>
+<li><p><strong>z</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The current value of the space variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The one step euler computation results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Having the initial system of differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{alignat}{1}
+  A^{L} &amp;= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A(z,T)\}\Big\}\\
+  A^{N} &amp;= \exp\big(h\hat\mathcal{{N}}(A^{L})\big) A^{L}\\
+  A(z+h,T) &amp;=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A^{N}\}\Big\}
+\end{alignat}\end{split}\]</div>
+<p>for <span class="math notranslate nohighlight">\(j = 1, \ldots, K\)</span> where <span class="math notranslate nohighlight">\(K\)</span> is the number of
+channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.ssfm_super_sym">
+<em class="property">static </em><code class="sig-name descname">ssfm_super_sym</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.ssfm_super_sym" title="Permalink to this definition">¶</a></dt>
+<dd><p>Super symmetric split step Fourier method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractEquation</span></code></a>) -- The function to compute.</p></li>
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The value of the unknown (waves) at the considered
+space step.</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The step size.</p></li>
+<li><p><strong>z</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The current value of the space variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The one step euler computation results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Having the initial system of differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{alignat}{1}
+  A_j^{L} &amp;= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
+  A_j^{N'} &amp;= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
+  \big(A_1^{L}, \ldots, A_K^{L}\big)\Big)  A_j^{L}\\
+  A_i^{N} &amp;= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
+  \big(A_1^{N'}, \ldots, A_{i}^{N}, A_{i+1}^{N},
+  \ldots, A_K^{N}\big)\Big)  A_j^{L}\\
+  A_j(z+h) &amp;=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+\end{alignat}\end{split}\]</div>
+<p>for <span class="math notranslate nohighlight">\(j = 1, \ldots, K\)</span> and <span class="math notranslate nohighlight">\(i = K, \ldots, 1\)</span>
+where <span class="math notranslate nohighlight">\(K\)</span> is the number of channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.solver.Solver.ssfm_symmetric">
+<em class="property">static </em><code class="sig-name descname">ssfm_symmetric</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.solver.Solver.ssfm_symmetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symmetric split step Fourier method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractEquation</span></code></a>) -- The function to compute.</p></li>
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The value of the unknown (waves) at the considered
+space step.</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The step size.</p></li>
+<li><p><strong>z</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The current value of the space variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The one step euler computation results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Having the initial system of differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{alignat}{1}
+  A_j^{L} &amp;= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
+  A_j^{N} &amp;= \exp\Big(h\hat\mathcal{{N}}
+  \big(A_1(z), \ldots, A_K(z)\big)\Big)  A_j^{L}\\
+  A_j(z+h) &amp;=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+  \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+\end{alignat}\end{split}\]</div>
+<p>for <span class="math notranslate nohighlight">\(j = 1, \ldots, K\)</span> where <span class="math notranslate nohighlight">\(K\)</span> is the number of
+channels.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="stepper">
+<h1>36. Stepper<a class="headerlink" href="#stepper" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.solvers.stepper.Stepper">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.solvers.stepper.</code><code class="sig-name descname">Stepper</code><span class="sig-paren">(</span><em class="sig-param">eqs, method=['euler'], length=1.0, steps=[100], step_method=['fixed'], solver_order='following', stepper_method=['forward'], solver_sequence=None, error=0.01, save_all=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.stepper.Stepper" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eqs</strong> (<em>list of AbstractEquation</em>) -- The equation to solve.</p></li>
+<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) -- The method used to solve the equation.</p></li>
+<li><p><strong>length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The length over which the equation is considered.
+<span class="math notranslate nohighlight">\([km]\)</span></p></li>
+<li><p><strong>steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) -- The number of steps used for the computation.</p></li>
+<li><p><strong>step_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) -- The method used to update the step size.</p></li>
+<li><p><strong>solver_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The order type in which the methods will be computed. (will
+be ignored if solver_sequence is provided)</p></li>
+<li><p><strong>stepper_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) -- The method used to converge to solution.</p></li>
+<li><p><strong>solver_sequence</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) -- The sequence in which the methods will be computed.</p></li>
+<li><p><strong>error</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The error for convergence criterion of stepper resolution.</p></li>
+<li><p><strong>save_all</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, will save all channels of all fields at each space
+step during the equation resolution. The number of step
+recorded depends on the <code class="xref py py-attr docutils literal notranslate"><span class="pre">memory_storage</span></code> attribute
+of <code class="xref py py-class docutils literal notranslate"><span class="pre">layout.Layout</span></code>. The recorded channels can be
+accessed with the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">storage</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.solvers.stepper.Stepper.start_shooting_backward">
+<code class="sig-name descname">start_shooting_backward</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.stepper.Stepper.start_shooting_backward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set parameters to start the shooting method with backward
+pass.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.solvers.stepper.Stepper.start_shooting_forward">
+<code class="sig-name descname">start_shooting_forward</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.stepper.Stepper.start_shooting_forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set parameters to start the shooting method with forward
+pass.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Optcom</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html">1. Component: Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-combiner">2. Component: Combiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-continuous-wave">3. Component: Continuous Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-ideal-fiber-coupler">4. Component: Ideal Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-amplifier">5. Component: Fiber Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-coupler">6. Component: Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-divider">7. Component: Divider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber">8. Component: Fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-gaussian">9. Component: Gaussian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-modulator">10. Component: Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-mach-zehnder-modulator">11. Component: Mach-Zehnder Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-sech">12. Component: Sech</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-soliton">13. Component: Soliton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html">14. Equation: Abstract coupled equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-equation">15. Equation: Abstract equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-refractive-index">16. Equation: Abstract refractive index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-non-linear-schrodinger-equation">17. Equation: Abstract non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-approximated-non-linear-schrodinger-equation">18. Equation: Approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-non-linear-schrodinger-equations">19. Equation: Non-linear Schrodinger equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-general-non-linear-schrodinger-equation">20. Equation: General non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-amplifier-non-linear-schrodinger-equation">21. Equation: Abstract amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-approximated-non-linear-schrodinger-equation">22. Equation: Amplifier approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-non-linear-schrodinger-equation">23. Equation: Amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-general-non-linear-schrodinger-equation">24. Equation: Amplifier general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-coupled-non-linear-schrodinger-equation">25. Equation: Abstract coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-approximated-non-linear-schrodinger-equation">26. Equation: Coupled approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-non-linear-schrodinger-equation">27. Equation: Coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-general-non-linear-schrodinger-equation">28. Equation: Coupled general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-fresnel">29. Equation: Fresnel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-mccumber">30. Equation: McCumber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-for-fibers">31. Equation: Rate Equations for fibers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-with-2-levels-for-fiber">32. Equation: Rate Equations with 2 levels for fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-resonant-index-change">33. Equation: Resonant index change</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-sellmeier">34. Equation: Sellmeier</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">35. Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#stepper">36. Stepper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html">37. Effect: Absorption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-abstract-class-for-effect-object">38. Effect: Abstract class for effect object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-asymmetry">39. Effect: Asymmetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-attenuation">40. Effect: Attenuation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-conversion">41. Effect: Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-correlation">42. Effect: Correlation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-coupling">43. Effect: Coupling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-dispersion">44. Effect: Dispersion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-gain-saturation">45. Effect: Gain saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-kerr">46. Effect: Kerr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-pumping">47. Effect: Pumping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-raman-scattering">48. Effect: Raman Scattering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-relaxation">49. Effect: Relaxation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-self-steepening">50. Effect: Self-steepening</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-stimulated-emission">51. Effect: Stimulated emission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html">52. Layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#taylor">53. Taylor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#domain">54. Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#abstract-component">55. Abstract Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html">56. Paramater: Effective area</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-non-linear-coefficient">57. Parameter: Non-linear coefficient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-overlap-factor">58. Parameter: Overlap factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-v-fiber-parameter">59. Parameter: V fiber parameter</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../equations/index.html" title="previous chapter">14. Equation: Abstract coupled equations</a></li>
+      <li>Next: <a href="../effects/index.html" title="next chapter">37. Effect: Absorption</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Sacha Medaer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/solvers/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

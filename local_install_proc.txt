@@ -1,0 +1,8 @@
+ - make sure you have python3.7 install on your machine as well as pip (official package manager of python) N.B.: need python3.7 (not 2 or <3.7) and when using pip , need to specify pip3.7 to use python3.7 (you can also make python version 3.7 as your default version if you don't want to put 3.7 all the time)
+
+ - extract the content of the zip file
+
+ - go in a terminal in the root of the project (the folder where you downloaded/extracted the git repo) and in order to make sure you have the require libraries type: $pip3 install -r requirements.txt
+
+ - go in a terminal out of the root project (one level up) and in order to install locally the library, type in a terminal: python3 -m pip install -e <root_folder_name>/
+   in case you didn't change the name, the root folder name should be optcom_0.0.1

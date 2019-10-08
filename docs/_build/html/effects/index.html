@@ -1,0 +1,1591 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python3.6">
+  <head>
+    <meta charset="utf-8" />
+    <title>37. Effect: Absorption &#8212; Optcom 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="52. Layout" href="../others/index.html" />
+    <link rel="prev" title="35. Solver" href="../solvers/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="effect-absorption">
+<h1>37. Effect: Absorption<a class="headerlink" href="#effect-absorption" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.absorption.Absorption">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.absorption.</code><code class="sig-name descname">Absorption</code><span class="sig-paren">(</span><em class="sig-param">dopant='yt'</em>, <em class="sig-param">predict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.absorption.Absorption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.absorption.Absorption.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.absorption.Absorption.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.absorption.Absorption.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.absorption.Absorption.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.absorption.Absorption.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.absorption.Absorption.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doping agent.</p></li>
+<li><p><strong>predict</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- A callable object to predict the cross sections.
+The variable must be the wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.absorption.Absorption.calc_cross_section">
+<em class="property">static </em><code class="sig-name descname">calc_cross_section</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">dopant='Yb'</em>, <em class="sig-param">predict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.absorption.Absorption.calc_cross_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the absorption cross section. Calculate with the
+fitting formula from ref. <a class="footnote-reference brackets" href="#id2" id="id1">4</a> .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>dopant</strong> -- The doping agent.</p></li>
+<li><p><strong>predict</strong> -- A callable object to predict the cross sections.
+The variable must be the wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the absorption cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or numpy.ndarray of float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Considering:</p>
+<div class="math notranslate nohighlight">
+\[f(\lambda, \lambda_c, \lambda_w, n)
+= \exp\Big[-\Big\lvert
+\frac{\lambda-\lambda_c}{\lambda_w}\Big\rvert^n \Big]\]</div>
+<p>With <span class="math notranslate nohighlight">\(\lambda\)</span>, <span class="math notranslate nohighlight">\(\lambda_c\)</span> and <span class="math notranslate nohighlight">\(\lambda_w\)</span>
+in <span class="math notranslate nohighlight">\([nm]\)</span></p>
+<p>For Ytterbium:</p>
+<div class="math notranslate nohighlight">
+\[\sigma_a^{Yb}(\lambda) = 0.09f(\lambda,913,8,2)
++ 0.13 f(\lambda,950,40,4)
++ 0.2 f(\lambda, 968, 40, 2.4)
++ 1.08 f(\lambda, 975.8,3,1.5)\]</div>
+<p>For Erbium:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  \sigma_a^{Er}(\lambda) &amp;= 0.221
+  f(\lambda, 1493, 16.5, 2.2)
+  + 0.342 f(\lambda, 1534, 4.5, 1.4)\\
+  &amp;\quad + 0.158f(\lambda, 1534, 30,4)
+  + 0.037 f(\lambda, 1534, 85, 4)
+  + 0.132 f(\lambda, 1541, 8,0.8)
+\end{split}\end{split}\]</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">4</a></span></dt>
+<dd><p>Valley, G.C., 2001. Modeling cladding-pumped Er/Yb fiber
+amplifiers. Optical Fiber Technology, 7(1), pp.21-44.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-abstract-class-for-effect-object">
+<h1>38. Effect: Abstract class for effect object<a class="headerlink" href="#effect-abstract-class-for-effect-object" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.abstract_effect.AbstractEffect">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.abstract_effect.</code><code class="sig-name descname">AbstractEffect</code><span class="sig-paren">(</span><em class="sig-param">omega=None</em>, <em class="sig-param">time=None</em>, <em class="sig-param">center_omega=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.abstract_effect.AbstractEffect.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.abstract_effect.AbstractEffect.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.abstract_effect.AbstractEffect.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.abstract_effect.AbstractEffect.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Corrective wave, optional, used if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The operator of the effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.abstract_effect.AbstractEffect.op_approx">
+<code class="sig-name descname">op_approx</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect.op_approx" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximated operator of the effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Corrective wave, optional, used if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The approximated operator of the effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.abstract_effect.AbstractEffect.term">
+<code class="sig-name descname">term</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect.term" title="Permalink to this definition">¶</a></dt>
+<dd><p>The term of the effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Corrective wave, optional, used if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The term of the effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.abstract_effect.AbstractEffect.term_approx">
+<code class="sig-name descname">term_approx</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.abstract_effect.AbstractEffect.term_approx" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximated term of the effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Corrective wave, optional, used if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The approximated term of the effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-asymmetry">
+<h1>39. Effect: Asymmetry<a class="headerlink" href="#effect-asymmetry" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.asymmetry.Asymmetry">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.asymmetry.</code><code class="sig-name descname">Asymmetry</code><span class="sig-paren">(</span><em class="sig-param">delta=None</em>, <em class="sig-param">beta_01=None</em>, <em class="sig-param">beta_02=None</em>, <em class="sig-param">medium='SiO2'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.asymmetry.Asymmetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.asymmetry.Asymmetry.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.asymmetry.Asymmetry.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.asymmetry.Asymmetry.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.asymmetry.Asymmetry.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.asymmetry.Asymmetry.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.asymmetry.Asymmetry.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The asymmetry measure coefficient. If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_01</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The zeroth order Taylor series dispersion coefficient of
+first waveguide. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>beta_02</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The zeroth order Taylor series dispersion coefficient of
+second waveguide. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The medium in which the dispersion is considered.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.asymmetry.Asymmetry.calc_delta">
+<em class="property">static </em><code class="sig-name descname">calc_delta</code><span class="sig-paren">(</span><em class="sig-param">beta_01</em>, <em class="sig-param">beta_02</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.asymmetry.Asymmetry.calc_delta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the measure of asymmetry for the parameters given
+for two waveguides. <a class="footnote-reference brackets" href="#id4" id="id3">8</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta_01</strong> -- The first term of the propagation constant of the first
+waveguide. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>beta_02</strong> -- The first term of the propagation constant of the second
+waveguide. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the asymmetry measure. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\delta_{a12} = \frac{1}{2} (\beta_{01} - \beta_{02})\]</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id3">8</a></span></dt>
+<dd><p>Govind Agrawal, Chapter 2: Fibers Couplers,
+Applications of Nonlinear Fiber Optics (Second Edition),
+Academic Press, 2008, Page 57.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.asymmetry.Asymmetry.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.asymmetry.Asymmetry.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the asymmetry effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-attenuation">
+<h1>40. Effect: Attenuation<a class="headerlink" href="#effect-attenuation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.attenuation.Attenuation">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.attenuation.</code><code class="sig-name descname">Attenuation</code><span class="sig-paren">(</span><em class="sig-param">alpha=None</em>, <em class="sig-param">order=1</em>, <em class="sig-param">medium='sio2'</em>, <em class="sig-param">start_taylor=0</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.attenuation.Attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.attenuation.Attenuation.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.attenuation.Attenuation.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.attenuation.Attenuation.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.attenuation.Attenuation.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.attenuation.Attenuation.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.attenuation.Attenuation.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The medium in which the attenuation is considered.</p></li>
+<li><p><strong>start_taylor</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the derivative from which to start the Taylor
+Series expansion.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.attenuation.Attenuation.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.attenuation.Attenuation.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the attenuation effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-conversion">
+<h1>41. Effect: Conversion<a class="headerlink" href="#effect-conversion" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.conversion.Conversion">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.conversion.</code><code class="sig-name descname">Conversion</code><a class="headerlink" href="#optcom.effects.conversion.Conversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Someone should do this code. I can do this code. I could actually do
+it. Ok, I'm coding.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/trollface_dance.gif"><img alt="../_images/trollface_dance.gif" src="../_images/trollface_dance.gif" style="width: 240.0px; height: 240.0px;" /></a>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="effect-correlation">
+<h1>42. Effect: Correlation<a class="headerlink" href="#effect-correlation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.correlation.Correlation">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.correlation.</code><code class="sig-name descname">Correlation</code><a class="headerlink" href="#optcom.effects.correlation.Correlation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Someone should do this code. I can do this code. I could actually do
+it. Ok, I'm coding.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/trollface_dance.gif"><img alt="../_images/trollface_dance.gif" src="../_images/trollface_dance.gif" style="width: 240.0px; height: 240.0px;" /></a>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="effect-coupling">
+<h1>43. Effect: Coupling<a class="headerlink" href="#effect-coupling" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.coupling.Coupling">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.coupling.</code><code class="sig-name descname">Coupling</code><span class="sig-paren">(</span><em class="sig-param">kappa=None</em>, <em class="sig-param">V=2.0</em>, <em class="sig-param">a=5.0</em>, <em class="sig-param">d=15.0</em>, <em class="sig-param">n_0=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.coupling.Coupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.coupling.Coupling.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.coupling.Coupling.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.coupling.Coupling.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.coupling.Coupling.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.coupling.Coupling.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.coupling.Coupling.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kappa</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The coupling coefficients. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>V</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fiber parameter.</p></li>
+<li><p><strong>a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The core radius. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>d</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The center to center spacing between the two cores.
+<span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>n_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The refractive index outside of the two fiber cores.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.coupling.Coupling.calc_kappa">
+<em class="property">static </em><code class="sig-name descname">calc_kappa</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">V=2.0</em>, <em class="sig-param">a=5.0</em>, <em class="sig-param">d=15.0</em>, <em class="sig-param">n_0=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.coupling.Coupling.calc_kappa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the coupling coefficient for the parameters given
+for two waveguides. (assuming the two waveguides are
+symmetric) <a class="footnote-reference brackets" href="#id6" id="id5">7</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>V</strong> -- The fiber parameter.</p></li>
+<li><p><strong>a</strong> -- The core radius. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>d</strong> -- The center to center spacing between the two cores.
+<span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>n_0</strong> -- The refractive index outside of the two fiber cores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the coupling coefficient. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\kappa = \frac{\pi V}{2 k_0 n_0 a^2}
+e^{-(c_0 + c_1 d + c_2 d^2)}\]</div>
+<p>This equation is accurate to within 1% for values of the fiber
+parameter <span class="math notranslate nohighlight">\(1.5\leq V\leq 2.5\)</span> and of the normalized
+center-to-center spacing <span class="math notranslate nohighlight">\(\bar{d} = d/a\)</span>,
+<span class="math notranslate nohighlight">\(2\leq \bar{d}\leq 4.5\)</span> .</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id5">7</a></span></dt>
+<dd><p>Govind Agrawal, Chapter 2: Fibers Couplers,
+Applications of Nonlinear Fiber Optics (Second Edition),
+Academic Press, 2008, Page 59.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.coupling.Coupling.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.coupling.Coupling.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the dispersion effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.coupling.Coupling.term">
+<code class="sig-name descname">term</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.coupling.Coupling.term" title="Permalink to this definition">¶</a></dt>
+<dd><p>The term of the effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Corrective wave, optional, used if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The term of the effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-dispersion">
+<h1>44. Effect: Dispersion<a class="headerlink" href="#effect-dispersion" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.dispersion.Dispersion">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.dispersion.</code><code class="sig-name descname">Dispersion</code><span class="sig-paren">(</span><em class="sig-param">beta=None</em>, <em class="sig-param">order=2</em>, <em class="sig-param">medium='sio2'</em>, <em class="sig-param">start_taylor=2</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.dispersion.Dispersion.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.dispersion.Dispersion.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.dispersion.Dispersion.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The medium in which the dispersion is considered.</p></li>
+<li><p><strong>start_taylor</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the derivative from which to start the Taylor
+Series expansion.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.calc_RDS">
+<em class="property">static </em><code class="sig-name descname">calc_RDS</code><span class="sig-paren">(</span><em class="sig-param">Lambda</em>, <em class="sig-param">beta_2</em>, <em class="sig-param">beta_3</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.calc_RDS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the relative dispersion slope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Lambda</strong> -- The wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>beta_2</strong> -- The GVD term of the dispersion. <span class="math notranslate nohighlight">\([ps^2\cdot km^{-1}]\)</span></p></li>
+<li><p><strong>beta_3</strong> -- The third order dispersion term. <span class="math notranslate nohighlight">\([ps^3\cdot km^{-1}]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the dispersion parameter.
+<span class="math notranslate nohighlight">\([nm^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[RDS = \frac{S}{D}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.calc_accumulated_dispersion">
+<em class="property">static </em><code class="sig-name descname">calc_accumulated_dispersion</code><span class="sig-paren">(</span><em class="sig-param">Lambda</em>, <em class="sig-param">beta_2</em>, <em class="sig-param">length</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.calc_accumulated_dispersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dispersion parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Lambda</strong> -- The wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>beta_2</strong> -- The GVD term of the dispersion. <span class="math notranslate nohighlight">\([ps^2\cdot km^{-1}]\)</span></p></li>
+<li><p><strong>length</strong> -- The length over which dispersion is considered. <span class="math notranslate nohighlight">\([km]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the dispersion parameter.
+<span class="math notranslate nohighlight">\([ps \cdot nm^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[D_{acc} = D \cdot L\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.calc_beta">
+<em class="property">static </em><code class="sig-name descname">calc_beta</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">medium</em>, <em class="sig-param">n=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.calc_beta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the propagation constant. (valid only for TEM)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>medium</strong> -- The medium in which the wave propagates (used for Sellmeier
+equations if n not provided).</p></li>
+<li><p><strong>n</strong> -- The refractive index at angular frequency <span class="math notranslate nohighlight">\(\omega\)</span>.
+Calcul <span class="math notranslate nohighlight">\(n(\omega)\)</span> from Sellmeier equation if None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\beta(\omega) = k(\omega) = k_0 n(\omega)
+= \frac{\omega}{c} n(\omega)\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.calc_beta_coeffs">
+<em class="property">static </em><code class="sig-name descname">calc_beta_coeffs</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">order</em>, <em class="sig-param">class_n</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.calc_beta_coeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the nth first derivatives of the propagation
+constant. (valid only for TEM)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>order</strong> -- The order of the highest dispersion coefficient.</p></li>
+<li><p><strong>class_n</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.abstract_refractive_index.AbstractRefractiveIndex" title="optcom.equations.abstract_refractive_index.AbstractRefractiveIndex"><em>AbstractRefractiveIndex</em></a>) -- A function which calculate the refractive index.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The nth derivative of the propagation constant.
+<span class="math notranslate nohighlight">\([ps^{i}\cdot km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\beta_i(\omega) = \frac{d^i \beta(\omega)}{d\omega^i}
+= \frac{1}{c}\bigg(i
+\frac{d^{(i-1)} n(\omega)}{d\omega^{(i-1)}}
++ \omega \frac{d^i n(\omega)}{d\omega^i}\bigg)\]</div>
+<p>for <span class="math notranslate nohighlight">\(i = 0, \ldots, \text{order}\)</span></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.calc_beta_deriv">
+<em class="property">static </em><code class="sig-name descname">calc_beta_deriv</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">order</em>, <em class="sig-param">medium</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.calc_beta_deriv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the nth derivative of the propagation constant.
+(valid only for TEM)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>order</strong> -- The order of the derivative.</p></li>
+<li><p><strong>medium</strong> -- The medium in which the wave propagates, used for Sellmeier
+equations in order to calculate the refractive index.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The nth derivative of the propagation constant.
+<span class="math notranslate nohighlight">\([ps^{i}\cdot km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\beta_i(\omega) = \frac{d^i \beta(\omega)}{d\omega^i}
+= \frac{1}{c}\bigg(i
+\frac{d^{(i-1)} n(\omega)}{d\omega^{(i-1)}}
++ \omega \frac{d^i n(\omega)}{d\omega^i}\bigg)\]</div>
+<p>for <span class="math notranslate nohighlight">\(i = 0, \ldots, \text{order}\)</span></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.calc_dispersion">
+<em class="property">static </em><code class="sig-name descname">calc_dispersion</code><span class="sig-paren">(</span><em class="sig-param">Lambda</em>, <em class="sig-param">beta_2</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.calc_dispersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dispersion parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Lambda</strong> -- The wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>beta_2</strong> -- The GVD term of the dispersion. <span class="math notranslate nohighlight">\([ps^2\cdot km^{-1}]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the dispersion parameter.
+<span class="math notranslate nohighlight">\([ps \cdot nm^{-1} \cdot km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[D = \frac{d}{d\lambda}\Big(\frac{1}{v_g}\Big)
+= \frac{d}{d\lambda} \beta_1
+= -\frac{2\pi c}{\lambda^2} \beta_2\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.calc_dispersion_slope">
+<em class="property">static </em><code class="sig-name descname">calc_dispersion_slope</code><span class="sig-paren">(</span><em class="sig-param">Lambda</em>, <em class="sig-param">beta_2</em>, <em class="sig-param">beta_3</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.calc_dispersion_slope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dispersio slope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Lambda</strong> -- The wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>beta_2</strong> -- The GVD term of the dispersion. <span class="math notranslate nohighlight">\([ps^2\cdot km^{-1}]\)</span></p></li>
+<li><p><strong>beta_3</strong> -- The third order dispersion term. <span class="math notranslate nohighlight">\([ps^3\cdot km^{-1}]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the dispersion parameter.
+<span class="math notranslate nohighlight">\([ps \cdot nm^{-2} \cdot km^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[S = \frac{d D}{d\lambda}
+= \beta_2 \frac{d}{d\lambda} \Big(-\frac{2\pi c}
+{\lambda^2}\Big) - \frac{2\pi c}
+{\lambda^2} \frac{d\beta_2}{d\lambda}
+= \frac{4\pi c}{\lambda^3} \beta_2
++ \Big(\frac{2\pi c}{\lambda^2}\Big)^2 \beta_3\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.dispersion.Dispersion.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.dispersion.Dispersion.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the dispersion effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-gain-saturation">
+<h1>45. Effect: Gain saturation<a class="headerlink" href="#effect-gain-saturation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.gain_saturation.GainSaturation">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.gain_saturation.</code><code class="sig-name descname">GainSaturation</code><span class="sig-paren">(</span><em class="sig-param">re</em>, <em class="sig-param">alpha=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.gain_saturation.GainSaturation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.gain_saturation.GainSaturation.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.gain_saturation.GainSaturation.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.gain_saturation.GainSaturation.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.gain_saturation.GainSaturation.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.gain_saturation.GainSaturation.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.gain_saturation.GainSaturation.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>re</strong> (<a class="reference internal" href="../equations/index.html#optcom.equations.re_fiber.REFiber" title="optcom.equations.re_fiber.REFiber"><em>REFiber</em></a>) -- The rate equations object.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The attenuation coefficient. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.gain_saturation.GainSaturation.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.gain_saturation.GainSaturation.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the gain saturation effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-kerr">
+<h1>46. Effect: Kerr<a class="headerlink" href="#effect-kerr" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.kerr.Kerr">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.kerr.</code><code class="sig-name descname">Kerr</code><span class="sig-paren">(</span><em class="sig-param">SPM=False</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">sigma=2.0</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.kerr.Kerr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.kerr.Kerr.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.kerr.Kerr.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.kerr.Kerr.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.kerr.Kerr.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.kerr.Kerr.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.kerr.Kerr.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM term.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.kerr.Kerr.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.kerr.Kerr.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Corrective wave, optional, used if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The operator of the effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.kerr.Kerr.op_spm">
+<code class="sig-name descname">op_spm</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.kerr.Kerr.op_spm" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the self-phase modulation effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.kerr.Kerr.op_xpm">
+<code class="sig-name descname">op_xpm</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.kerr.Kerr.op_xpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operator of the cross-phase modulation effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-pumping">
+<h1>47. Effect: Pumping<a class="headerlink" href="#effect-pumping" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.pumping.Pumping">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.pumping.</code><code class="sig-name descname">Pumping</code><a class="headerlink" href="#optcom.effects.pumping.Pumping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Someone should do this code. I can do this code. I could actually do
+it. Ok, I'm coding.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/trollface_dance.gif"><img alt="../_images/trollface_dance.gif" src="../_images/trollface_dance.gif" style="width: 240.0px; height: 240.0px;" /></a>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="effect-raman-scattering">
+<h1>48. Effect: Raman Scattering<a class="headerlink" href="#effect-raman-scattering" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.raman.Raman">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.raman.</code><code class="sig-name descname">Raman</code><span class="sig-paren">(</span><em class="sig-param">T_R=0.003</em>, <em class="sig-param">eta=2.0</em>, <em class="sig-param">approx_type=1</em>, <em class="sig-param">cross_term=False</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em>, <em class="sig-param">tau_b=0.096</em>, <em class="sig-param">f_a=0.75</em>, <em class="sig-param">f_b=0.21</em>, <em class="sig-param">f_c=0.04</em>, <em class="sig-param">h_R=None</em>, <em class="sig-param">time=None</em>, <em class="sig-param">omega=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.raman.Raman.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.raman.Raman.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.raman.Raman.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.raman.Raman.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.raman.Raman.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.raman.Raman.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The raman coefficient. <span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the cross terms in the effect.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>cross_term</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-term influence in the effect.</p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The spectral width of the Boson peak. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the isotropic part to the
+isotropic Raman function.</p></li>
+<li><p><strong>f_b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the anisotropic part to the
+anisotropic Raman function.</p></li>
+<li><p><strong>f_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contributian of the isotropic part to the
+anisotropic Raman function.</p></li>
+<li><p><strong>h_R</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- The Raman response function values.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- The time values of the field.</p></li>
+<li><p><strong>omega</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- The angular frequencies values of the field.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.calc_h_R">
+<em class="property">static </em><code class="sig-name descname">calc_h_R</code><span class="sig-paren">(</span><em class="sig-param">time</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em>, <em class="sig-param">tau_b=0.096</em>, <em class="sig-param">f_a=0.75</em>, <em class="sig-param">f_b=0.21</em>, <em class="sig-param">f_c=0.04</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.calc_h_R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Raman response function as the sum of the
+isotropic <span class="math notranslate nohighlight">\(R_a(t)\)</span> and anisotropic <span class="math notranslate nohighlight">\(R_b(t)\)</span>
+(Boson peak) Raman response functions. <a class="footnote-reference brackets" href="#id8" id="id7">1</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The time value(s). <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The spectral width of the Boson peak. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the isotropic part to the
+isotropic Raman function.</p></li>
+<li><p><strong>f_b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the anisotropic part to the
+anisotropic Raman function.</p></li>
+<li><p><strong>f_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contributian of the isotropic part to the
+anisotropic Raman function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Value of the Raman response function at the time given as
+parameter. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+h_R(t) &amp;= R_a(t) + R_b(t)\\
+&amp;= (f_a h_a(t)) + (f_b h_b(t) + f_c h_a(t))\\
+&amp;= (f_a+f_c)h_a(t) + f_b h_b(t)
+\end{split}\end{split}\]</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id7">1</a></span></dt>
+<dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
+for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.calc_h_a">
+<em class="property">static </em><code class="sig-name descname">calc_h_a</code><span class="sig-paren">(</span><em class="sig-param">time</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.calc_h_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the isotropic part of the Raman response function.
+<a class="footnote-reference brackets" href="#id10" id="id9">2</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The time value(s). <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Value of the isotropic part of the Raman response function
+at the time given as parameter. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[h_a(t) = \frac{\tau_1}{\tau_1^2 + \tau_2^2}
+e^{\frac{-t}{\tau_2}} \sin\big(\frac{t}{\tau_1}\big)\]</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id9">2</a></span></dt>
+<dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
+for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.calc_h_b">
+<em class="property">static </em><code class="sig-name descname">calc_h_b</code><span class="sig-paren">(</span><em class="sig-param">time</em>, <em class="sig-param">tau_b=0.096</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.calc_h_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the anisotropic part (boson peak) of the Raman
+response function. <a class="footnote-reference brackets" href="#id12" id="id11">3</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The time value(s). <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The spectral width of the Boson peak. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Value of the anisotropic part of the Raman response function
+at the time given as parameter. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[h_b(t) = \frac{2\tau_b - t}{\tau_b^2}
+e^{\frac{-t}{\tau_b}}\]</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id11">3</a></span></dt>
+<dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
+for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.calc_raman_gain">
+<em class="property">static </em><code class="sig-name descname">calc_raman_gain</code><span class="sig-paren">(</span><em class="sig-param">omega_bw</em>, <em class="sig-param">h_R</em>, <em class="sig-param">center_omega</em>, <em class="sig-param">n_0</em>, <em class="sig-param">f_R</em>, <em class="sig-param">n_2</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.calc_raman_gain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Raman gain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega_bw</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The angular frequency bandwidth. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>h_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The raman response function. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>center_omega</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>n_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The refractive index.</p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>n_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The non-linear index. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The Raman gain.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[g_R(\Delta \omega) = \frac{\omega_0}{c n_0} f_R
+\chi^{(3)} \Im{\hat{h}_R(\Delta \omega)}\]</div>
+<p>where:</p>
+<div class="math notranslate nohighlight">
+\[\chi^{(3)} = \frac{4\epsilon_0 c n^2}{3} n_2\]</div>
+<p><span class="math notranslate nohighlight">\(\chi^{(3)}\)</span> is in <span class="math notranslate nohighlight">\([m^2 \cdot V^{-2}]\)</span>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.op">
+<code class="sig-name descname">op</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.op" title="Permalink to this definition">¶</a></dt>
+<dd><p>The non approximated operator of the Raman effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.op_approx">
+<code class="sig-name descname">op_approx</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.op_approx" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximation of the operator of the Raman effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.op_approx_cross">
+<code class="sig-name descname">op_approx_cross</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.op_approx_cross" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximation operator of the cross terms of the Raman
+effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.raman.Raman.op_approx_self">
+<code class="sig-name descname">op_approx_self</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.raman.Raman.op_approx_self" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximation of the operator of the Raman effect for the
+considered wave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-relaxation">
+<h1>49. Effect: Relaxation<a class="headerlink" href="#effect-relaxation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.relaxation.Relaxation">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.relaxation.</code><code class="sig-name descname">Relaxation</code><a class="headerlink" href="#optcom.effects.relaxation.Relaxation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Someone should do this code. I can do this code. I could actually do
+it. Ok, I'm coding.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/trollface_dance.gif"><img alt="../_images/trollface_dance.gif" src="../_images/trollface_dance.gif" style="width: 240.0px; height: 240.0px;" /></a>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="effect-self-steepening">
+<h1>50. Effect: Self-steepening<a class="headerlink" href="#effect-self-steepening" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.self_steepening.SelfSteepening">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.self_steepening.</code><code class="sig-name descname">SelfSteepening</code><span class="sig-paren">(</span><em class="sig-param">eta=2.0</em>, <em class="sig-param">approx_type=1</em>, <em class="sig-param">cross_term=False</em>, <em class="sig-param">omega=None</em>, <em class="sig-param">center_omega=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.self_steepening.SelfSteepening.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.self_steepening.SelfSteepening.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.self_steepening.SelfSteepening.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the cross terms in the effect.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>cross_term</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-term influence in the effect.</p></li>
+<li><p><strong>omega</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- The angular frequencies values of the field.
+<span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>center_omega</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- The center angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.self_steepening.SelfSteepening.op_approx">
+<code class="sig-name descname">op_approx</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening.op_approx" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximation of the operator of the
+self-steepening effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.self_steepening.SelfSteepening.op_approx_cross">
+<code class="sig-name descname">op_approx_cross</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening.op_approx_cross" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximation of the operator of the cross terms of the
+self-steepening effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.self_steepening.SelfSteepening.op_approx_self">
+<code class="sig-name descname">op_approx_self</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening.op_approx_self" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximation of the operator of the
+self-steepening effect for the considered wave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.effects.self_steepening.SelfSteepening.term_approx">
+<code class="sig-name descname">term_approx</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.self_steepening.SelfSteepening.term_approx" title="Permalink to this definition">¶</a></dt>
+<dd><p>The approximated term of the effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Corrective wave, optional, used if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The approximated term of the effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="effect-stimulated-emission">
+<h1>51. Effect: Stimulated emission<a class="headerlink" href="#effect-stimulated-emission" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.effects.stimulated_emission.StimulatedEmission">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.effects.stimulated_emission.</code><code class="sig-name descname">StimulatedEmission</code><span class="sig-paren">(</span><em class="sig-param">dopant='yt'</em>, <em class="sig-param">predict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.stimulated_emission.StimulatedEmission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic class for effect object.</p>
+<dl class="attribute">
+<dt id="optcom.effects.stimulated_emission.StimulatedEmission.omega">
+<code class="sig-name descname">omega</code><a class="headerlink" href="#optcom.effects.stimulated_emission.StimulatedEmission.omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular frequency array. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.stimulated_emission.StimulatedEmission.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#optcom.effects.stimulated_emission.StimulatedEmission.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.effects.stimulated_emission.StimulatedEmission.center_omega">
+<code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.effects.stimulated_emission.StimulatedEmission.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doping agent.</p></li>
+<li><p><strong>predict</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- A callable object to predict the cross sections.
+The variable must be the wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.effects.stimulated_emission.StimulatedEmission.calc_cross_section">
+<em class="property">static </em><code class="sig-name descname">calc_cross_section</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">dopant='Yb'</em>, <em class="sig-param">predict=None</em>, <em class="sig-param">center_omega=None</em>, <em class="sig-param">N_0=None</em>, <em class="sig-param">N_1=None</em>, <em class="sig-param">T=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.effects.stimulated_emission.StimulatedEmission.calc_cross_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the emission cross section. There is no analytical
+formula for the emission cross section. Calculate first the
+absorption cross sections with the fitting formula from ref.
+<a class="footnote-reference brackets" href="#id14" id="id13">5</a> and then use the McCumber relations to deduce the emission
+cross sections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>dopant</strong> -- The type of the doped medium.</p></li>
+<li><p><strong>predict</strong> -- A callable object to predict the cross sections.
+The variable must be the wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>center_omega</strong> -- The center angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>N_0</strong> -- The population in ground state. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>N_1</strong> -- The population in the excited state. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>T</strong> -- The temperature. <span class="math notranslate nohighlight">\([K]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the emission cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id13">5</a></span></dt>
+<dd><p>Valley, G.C., 2001. Modeling cladding-pumped Er/Yb fiber
+amplifiers. Optical Fiber Technology, 7(1), pp.21-44.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Optcom</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html">1. Component: Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-combiner">2. Component: Combiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-continuous-wave">3. Component: Continuous Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-ideal-fiber-coupler">4. Component: Ideal Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-amplifier">5. Component: Fiber Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-coupler">6. Component: Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-divider">7. Component: Divider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber">8. Component: Fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-gaussian">9. Component: Gaussian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-modulator">10. Component: Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-mach-zehnder-modulator">11. Component: Mach-Zehnder Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-sech">12. Component: Sech</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-soliton">13. Component: Soliton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html">14. Equation: Abstract coupled equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-equation">15. Equation: Abstract equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-refractive-index">16. Equation: Abstract refractive index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-non-linear-schrodinger-equation">17. Equation: Abstract non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-approximated-non-linear-schrodinger-equation">18. Equation: Approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-non-linear-schrodinger-equations">19. Equation: Non-linear Schrodinger equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-general-non-linear-schrodinger-equation">20. Equation: General non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-amplifier-non-linear-schrodinger-equation">21. Equation: Abstract amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-approximated-non-linear-schrodinger-equation">22. Equation: Amplifier approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-non-linear-schrodinger-equation">23. Equation: Amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-general-non-linear-schrodinger-equation">24. Equation: Amplifier general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-coupled-non-linear-schrodinger-equation">25. Equation: Abstract coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-approximated-non-linear-schrodinger-equation">26. Equation: Coupled approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-non-linear-schrodinger-equation">27. Equation: Coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-general-non-linear-schrodinger-equation">28. Equation: Coupled general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-fresnel">29. Equation: Fresnel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-mccumber">30. Equation: McCumber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-for-fibers">31. Equation: Rate Equations for fibers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-with-2-levels-for-fiber">32. Equation: Rate Equations with 2 levels for fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-resonant-index-change">33. Equation: Resonant index change</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-sellmeier">34. Equation: Sellmeier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html">35. Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html#stepper">36. Stepper</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">37. Effect: Absorption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-abstract-class-for-effect-object">38. Effect: Abstract class for effect object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-asymmetry">39. Effect: Asymmetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-attenuation">40. Effect: Attenuation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-conversion">41. Effect: Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-correlation">42. Effect: Correlation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-coupling">43. Effect: Coupling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-dispersion">44. Effect: Dispersion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-gain-saturation">45. Effect: Gain saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-kerr">46. Effect: Kerr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-pumping">47. Effect: Pumping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-raman-scattering">48. Effect: Raman Scattering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-relaxation">49. Effect: Relaxation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-self-steepening">50. Effect: Self-steepening</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#effect-stimulated-emission">51. Effect: Stimulated emission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html">52. Layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#taylor">53. Taylor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#domain">54. Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#abstract-component">55. Abstract Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html">56. Paramater: Effective area</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-non-linear-coefficient">57. Parameter: Non-linear coefficient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-overlap-factor">58. Parameter: Overlap factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-v-fiber-parameter">59. Parameter: V fiber parameter</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../solvers/index.html" title="previous chapter">35. Solver</a></li>
+      <li>Next: <a href="../others/index.html" title="next chapter">52. Layout</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Sacha Medaer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/effects/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

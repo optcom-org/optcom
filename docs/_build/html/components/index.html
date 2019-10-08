@@ -1,0 +1,1764 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python3.6">
+  <head>
+    <meta charset="utf-8" />
+    <title>1. Component: Amplifier &#8212; Optcom 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="14. Equation: Abstract coupled equations" href="../equations/index.html" />
+    <link rel="prev" title="Welcome to Optcom&#39;s documentation!" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="component-amplifier">
+<h1>1. Component: Amplifier<a class="headerlink" href="#component-amplifier" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.ideal_amplifier.IdealAmplifier">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_amplifier.</code><code class="sig-name descname">IdealAmplifier</code><span class="sig-paren">(</span><em class="sig-param">name='Ideal Amplifier'</em>, <em class="sig-param">gain=1.0</em>, <em class="sig-param">peak_power=None</em>, <em class="sig-param">save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_amplifier.IdealAmplifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ideal Amplifier.</p>
+<dl class="attribute">
+<dt id="optcom.components.ideal_amplifier.IdealAmplifier.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.ideal_amplifier.IdealAmplifier.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_amplifier.IdealAmplifier.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.ideal_amplifier.IdealAmplifier.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_amplifier.IdealAmplifier.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.ideal_amplifier.IdealAmplifier.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_amplifier.IdealAmplifier.gain">
+<code class="sig-name descname">gain</code><a class="headerlink" href="#optcom.components.ideal_amplifier.IdealAmplifier.gain" title="Permalink to this definition">¶</a></dt>
+<dd><p>The gain of the amplifier. <span class="math notranslate nohighlight">\([dB]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_amplifier.IdealAmplifier.peak_power">
+<code class="sig-name descname">peak_power</code><a class="headerlink" href="#optcom.components.ideal_amplifier.IdealAmplifier.peak_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>The target peak power to reach. (gain will be ignored if target
+power is provided) <span class="math notranslate nohighlight">\([W]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">__________________</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>gain</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The gain of the amplifier. <span class="math notranslate nohighlight">\([dB]\)</span>
+Can be a callable with time variable. <span class="math notranslate nohighlight">\([ps]\)</span>
+(will be ignored if peak power is provided))</p></li>
+<li><p><strong>peak_power</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The target peak power to reach. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-combiner">
+<h1>2. Component: Combiner<a class="headerlink" href="#component-combiner" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.ideal_combiner.IdealCombiner">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_combiner.</code><code class="sig-name descname">IdealCombiner</code><span class="sig-paren">(</span><em class="sig-param">name='Ideal Combiner'</em>, <em class="sig-param">arms=2</em>, <em class="sig-param">combine=False</em>, <em class="sig-param">ratios=None</em>, <em class="sig-param">wait=True</em>, <em class="sig-param">save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_combiner.IdealCombiner" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ideal Combiner.</p>
+<dl class="attribute">
+<dt id="optcom.components.ideal_combiner.IdealCombiner.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.ideal_combiner.IdealCombiner.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_combiner.IdealCombiner.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.ideal_combiner.IdealCombiner.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_combiner.IdealCombiner.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.ideal_combiner.IdealCombiner.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_combiner.IdealCombiner.arms">
+<code class="sig-name descname">arms</code><a class="headerlink" href="#optcom.components.ideal_combiner.IdealCombiner.arms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of input arms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_combiner.IdealCombiner.ratios">
+<code class="sig-name descname">ratios</code><a class="headerlink" href="#optcom.components.ideal_combiner.IdealCombiner.ratios" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the combining ratios of the corresponding
+index-number port.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="n">_________</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span>   <span class="n">__________</span>\
+<span class="p">[</span><span class="mi">2</span><span class="p">]</span>   <span class="n">___________</span>\<span class="n">_______</span> <span class="p">[</span><span class="n">n</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">]</span>   <span class="n">___________</span><span class="o">/</span>
+    <span class="o">...</span>
+<span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="n">_________</span><span class="o">/</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>arms</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of input arms.</p></li>
+<li><p><strong>combine</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If False, propagate all the fields without changing them in
+the last port. Otherwise, add values of channels with same
+center angular frequencies and append the others depending
+on ratios provided, then propagate the resulting field.</p></li>
+<li><p><strong>ratios</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- A list with the combining ratios of the corresponding
+index-number port.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-continuous-wave">
+<h1>3. Component: Continuous Wave<a class="headerlink" href="#component-continuous-wave" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.cw.CW">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.cw.</code><code class="sig-name descname">CW</code><span class="sig-paren">(</span><em class="sig-param">name='CW', channels=1, center_lambda=[1552.0], peak_power=[0.001], offset_nu=[0.0], init_phi=[0.0], save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.cw.CW" title="Permalink to this definition">¶</a></dt>
+<dd><p>A CW pulse Generator.</p>
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.cw.CW.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.cw.CW.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.cw.CW.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.channels">
+<code class="sig-name descname">channels</code><a class="headerlink" href="#optcom.components.cw.CW.channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of channels in the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.center_lambda">
+<code class="sig-name descname">center_lambda</code><a class="headerlink" href="#optcom.components.cw.CW.center_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.peak_power">
+<code class="sig-name descname">peak_power</code><a class="headerlink" href="#optcom.components.cw.CW.peak_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Peak power of the pulses. <span class="math notranslate nohighlight">\([W]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.offset_nu">
+<code class="sig-name descname">offset_nu</code><a class="headerlink" href="#optcom.components.cw.CW.offset_nu" title="Permalink to this definition">¶</a></dt>
+<dd><p>The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.cw.CW.init_phi">
+<code class="sig-name descname">init_phi</code><a class="headerlink" href="#optcom.components.cw.CW.init_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The nitial phase of the pulses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[A(0,t) = \sqrt{P_0} \exp\Big[i\big(\phi_0 - 2\pi (\nu_c
++\nu_{offset})t\big)\Big]\]</div>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__________________</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>channels</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of channels in the field.</p></li>
+<li><p><strong>center_lambda</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>peak_power</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Peak power of the pulses. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
+<li><p><strong>offset_nu</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p></li>
+<li><p><strong>init_phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The initial phase of the pulses.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-ideal-fiber-coupler">
+<h1>4. Component: Ideal Fiber Coupler<a class="headerlink" href="#component-ideal-fiber-coupler" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.ideal_fiber_coupler.IdealFiberCoupler">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_fiber_coupler.</code><code class="sig-name descname">IdealFiberCoupler</code><span class="sig-paren">(</span><em class="sig-param">name='Ideal Fiber Coupler', ratios_ports=[[0.5, 0.5]], max_nbr_pass=None, save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_fiber_coupler.IdealFiberCoupler" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ideal fiber coupler</p>
+<dl class="attribute">
+<dt id="optcom.components.ideal_fiber_coupler.IdealFiberCoupler.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.ideal_fiber_coupler.IdealFiberCoupler.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_fiber_coupler.IdealFiberCoupler.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.ideal_fiber_coupler.IdealFiberCoupler.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_fiber_coupler.IdealFiberCoupler.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.ideal_fiber_coupler.IdealFiberCoupler.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">_______</span>        <span class="n">______</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+           \<span class="n">______</span><span class="o">/</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">_______</span><span class="o">/</span>      \<span class="n">______</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>ratios_ports</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- Each element of the list contain a list with the two
+dividing percentages for the two output ports.</p></li>
+<li><p><strong>max_nbr_pass</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) -- The maximum number of times a field can enter at the
+corresponding index-number port.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-fiber-amplifier">
+<h1>5. Component: Fiber Amplifier<a class="headerlink" href="#component-fiber-amplifier" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.fiber_amplifier.</code><code class="sig-name descname">FiberAmplifier</code><span class="sig-paren">(</span><em class="sig-param">name='Fiber Amplifier', length=1.0, alpha=None, alpha_order=1, beta=None, beta_order=2, gamma=None, gain_order=1, sigma=2.0, eta=2.0, T_R=0.003, tau_1=0.0122, tau_2=0.032, f_R=0.245, nl_approx=True, sigma_a=None, sigma_e=None, n_core=None, n_clad=None, NA=None, temperature=293.15, tau_meta=840.0, N_T=0.063, core_radius=5.0, clad_radius=62.5, area_doped=None, eta_s=1.26, eta_p=1.41, R_0=0.0008, R_L=0.0008, signal_width=[1.0], nl_index=None, ATT=True, DISP=True, SPM=True, XPM=False, FWM=False, SS=False, RS=False, GS=True, approx_type=1, medium='sio2', dopant='yt', method='rk4ip', steps=100, solver_order='following', error=0.01, propagate_pump=False, save=False, save_all=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>A non ideal Fiber Amplifier.</p>
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.N_0">
+<code class="sig-name descname">N_0</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.N_0" title="Permalink to this definition">¶</a></dt>
+<dd><p>The population in the ground state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.N_1">
+<code class="sig-name descname">N_1</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.N_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>The population in the metastable state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.power_signal_forward">
+<code class="sig-name descname">power_signal_forward</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.power_signal_forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Power of the foward propagating signal for each channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.power_signal_backward">
+<code class="sig-name descname">power_signal_backward</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.power_signal_backward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Power of the backward propagating signal for each channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.power_ase_forward">
+<code class="sig-name descname">power_ase_forward</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.power_ase_forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Power of the foward propagating ase for each channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.power_ase_backward">
+<code class="sig-name descname">power_ase_backward</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.power_ase_backward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Power of the backward propagating ase for each channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.power_pump_forward">
+<code class="sig-name descname">power_pump_forward</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.power_pump_forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Power of the foward propagating pump for each channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_amplifier.FiberAmplifier.power_pump_backward">
+<code class="sig-name descname">power_pump_backward</code><a class="headerlink" href="#optcom.components.fiber_amplifier.FiberAmplifier.power_pump_backward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Power of the backward propagating pump for each channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.ndarray of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">_____________________</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="o">/</span>                   \
+   <span class="o">/</span>                     \
+<span class="p">[</span><span class="mi">2</span><span class="p">]</span>                       <span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>[0] and [1] : signal and [2] and [3] : pump</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The length of the fiber. <span class="math notranslate nohighlight">\([km]\)</span></p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>gain_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the gain coefficients to take into account.
+(from the Rate Equations resolution)</p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term muiltiplying the XPM in other non linear
+terms of the NLSE.</p></li>
+<li><p><strong>T_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The raman coefficient. <span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>nl_approx</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the approximation of the NLSE is used.</p></li>
+<li><p><strong>sigma_a</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The absorption cross sections of the signal and the pump
+(1&lt;=len(sigma_a)&lt;=2). <span class="math notranslate nohighlight">\([nm^2]\)</span> If a callable is
+provided, varibale must be wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>sigma_e</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The emission cross sections of the signal and the pump
+(1&lt;=len(sigma_a)&lt;=2). <span class="math notranslate nohighlight">\([nm^2]\)</span> If a callable is
+provided, varibale must be wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>n_core</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The refractive index of the core. If the medium is not
+recognised by Optcom, at least two elements should be
+provided out of those three: n_core, n_clad, NA.</p></li>
+<li><p><strong>n_clad</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The refractive index of the cladding. If the medium is not
+recognised by Optcom, at least two elements should be
+provided out of those three: n_core, n_clad, NA.</p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The numerical aperture. If the medium is not
+recognised by Optcom, at least two elements should be
+provided out of those three: n_core, n_clad, NA.</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The temperature of the medium. <span class="math notranslate nohighlight">\([K]\)</span></p></li>
+<li><p><strong>tau_meta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The metastable level lifetime. <span class="math notranslate nohighlight">\([\mu s]\)</span></p></li>
+<li><p><strong>N_T</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The total doping concentration. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>clad_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the cladding. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>area_doped</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The doped area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span> If None, will be
+approximated to the core area.</p></li>
+<li><p><strong>eta_s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The background signal loss. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>eta_p</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The background pump loss. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>R_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber start.</p></li>
+<li><p><strong>R_L</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber end.</p></li>
+<li><p><strong>signal_width</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The width of each channel of the signal. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>nl_index</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear index. Used to calculate the non linear
+parameter. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>SS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-steepening.</p></li>
+<li><p><strong>RS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Raman scattering.</p></li>
+<li><p><strong>GS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the gain saturation.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber amplifier.</p></li>
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doped medium of the fiber amplifier.</p></li>
+<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The solver method type</p></li>
+<li><p><strong>steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of steps for the solver</p></li>
+<li><p><strong>solver_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The order in which to solve RE and NLSE. Can be either
+&quot;following&quot; or &quot;alternating&quot;.</p></li>
+<li><p><strong>error</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The error for convergence criterion of stepper resolution.</p></li>
+<li><p><strong>propagate_pump</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the pump is propagated forward in the layout.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+<li><p><strong>save_all</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, save the wave at each spatial step in the
+component.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-fiber-coupler">
+<h1>6. Component: Fiber Coupler<a class="headerlink" href="#component-fiber-coupler" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.fiber_coupler.FiberCoupler">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.fiber_coupler.</code><code class="sig-name descname">FiberCoupler</code><span class="sig-paren">(</span><em class="sig-param">name='Fiber Coupler', length=1.0, max_nbr_pass=None, nbr_fibers=2, alpha=None, alpha_order=1, beta=None, beta_order=2, gamma=None, kappa=None, sigma=[2.0], sigma_cross=[[0.1]], eta=2.0, T_R=0.003, tau_1=0.0122, tau_2=0.032, f_R=0.245, nl_approx=True, NA=[0.1], ATT=True, DISP=True, SPM=True, XPM=False, FWM=False, SS=False, RS=False, ASYM=True, COUP=True, approx_type=1, medium='sio2', c2c_spacing=[[15.0]], core_radius=[5.0], V=[2.0], n_0=[1.0], method='rk4ip', steps=100, save=False, save_all=False, wait=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.fiber_coupler.FiberCoupler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A non ideal fiber coupler.</p>
+<dl class="attribute">
+<dt id="optcom.components.fiber_coupler.FiberCoupler.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.fiber_coupler.FiberCoupler.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_coupler.FiberCoupler.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.fiber_coupler.FiberCoupler.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber_coupler.FiberCoupler.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.fiber_coupler.FiberCoupler.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">_______</span>        <span class="n">______</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+           \<span class="n">______</span><span class="o">/</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">_______</span><span class="o">/</span>      \<span class="n">______</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The length of the coupler. <span class="math notranslate nohighlight">\([km]\)</span></p></li>
+<li><p><strong>nbr_fibers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of fibers in the coupler.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>kappa</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]]]) -- The coupling coefficients. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Positive term multiplying the XPM term of the NLSE.</p></li>
+<li><p><strong>sigma_cross</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- Positive term multiplying the XPM term of the NLSE inbetween
+the fibers.</p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term muiltiplying the XPM in other non linear
+terms of the NLSE.</p></li>
+<li><p><strong>T_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The raman coefficient. <span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]) -- The numerical aperture.</p></li>
+<li><p><strong>nl_approx</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the approximation of the NLSE is used.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>SS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-steepening.</p></li>
+<li><p><strong>RS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Raman scattering.</p></li>
+<li><p><strong>ASYM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the asymmetry effects between cores.</p></li>
+<li><p><strong>COUP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the coupling effects between cores.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+<li><p><strong>c2c_spacing</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The center to center distance between two cores.
+<span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The core radius. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>V</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The fiber parameter.</p></li>
+<li><p><strong>n_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The refractive index outside of the waveguides.</p></li>
+<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The solver method type</p></li>
+<li><p><strong>steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of steps for the solver</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+<li><p><strong>save_all</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, save the wave at each spatial step in the
+component.</p></li>
+<li><p><strong>wait</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, wait for another pulse in the anolog port
+[0 &lt;-&gt; 1, and 2 &lt;-&gt; 3] to launch the simulation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-divider">
+<h1>7. Component: Divider<a class="headerlink" href="#component-divider" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.ideal_divider.IdealDivider">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_divider.</code><code class="sig-name descname">IdealDivider</code><span class="sig-paren">(</span><em class="sig-param">name='Ideal Divider'</em>, <em class="sig-param">arms=2</em>, <em class="sig-param">divide=True</em>, <em class="sig-param">ratios=None</em>, <em class="sig-param">save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_divider.IdealDivider" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ideal Divider.</p>
+<dl class="attribute">
+<dt id="optcom.components.ideal_divider.IdealDivider.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.ideal_divider.IdealDivider.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_divider.IdealDivider.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.ideal_divider.IdealDivider.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_divider.IdealDivider.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.ideal_divider.IdealDivider.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_divider.IdealDivider.arms">
+<code class="sig-name descname">arms</code><a class="headerlink" href="#optcom.components.ideal_divider.IdealDivider.arms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of input arms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_divider.IdealDivider.ratios">
+<code class="sig-name descname">ratios</code><a class="headerlink" href="#optcom.components.ideal_divider.IdealDivider.ratios" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the dividing ratios of the corresponding
+index-number port.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>           <span class="n">__________</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+         <span class="o">/</span><span class="n">___________</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">____</span><span class="o">/</span><span class="n">____________</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        \<span class="n">____________</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+         <span class="o">...</span>
+         \<span class="n">___________</span> <span class="p">[</span><span class="n">n</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>arms</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of input arms.</p></li>
+<li><p><strong>divide</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If False, propagate a copy of entering fields to each
+output port. Otherwise, divide power depending on
+provided ratios.</p></li>
+<li><p><strong>ratios</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- A list with the dividing ratios of the corresponding
+index-number port.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-fiber">
+<h1>8. Component: Fiber<a class="headerlink" href="#component-fiber" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.fiber.Fiber">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.fiber.</code><code class="sig-name descname">Fiber</code><span class="sig-paren">(</span><em class="sig-param">name='Fiber'</em>, <em class="sig-param">length=1.0</em>, <em class="sig-param">alpha=None</em>, <em class="sig-param">alpha_order=1</em>, <em class="sig-param">beta=None</em>, <em class="sig-param">beta_order=2</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">sigma=2.0</em>, <em class="sig-param">eta=2.0</em>, <em class="sig-param">T_R=0.003</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em>, <em class="sig-param">f_R=0.245</em>, <em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=0.1</em>, <em class="sig-param">nl_approx=True</em>, <em class="sig-param">ATT=True</em>, <em class="sig-param">DISP=True</em>, <em class="sig-param">SPM=True</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">SS=False</em>, <em class="sig-param">RS=False</em>, <em class="sig-param">approx_type=1</em>, <em class="sig-param">method='rk4ip'</em>, <em class="sig-param">steps=100</em>, <em class="sig-param">medium='sio2'</em>, <em class="sig-param">save=False</em>, <em class="sig-param">save_all=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.fiber.Fiber" title="Permalink to this definition">¶</a></dt>
+<dd><p>A non ideal Fiber.</p>
+<dl class="attribute">
+<dt id="optcom.components.fiber.Fiber.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.fiber.Fiber.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber.Fiber.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.fiber.Fiber.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.fiber.Fiber.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.fiber.Fiber.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">__________________</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The length of the fiber. <span class="math notranslate nohighlight">\([km]\)</span></p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM term of the NLSE</p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term muiltiplying the XPM in other non linear
+terms of the NLSE</p></li>
+<li><p><strong>T_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The raman coefficient. <span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The numerical aperture.</p></li>
+<li><p><strong>nl_approx</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the approximation of the NLSE is used.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>SS</strong> (<em>bool</em>) -- If True, trigger the self-steepening.</p></li>
+<li><p><strong>RS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Raman scattering.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The solver method type</p></li>
+<li><p><strong>steps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of steps for the solver</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+<li><p><strong>save_all</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, save the wave at each spatial step in the
+component.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-gaussian">
+<h1>9. Component: Gaussian<a class="headerlink" href="#component-gaussian" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.gaussian.Gaussian">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.gaussian.</code><code class="sig-name descname">Gaussian</code><span class="sig-paren">(</span><em class="sig-param">name='Gaussian', channels=1, center_lambda=[1552.0], position=[0.5], width=[10.0], peak_power=[0.001], bit_rate=[0.0], offset_nu=[0.0], order=[1], chirp=[0.0], init_phi=[0.0], save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.gaussian.Gaussian" title="Permalink to this definition">¶</a></dt>
+<dd><p>A gaussian pulse Generator.</p>
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.channels">
+<code class="sig-name descname">channels</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of channels in the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.center_lambda">
+<code class="sig-name descname">center_lambda</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.center_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.position">
+<code class="sig-name descname">position</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative position of the pulses in the time window.
+<span class="math notranslate nohighlight">\(\in [0,1]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.width">
+<code class="sig-name descname">width</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Half width of the pulse. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.peak_power">
+<code class="sig-name descname">peak_power</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.peak_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Peak power of the pulses. <span class="math notranslate nohighlight">\([W]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.bit_rate">
+<code class="sig-name descname">bit_rate</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.bit_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bit rate (repetition rate) of the pulse in the time window.
+<span class="math notranslate nohighlight">\([THz]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.offset_nu">
+<code class="sig-name descname">offset_nu</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.offset_nu" title="Permalink to this definition">¶</a></dt>
+<dd><p>The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.order">
+<code class="sig-name descname">order</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>The order of the super gaussian pulse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.chirp">
+<code class="sig-name descname">chirp</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.chirp" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chirp parameter for chirped pulses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.gaussian.Gaussian.init_phi">
+<code class="sig-name descname">init_phi</code><a class="headerlink" href="#optcom.components.gaussian.Gaussian.init_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The nitial phase of the pulses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[A(0,t) = \sqrt{P_0}
+\exp\bigg[-\frac{1+iC}{2}
+\bigg(\frac{t-t_0}{T_0}\bigg)^{2m}
++ i\big(\phi_0 - 2\pi (\nu_c  + \nu_{offset})t\big)\bigg]\]</div>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__________________</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>channels</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of channels in the field.</p></li>
+<li><p><strong>center_lambda</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>position</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Relative position of the pulses in the time window.
+<span class="math notranslate nohighlight">\(\in [0,1]\)</span></p></li>
+<li><p><strong>width</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Half width of the pulse. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>peak_power</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Peak power of the pulses. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
+<li><p><strong>bit_rate</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Bit rate (repetition rate) of the pulse in the time window.
+<span class="math notranslate nohighlight">\([THz]\)</span></p></li>
+<li><p><strong>offset_nu</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p></li>
+<li><p><strong>order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) -- The order of the super gaussian pulse.</p></li>
+<li><p><strong>chirp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The chirp parameter for chirped pulses.</p></li>
+<li><p><strong>init_phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The initial phase of the pulses.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-modulator">
+<h1>10. Component: Modulator<a class="headerlink" href="#component-modulator" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.ideal_phase_mod.IdealPhaseMod">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_phase_mod.</code><code class="sig-name descname">IdealPhaseMod</code><span class="sig-paren">(</span><em class="sig-param">name='Ideal Phase Modulator'</em>, <em class="sig-param">phase_shift=3.141592653589793</em>, <em class="sig-param">phase=None</em>, <em class="sig-param">save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_phase_mod.IdealPhaseMod" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ideal phase Modulator</p>
+<dl class="attribute">
+<dt id="optcom.components.ideal_phase_mod.IdealPhaseMod.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.ideal_phase_mod.IdealPhaseMod.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_phase_mod.IdealPhaseMod.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.ideal_phase_mod.IdealPhaseMod.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_phase_mod.IdealPhaseMod.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.ideal_phase_mod.IdealPhaseMod.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_phase_mod.IdealPhaseMod.phase_shift">
+<code class="sig-name descname">phase_shift</code><a class="headerlink" href="#optcom.components.ideal_phase_mod.IdealPhaseMod.phase_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>The phase_shift induced by the modulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_phase_mod.IdealPhaseMod.phase">
+<code class="sig-name descname">phase</code><a class="headerlink" href="#optcom.components.ideal_phase_mod.IdealPhaseMod.phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The target phase to reach. (phase_shift will be ignored if
+target is provided)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">__________________</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>phase_shift</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The phase_shift induced by the modulator. Can be a callable
+with time variable. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>phase</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The target phase to reach. (phase_shift will be ignored if
+target is provided)</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-mach-zehnder-modulator">
+<h1>11. Component: Mach-Zehnder Modulator<a class="headerlink" href="#component-mach-zehnder-modulator" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.ideal_mz.IdealMZ">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_mz.</code><code class="sig-name descname">IdealMZ</code><span class="sig-paren">(</span><em class="sig-param">name='Ideal MZ Modulator', phase_shift=[0.0, 0.0], loss=0.0, ext_ratio=0.0, v_pi=None, v_bias=None, v_mod=None, save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_mz.IdealMZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ideal Mach Zehnder Modulator</p>
+<dl class="attribute">
+<dt id="optcom.components.ideal_mz.IdealMZ.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.ideal_mz.IdealMZ.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_mz.IdealMZ.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.ideal_mz.IdealMZ.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.ideal_mz.IdealMZ.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.ideal_mz.IdealMZ.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\phi_k(t)= \pi \frac{V_{mod,k}(t)+V_{bias,k}}{V_{\pi,k}}
+\quad k\in\{1,2\}\]</div>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="n">_______</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">_____</span><span class="o">/</span>       \<span class="n">______</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+         \<span class="n">_______</span><span class="o">/</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>phase_shift</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]) -- The phase difference induced between the two arms of the MZ.
+Can be a list of callable with time variable. <span class="math notranslate nohighlight">\([ps]\)</span>
+(will be ignored if (v_pi and v_bias) or (v_pi and v_mod)
+are provided)</p></li>
+<li><p><strong>loss</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The loss induced by the MZ. <span class="math notranslate nohighlight">\([dB]\)</span></p></li>
+<li><p><strong>ext_ratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The extinction ratio.</p></li>
+<li><p><strong>v_pi</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The half-wave voltage. <span class="math notranslate nohighlight">\([V]\)</span></p></li>
+<li><p><strong>v_bias</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The bias voltage. <span class="math notranslate nohighlight">\([V]\)</span></p></li>
+<li><p><strong>v_mod</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]) -- The modulation voltage <span class="math notranslate nohighlight">\([V]\)</span>. Must be a callable with
+time variable. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-sech">
+<h1>12. Component: Sech<a class="headerlink" href="#component-sech" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.sech.Sech">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.sech.</code><code class="sig-name descname">Sech</code><span class="sig-paren">(</span><em class="sig-param">name='Sech', channels=1, center_lambda=[1552.0], position=[0.5], width=[10.0], peak_power=[0.001], bit_rate=[0.0], offset_nu=[0.0], chirp=[0.0], init_phi=[0.0], save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.sech.Sech" title="Permalink to this definition">¶</a></dt>
+<dd><p>An hyperbolic secant pulse Generator.</p>
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.sech.Sech.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.sech.Sech.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.sech.Sech.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.channels">
+<code class="sig-name descname">channels</code><a class="headerlink" href="#optcom.components.sech.Sech.channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of channels in the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.center_lambda">
+<code class="sig-name descname">center_lambda</code><a class="headerlink" href="#optcom.components.sech.Sech.center_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.position">
+<code class="sig-name descname">position</code><a class="headerlink" href="#optcom.components.sech.Sech.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative position of the pulses in the time window.
+<span class="math notranslate nohighlight">\(\in [0,1]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.width">
+<code class="sig-name descname">width</code><a class="headerlink" href="#optcom.components.sech.Sech.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Half width of the pulse. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.peak_power">
+<code class="sig-name descname">peak_power</code><a class="headerlink" href="#optcom.components.sech.Sech.peak_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Peak power of the pulses. <span class="math notranslate nohighlight">\([W]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.bit_rate">
+<code class="sig-name descname">bit_rate</code><a class="headerlink" href="#optcom.components.sech.Sech.bit_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bit rate (repetition rate) of the pulse in the time window.
+<span class="math notranslate nohighlight">\([THz]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.offset_nu">
+<code class="sig-name descname">offset_nu</code><a class="headerlink" href="#optcom.components.sech.Sech.offset_nu" title="Permalink to this definition">¶</a></dt>
+<dd><p>The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.chirp">
+<code class="sig-name descname">chirp</code><a class="headerlink" href="#optcom.components.sech.Sech.chirp" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chirp parameter for chirped pulses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.sech.Sech.init_phi">
+<code class="sig-name descname">init_phi</code><a class="headerlink" href="#optcom.components.sech.Sech.init_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The nitial phase of the pulses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[A(0,t) = \sqrt{P_0} \sech\Big(\frac{t-t_0}{T_0}\Big)
+\exp\bigg[-\frac{iC}{2}\frac{t-t_0}{T_0}^{2}
++ i(\phi_0 - 2\pi (\nu_c  + \nu_{offset})t)\bigg]\]</div>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__________________</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>channels</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of channels in the field.</p></li>
+<li><p><strong>center_lambda</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>position</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Relative position of the pulses in the time window.
+<span class="math notranslate nohighlight">\(\in [0,1]\)</span></p></li>
+<li><p><strong>width</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Half width of the pulse. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>peak_power</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Peak power of the pulses. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
+<li><p><strong>bit_rate</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Bit rate (repetition rate) of the pulse in the time window.
+<span class="math notranslate nohighlight">\([THz]\)</span></p></li>
+<li><p><strong>offset_nu</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p></li>
+<li><p><strong>chirp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The chirp parameter for chirped pulses.</p></li>
+<li><p><strong>init_phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The initial phase of the pulses.</p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="component-soliton">
+<h1>13. Component: Soliton<a class="headerlink" href="#component-soliton" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.components.soliton.Soliton">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.soliton.</code><code class="sig-name descname">Soliton</code><span class="sig-paren">(</span><em class="sig-param">name='Soliton', channels=1, center_lambda=[1552.0], position=[0.5], width=[10.0], bit_rate=[0.0], offset_nu=[0.0], order=[1], init_phi=[0.0], beta_2=[-18.0], gamma=[1.0], save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.soliton.Soliton" title="Permalink to this definition">¶</a></dt>
+<dd><p>A soliton pulse Generator.</p>
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#optcom.components.soliton.Soliton.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.ports_type">
+<code class="sig-name descname">ports_type</code><a class="headerlink" href="#optcom.components.soliton.Soliton.ports_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of each port of the component, give also the number of
+ports in the component. For types, see
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">optcom/utils/constant_values/port_types</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.save">
+<code class="sig-name descname">save</code><a class="headerlink" href="#optcom.components.soliton.Soliton.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, the last wave to enter/exit a port will be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.channels">
+<code class="sig-name descname">channels</code><a class="headerlink" href="#optcom.components.soliton.Soliton.channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of channels in the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.center_lambda">
+<code class="sig-name descname">center_lambda</code><a class="headerlink" href="#optcom.components.soliton.Soliton.center_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.position">
+<code class="sig-name descname">position</code><a class="headerlink" href="#optcom.components.soliton.Soliton.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative position of the pulses in the time window.
+<span class="math notranslate nohighlight">\(\in [0,1]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.width">
+<code class="sig-name descname">width</code><a class="headerlink" href="#optcom.components.soliton.Soliton.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Half width of the pulse. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.bit_rate">
+<code class="sig-name descname">bit_rate</code><a class="headerlink" href="#optcom.components.soliton.Soliton.bit_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bit rate (repetition rate) of the pulse in the time window.
+<span class="math notranslate nohighlight">\([THz]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.offset_nu">
+<code class="sig-name descname">offset_nu</code><a class="headerlink" href="#optcom.components.soliton.Soliton.offset_nu" title="Permalink to this definition">¶</a></dt>
+<dd><p>The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.order">
+<code class="sig-name descname">order</code><a class="headerlink" href="#optcom.components.soliton.Soliton.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>The order of the super soliton pulse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.beta_2">
+<code class="sig-name descname">beta_2</code><a class="headerlink" href="#optcom.components.soliton.Soliton.beta_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GVD term of the dispersion. (must be negative)
+<span class="math notranslate nohighlight">\([ps^2\cdot km^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.gamma">
+<code class="sig-name descname">gamma</code><a class="headerlink" href="#optcom.components.soliton.Soliton.gamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>The non-linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="optcom.components.soliton.Soliton.init_phi">
+<code class="sig-name descname">init_phi</code><a class="headerlink" href="#optcom.components.soliton.Soliton.init_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The nitial phase of the pulses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+   A(0,t) &amp;= \sqrt{P_0}\sech\Big(\frac{t-t_0}{T_0}\Big)
+      \exp\bigg[i(\phi_0-2\pi(\nu_c+\nu_{offset})t)\bigg]\\
+        &amp;= \sqrt{\frac{N_s^2}{\gamma L_D}}
+           \sech\Big(\frac{t-t_0}{T_0}\Big)
+      \exp\bigg[i(\phi_0-2\pi(\nu_c+\nu_{offset})t)\bigg]\\
+        &amp;= \sqrt{-\frac{N_s^2 \beta_2}{\gamma T_0^2}}
+           \sech\Big(\frac{t-t_0}{T_0}\Big)
+      \exp\bigg[i(\phi_0-2\pi(\nu_c+\nu_{offset})t)\bigg]
+\end{split}\end{split}\]</div>
+<p>Component diagram:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">__________________</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The name of the component.</p></li>
+<li><p><strong>channels</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of channels in the field.</p></li>
+<li><p><strong>center_lambda</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The center wavelength of the channels. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>position</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Relative position of the pulses in the time window.
+<span class="math notranslate nohighlight">\(\in [0,1]\)</span></p></li>
+<li><p><strong>width</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Half width of the pulse. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>bit_rate</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Bit rate (repetition rate) of the pulse in the time window.
+<span class="math notranslate nohighlight">\([THz]\)</span></p></li>
+<li><p><strong>offset_nu</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The offset frequency. <span class="math notranslate nohighlight">\([THz]\)</span></p></li>
+<li><p><strong>order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) -- The order of the super soliton pulse.</p></li>
+<li><p><strong>init_phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The initial phase of the pulses.</p></li>
+<li><p><strong>beta_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The GVD term of the dispersion. (must be negative)
+<span class="math notranslate nohighlight">\([ps^2\cdot km^{-1}]\)</span></p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The non-linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span></p></li>
+<li><p><strong>save</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, the last wave to enter/exit a port will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Optcom</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Component: Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-combiner">2. Component: Combiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-continuous-wave">3. Component: Continuous Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-ideal-fiber-coupler">4. Component: Ideal Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-fiber-amplifier">5. Component: Fiber Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-fiber-coupler">6. Component: Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-divider">7. Component: Divider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-fiber">8. Component: Fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-gaussian">9. Component: Gaussian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-modulator">10. Component: Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-mach-zehnder-modulator">11. Component: Mach-Zehnder Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-sech">12. Component: Sech</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#component-soliton">13. Component: Soliton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html">14. Equation: Abstract coupled equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-equation">15. Equation: Abstract equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-refractive-index">16. Equation: Abstract refractive index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-non-linear-schrodinger-equation">17. Equation: Abstract non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-approximated-non-linear-schrodinger-equation">18. Equation: Approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-non-linear-schrodinger-equations">19. Equation: Non-linear Schrodinger equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-general-non-linear-schrodinger-equation">20. Equation: General non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-amplifier-non-linear-schrodinger-equation">21. Equation: Abstract amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-approximated-non-linear-schrodinger-equation">22. Equation: Amplifier approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-non-linear-schrodinger-equation">23. Equation: Amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-amplifier-general-non-linear-schrodinger-equation">24. Equation: Amplifier general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-abstract-coupled-non-linear-schrodinger-equation">25. Equation: Abstract coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-approximated-non-linear-schrodinger-equation">26. Equation: Coupled approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-non-linear-schrodinger-equation">27. Equation: Coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-coupled-general-non-linear-schrodinger-equation">28. Equation: Coupled general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-fresnel">29. Equation: Fresnel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-mccumber">30. Equation: McCumber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-for-fibers">31. Equation: Rate Equations for fibers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-rate-equations-with-2-levels-for-fiber">32. Equation: Rate Equations with 2 levels for fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-resonant-index-change">33. Equation: Resonant index change</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equations/index.html#equation-sellmeier">34. Equation: Sellmeier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html">35. Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html#stepper">36. Stepper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html">37. Effect: Absorption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-abstract-class-for-effect-object">38. Effect: Abstract class for effect object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-asymmetry">39. Effect: Asymmetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-attenuation">40. Effect: Attenuation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-conversion">41. Effect: Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-correlation">42. Effect: Correlation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-coupling">43. Effect: Coupling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-dispersion">44. Effect: Dispersion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-gain-saturation">45. Effect: Gain saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-kerr">46. Effect: Kerr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-pumping">47. Effect: Pumping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-raman-scattering">48. Effect: Raman Scattering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-relaxation">49. Effect: Relaxation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-self-steepening">50. Effect: Self-steepening</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-stimulated-emission">51. Effect: Stimulated emission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html">52. Layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#taylor">53. Taylor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#domain">54. Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#abstract-component">55. Abstract Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html">56. Paramater: Effective area</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-non-linear-coefficient">57. Parameter: Non-linear coefficient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-overlap-factor">58. Parameter: Overlap factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-v-fiber-parameter">59. Parameter: V fiber parameter</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to Optcom's documentation!</a></li>
+      <li>Next: <a href="../equations/index.html" title="next chapter">14. Equation: Abstract coupled equations</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Sacha Medaer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/components/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

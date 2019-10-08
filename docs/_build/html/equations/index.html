@@ -1,0 +1,2112 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python3.6">
+  <head>
+    <meta charset="utf-8" />
+    <title>14. Equation: Abstract coupled equations &#8212; Optcom 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="35. Solver" href="../solvers/index.html" />
+    <link rel="prev" title="1. Component: Amplifier" href="../components/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="equation-abstract-coupled-equations">
+<h1>14. Equation: Abstract coupled equations<a class="headerlink" href="#equation-abstract-coupled-equations" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.abstract_coupled_equation.AbstractCoupledEquation">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.abstract_coupled_equation.</code><code class="sig-name descname">AbstractCoupledEquation</code><span class="sig-paren">(</span><em class="sig-param">nbr_eqs</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_coupled_equation.AbstractCoupledEquation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent class of any coupled equation.</p>
+<p class="rubric">Notes</p>
+<p>Considering <span class="math notranslate nohighlight">\(l = 1, \ldots, M\)</span> equations with
+<span class="math notranslate nohighlight">\(j = 1, \ldots, K_l\)</span> channels per equation, the
+AbstractCoupledEquation class implement the following
+generic equations:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial A_{lj}}{\partial z} =
+f_l(\{A_{l1}, \ldots, A_{lK_l}\})
++ \sum_{m \neq l}^{M} \hat{E}_{lm}^{l} A_{lj}
++ \sum_{m \neq l}^{M} \hat{E}_{lm}^{n} A_{lj}
++ \sum_{m=0}^M \hat{E}_{lm}^{a} \sum_{k=0}^{K_m} A_{mk}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_l\)</span> is an equation related to equation <span class="math notranslate nohighlight">\(l\)</span>,
+<span class="math notranslate nohighlight">\(\hat{E}^l\)</span> are the linear effects (self._effects_lin),
+<span class="math notranslate nohighlight">\(\hat{E}^n\)</span> are the non linear effects
+(self._effects_non_lin),
+and <span class="math notranslate nohighlight">\(\hat{E}^l\)</span> are the general effects (self._effects_all).</p>
+<dl class="method">
+<dt id="optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once after a Stepper ended the
+computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once before a Stepper began the
+computation. Pass the time, wavelength and center wavelength
+to all the effects in the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called before each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_coupled_equation.AbstractCoupledEquation.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called after each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-abstract-equation">
+<h1>15. Equation: Abstract equation<a class="headerlink" href="#equation-abstract-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.abstract_equation.AbstractEquation">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.abstract_equation.</code><code class="sig-name descname">AbstractEquation</code><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once after a Stepper ended the
+computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.exp">
+<em class="property">static </em><code class="sig-name descname">exp</code><span class="sig-paren">(</span><em class="sig-param">wave</em>, <em class="sig-param">h</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.exp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exponential function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wave</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave vector</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The spatial step</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Exponential of the wave multiplied by the spatial step</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\exp(h\hat{D})\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.op_all">
+<code class="sig-name descname">op_all</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.op_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>General operator of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.op_lin">
+<code class="sig-name descname">op_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.op_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linear operator of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.op_non_lin">
+<code class="sig-name descname">op_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.op_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear operator of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once before a Stepper began the
+computation. Pass the time, wavelength and center wavelength
+to all the effects in the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called before each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.term_all">
+<code class="sig-name descname">term_all</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.term_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>General term of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.term_lin">
+<code class="sig-name descname">term_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.term_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linear term of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.term_non_lin">
+<code class="sig-name descname">term_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.term_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear term of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_equation.AbstractEquation.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_equation.AbstractEquation.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called after each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-abstract-refractive-index">
+<h1>16. Equation: Abstract refractive index<a class="headerlink" href="#equation-abstract-refractive-index" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.abstract_refractive_index.AbstractRefractiveIndex">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.abstract_refractive_index.</code><code class="sig-name descname">AbstractRefractiveIndex</code><span class="sig-paren">(</span><em class="sig-param">medium</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_refractive_index.AbstractRefractiveIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent of refractive index generator class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>medium</strong> -- The medium in which the wave propagates.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.abstract_refractive_index.AbstractRefractiveIndex.n">
+<code class="sig-name descname">n</code><span class="sig-paren">(</span><em class="sig-param">omega</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_refractive_index.AbstractRefractiveIndex.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the refractive index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The refractive index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_refractive_index.AbstractRefractiveIndex.n_deriv">
+<code class="sig-name descname">n_deriv</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">order_deriv</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_refractive_index.AbstractRefractiveIndex.n_deriv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the derivative of the refractive index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>order</strong> -- The order of the derivative. (0 &lt;= order &lt;= 5)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The derivative of the refractive index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-abstract-non-linear-schrodinger-equation">
+<h1>17. Equation: Abstract non-linear Schrodinger equation<a class="headerlink" href="#equation-abstract-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.abstract_nlse.AbstractNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.abstract_nlse.</code><code class="sig-name descname">AbstractNLSE</code><span class="sig-paren">(</span><em class="sig-param">alpha</em>, <em class="sig-param">alpha_order</em>, <em class="sig-param">beta</em>, <em class="sig-param">beta_order</em>, <em class="sig-param">gamma</em>, <em class="sig-param">core_radius</em>, <em class="sig-param">NA</em>, <em class="sig-param">ATT</em>, <em class="sig-param">DISP</em>, <em class="sig-param">medium</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_nlse.AbstractNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear Schrodinger equations.</p>
+<p>Represent the different effects in the NLSE as well as different
+types of NLSEs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The numerical aperture.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.abstract_nlse.AbstractNLSE.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_nlse.AbstractNLSE.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once after a Stepper ended the
+computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_nlse.AbstractNLSE.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_nlse.AbstractNLSE.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once before a Stepper began the
+computation. Pass the time, wavelength and center wavelength
+to all the effects in the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_nlse.AbstractNLSE.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_nlse.AbstractNLSE.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called before each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-approximated-non-linear-schrodinger-equation">
+<h1>18. Equation: Approximated non-linear Schrodinger equation<a class="headerlink" href="#equation-approximated-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.anlse.ANLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.anlse.</code><code class="sig-name descname">ANLSE</code><span class="sig-paren">(</span><em class="sig-param">alpha=None</em>, <em class="sig-param">alpha_order=1</em>, <em class="sig-param">beta=None</em>, <em class="sig-param">beta_order=2</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">sigma=2.0</em>, <em class="sig-param">eta=2.0</em>, <em class="sig-param">T_R=0.003</em>, <em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=0.1</em>, <em class="sig-param">ATT=True</em>, <em class="sig-param">DISP=True</em>, <em class="sig-param">SPM=True</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">SS=False</em>, <em class="sig-param">RS=False</em>, <em class="sig-param">approx_type=1</em>, <em class="sig-param">medium='sio2'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.anlse.ANLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximated non linear Schrodinger equations.</p>
+<p>Represent the different effects in the approximated NLSE.</p>
+<p class="rubric">Notes</p>
+<p>NLSE approximation 1:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial A_j}{\partial t} = i\gamma \Bigg[ |A_j|^2
++ \sigma \sum_{k\neq j}|A_k|^2 + i S \frac{1}{A_j}
+\bigg(\frac{\partial |A_j|^2 A_j}{\partial t}
++ \eta \sum_{k\neq j}
+\frac{\partial |A_k|^2 A_j}{\partial t} \bigg)
+- T_R \bigg(\frac{\partial |A_j|^2}{\partial t}
++ \eta \sum_{k\neq j} \frac{\partial |A_k|^2}{\partial t}
+\bigg) \Bigg] A_j\]</div>
+<p>NLSE approximation 2:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial A_j}{\partial t} = i\gamma \Bigg[ |A_j|^2
++ \sigma \sum_{k\neq j}|A_k|^2 + i S \bigg(A^{*}_j
++ \frac{\eta}{A_j} \sum_{k\neq j}|A_k|^2\bigg)
+\frac{\partial A_j}{\partial t}
++ \big(i S - T_R\big) \frac{\partial |A_j|^2}{\partial t}
++ \eta \big(i S - T_R\big) \sum_{k\neq j}
+\frac{\partial |A_k|^2}{\partial t} \Bigg] A_j\]</div>
+<p>NLSE approximation 3:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial A_j}{\partial t} = i\gamma \Bigg[ |A_j|^2
++ \sigma \sum_{k\neq j}|A_k|^2
++ \bigg((2 i S - T_R) A^{*}_j
++ i S \frac{\eta}{A_j} \sum_{k\neq j} |A_k|^2\bigg)
+\frac{\partial A_j}{\partial t}
++ \big(i S - T_R\big) A_j
+\frac{\partial A^{*}_j}{\partial t}
++ \eta \big(i S - T_R\big) \sum_{k\neq j}
+\frac{\partial |A_k|^2}{\partial t} \Bigg] A_j\]</div>
+<p>NLSE approximation 1:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+\hat{N}(A_j) = i\gamma \Bigg[ |A_j|^2
++ \sigma \sum_{k\neq j}|A_k|^2
++ i S \frac{1}{A_j}
+\mathcal{F}^{-1}\bigg\{ (-i \omega)
+\mathcal{F}\Big\{|A_j|^2 A_j
++ \eta \sum_{k\neq j}|A_k|^2 A_j\Big\}\bigg\} \\
+\quad\quad\quad
+- T_R \mathcal{F}^{-1}\bigg\{(-i\omega)
+\mathcal{F}\Big\{|A_j|^2+ \eta \sum_{k\neq j}|A_k|^2
+\Big\}\bigg\} \Bigg]
+\end{split}\end{split}\]</div>
+<p>NLSE approximation 2:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+\hat{N}(A_j) = i\gamma \Bigg[ |A_j|^2
++ \sigma\sum_{k\neq j}|A_k|^2
++ i S \Big(A_j^*
++ \eta \sum_{k\neq j}|A_k|^2\Big)
+\mathcal{F}^{-1}\big\{ (-i \omega)
+\mathcal{F}\{A_j\}\big\}\\
+\quad\quad\quad
++ \big(i S - T_R\big)\mathcal{F}^{-1}\bigg\{(-i\omega)
+\mathcal{F}\Big\{|A_j|^2
++ \eta \sum_{k\neq j}|A_k|^2\Big\}\bigg\} \Bigg]
+\end{split}\end{split}\]</div>
+<p>NLSE approximation 3:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+\hat{N}(A_j) = i\gamma \Bigg[ |A_j|^2
++ \sigma\sum_{k\neq j}|A_k|^2
++ \bigg((2 i S - T_R) A_j^*
++ i\eta S \sum_{k\neq j}|A_k|^2\bigg)
+\mathcal{F}^{-1}\big\{ (- i \omega)
+\mathcal{F}\{A_j\}\big\} \\
+\quad\quad\quad
++ \big(i S - T_R\big) A_j
+\mathcal{F}^{-1}\big\{(-i\omega)\mathcal{F}\{A_j^*\}\big\}
++ \eta\big(i S - T_R\big)
+\mathcal{F}^{-1}\bigg\{ (- i \omega)
+\mathcal{F}\Big\{\sum_{k\neq j}|A_k|^2\Big\}\bigg\}\Bigg]
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM term of the NLSE</p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM in other non linear
+terms of the NLSE</p></li>
+<li><p><strong>T_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The raman coefficient. <span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The numerical aperture.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>SS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-steepening.</p></li>
+<li><p><strong>RS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Raman scattering.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.anlse.ANLSE.op_non_lin">
+<code class="sig-name descname">op_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.anlse.ANLSE.op_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the non linear effects of the approximated NLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-non-linear-schrodinger-equations">
+<h1>19. Equation: Non-linear Schrodinger equations<a class="headerlink" href="#equation-non-linear-schrodinger-equations" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.nlse.NLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.nlse.</code><code class="sig-name descname">NLSE</code><span class="sig-paren">(</span><em class="sig-param">alpha=None</em>, <em class="sig-param">alpha_order=1</em>, <em class="sig-param">beta=None</em>, <em class="sig-param">beta_order=2</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">sigma=2.0</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em>, <em class="sig-param">f_R=0.245</em>, <em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=0.1</em>, <em class="sig-param">ATT=True</em>, <em class="sig-param">DISP=True</em>, <em class="sig-param">SPM=True</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">medium='sio2'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.nlse.NLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear Schrodinger equations.</p>
+<p>Represent the different effects in the NLSE.</p>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  \frac{\partial A_j}{\partial t}
+  &amp;= i\gamma \Bigg[\bigg[(1-f_R)|A_j(z,t)|^2
+  + f_R\int_{-\infty}^{+\infty}h_R(s)|A_j(z,t-s)|^2 ds
+  \bigg] \\
+  &amp;\quad + \sum_{k\neq j} \bigg[\sigma (1-f_R)|A_k(z,t)|^2
+  + \eta f_R\int_{-\infty}^{+\infty}h_R(s)|A_k(z,t-s)|^2
+  ds\bigg] \Bigg] A_j
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM term of the NLSE</p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The numerical aperture.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.nlse.NLSE.op_non_lin">
+<code class="sig-name descname">op_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.nlse.NLSE.op_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the non linear effects of the approximated NLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet propagating in the fiber.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Correction wave, use for consistency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The non linear term for the considered wave</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\hat{N} = i \gamma \Big[ (1-f_R) |A|^2
++ f_R \mathcal{F}^{-1}
+\big\{\mathcal{F}\{h_R\}\mathcal{F}\{|A|^2\}
+\big\}\Big]\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-general-non-linear-schrodinger-equation">
+<h1>20. Equation: General non-linear Schrodinger equation<a class="headerlink" href="#equation-general-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.gnlse.GNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.gnlse.</code><code class="sig-name descname">GNLSE</code><span class="sig-paren">(</span><em class="sig-param">alpha=None</em>, <em class="sig-param">alpha_order=1</em>, <em class="sig-param">beta=None</em>, <em class="sig-param">beta_order=2</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">sigma=2.0</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em>, <em class="sig-param">f_R=0.245</em>, <em class="sig-param">core_radius=5.0</em>, <em class="sig-param">NA=0.1</em>, <em class="sig-param">ATT=True</em>, <em class="sig-param">DISP=True</em>, <em class="sig-param">SPM=True</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">medium='sio2'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.gnlse.GNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>General non linear Schrodinger equations.</p>
+<p>Represent the different effects in the GNLSE.</p>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  \frac{\partial A_j}{\partial t}
+  &amp;= i\gamma \Big(1+\frac{i}{\omega_0}
+  \frac{\partial}{\partial t}\Big)
+  \Bigg[\bigg[(1-f_R)|A_j(z,t)|^2
+  + f_R\int_{-\infty}^{+\infty}h_R(s)|A_j(z,t-s)|^2 ds
+  \bigg] \\
+  &amp;\quad + \sum_{k\neq j} \bigg[\sigma (1-f_R)|A_k(z,t)|^2
+  + \eta f_R\int_{-\infty}^{+\infty}h_R(s)|A_k(z,t-s)|^2
+  ds\bigg] \Bigg] A_j
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM term of the NLSE</p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) -- The numerical aperture.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.gnlse.GNLSE.op_non_lin">
+<code class="sig-name descname">op_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.gnlse.GNLSE.op_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the non linear effects of the approximated NLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet propagating in the fiber.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Correction wave, use for consistency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The non linear term for the considered wave</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\hat{N} = \mathcal{F}^{-1}\bigg\{i \gamma
+\Big(1+\frac{\omega}{\omega_0}\Big)
+\mathcal{F}\Big\{ (1-f_R) |A|^2
++ f_R \mathcal{F}^{-1}\big\{\mathcal{F}\{h_R\}
+\mathcal{F}\{|A|^2\}\big\}\Big\}\bigg\}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.gnlse.GNLSE.term_non_lin">
+<code class="sig-name descname">term_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.gnlse.GNLSE.term_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear term of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-abstract-amplifier-non-linear-schrodinger-equation">
+<h1>21. Equation: Abstract amplifier non-linear Schrodinger equation<a class="headerlink" href="#equation-abstract-amplifier-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.abstract_ampnlse.AbstractAmpNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.abstract_ampnlse.</code><code class="sig-name descname">AbstractAmpNLSE</code><span class="sig-paren">(</span><em class="sig-param">re</em>, <em class="sig-param">alpha</em>, <em class="sig-param">alpha_order</em>, <em class="sig-param">beta</em>, <em class="sig-param">beta_order</em>, <em class="sig-param">gamma</em>, <em class="sig-param">gain_order</em>, <em class="sig-param">R_0</em>, <em class="sig-param">R_L</em>, <em class="sig-param">nl_index</em>, <em class="sig-param">ATT</em>, <em class="sig-param">DISP</em>, <em class="sig-param">GS</em>, <em class="sig-param">medium</em>, <em class="sig-param">dopant</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_ampnlse.AbstractAmpNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>re</strong> (<a class="reference internal" href="#optcom.equations.re_fiber.REFiber" title="optcom.equations.re_fiber.REFiber"><code class="xref py py-class docutils literal notranslate"><span class="pre">REFiber</span></code></a>) -- A fiber rate equation object.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>gain_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the gain coefficients to take into account.
+(from the Rate Equations resolution)</p></li>
+<li><p><strong>R_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber start.</p></li>
+<li><p><strong>R_L</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber end.</p></li>
+<li><p><strong>nl_index</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear index. Used to calculate the non linear
+parameter. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>GS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the gain saturation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber amplifier.</p></li>
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doped medium of the fiber amplifier.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="class">
+<dt id="optcom.equations.abstract_ampnlse.AbstractAmpNLSE.RefractiveIndex">
+<em class="property">class </em><code class="sig-name descname">RefractiveIndex</code><span class="sig-paren">(</span><em class="sig-param">re</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_ampnlse.AbstractAmpNLSE.RefractiveIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container for refractive index computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>medium</strong> -- The medium in which the wave propagates.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.abstract_ampnlse.AbstractAmpNLSE.RefractiveIndex.n">
+<code class="sig-name descname">n</code><span class="sig-paren">(</span><em class="sig-param">omega</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_ampnlse.AbstractAmpNLSE.RefractiveIndex.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the refractive index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The refractive index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_ampnlse.AbstractAmpNLSE.initial_condition">
+<code class="sig-name descname">initial_condition</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_ampnlse.AbstractAmpNLSE.initial_condition" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The propagationg waves.</p></li>
+<li><p><strong>end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If true, boundary counditions at z=L, else at z=0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The waves after initial conditions.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If co-propagating signal and pump:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  A_s^+(z=0) &amp;= \sqrt{R_0} A_s^-(z=0)
+                + P_{s,ref}^+(z=0)\\
+  A_p^+(z=0) &amp;= \sqrt{R_0} A_p^-(z=0)
+                + P_{p, ref}^+(z=0)\\
+  A_s^-(z=L) &amp;= \sqrt{R_L} A_s^+(z=L)\\
+  A_p^-(z=L) &amp;= \sqrt{R_L} A_s^+(z=L)
+\end{split}\end{split}\]</div>
+<p>If counter-propagating signal and pump:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  A_s^+(z=0) &amp;= \sqrt{R_0} A_s^-(z=0)
+                + P_{s,ref}^+(z=0)\\
+  A_p^+(z=0) &amp;= \sqrt{R_0} A_p^-(z=0)\\
+  A_s^-(z=L) &amp;= \sqrt{R_L} A_s^+(z=L)\\
+  A_p^-(z=L) &amp;= \sqrt{R_L} A_s^+(z=L)
+                + P_{p, ref}^-(z=0)
+\end{split}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_ampnlse.AbstractAmpNLSE.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_ampnlse.AbstractAmpNLSE.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once before a Stepper began the
+computation. Pass the time, wavelength and center wavelength
+to all the effects in the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.abstract_ampnlse.AbstractAmpNLSE.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_ampnlse.AbstractAmpNLSE.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called before each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-amplifier-approximated-non-linear-schrodinger-equation">
+<h1>22. Equation: Amplifier approximated non-linear Schrodinger equation<a class="headerlink" href="#equation-amplifier-approximated-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.ampanlse.AmpANLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.ampanlse.</code><code class="sig-name descname">AmpANLSE</code><span class="sig-paren">(</span><em class="sig-param">re_eq</em>, <em class="sig-param">alpha=None</em>, <em class="sig-param">alpha_order=1</em>, <em class="sig-param">beta=None</em>, <em class="sig-param">beta_order=2</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">gain_order=1</em>, <em class="sig-param">sigma=2.0</em>, <em class="sig-param">eta=2.0</em>, <em class="sig-param">T_R=0.003</em>, <em class="sig-param">R_0=0.0008</em>, <em class="sig-param">R_L=0.0008</em>, <em class="sig-param">nl_index=None</em>, <em class="sig-param">ATT=True</em>, <em class="sig-param">DISP=True</em>, <em class="sig-param">SPM=True</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">SS=False</em>, <em class="sig-param">RS=False</em>, <em class="sig-param">GS=True</em>, <em class="sig-param">approx_type=1</em>, <em class="sig-param">medium='sio2'</em>, <em class="sig-param">dopant='yt'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.ampanlse.AmpANLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximated non linear Schrodinger equations for fiber
+amplifier.</p>
+<p>Represent the different effects in the approximated NLSE for fiber
+amplifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>re_eq</strong> (<a class="reference internal" href="#optcom.equations.re_fiber.REFiber" title="optcom.equations.re_fiber.REFiber"><em>REFiber</em></a>) -- A fiber rate equation object.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>gain_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the gain coefficients to take into account.
+(from the Rate Equations resolution)</p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM term of the NLSE</p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM in other non linear
+terms of the NLSE</p></li>
+<li><p><strong>T_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The raman coefficient. <span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>R_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber start.</p></li>
+<li><p><strong>R_L</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber end.</p></li>
+<li><p><strong>nl_index</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear index. Used to calculate the non linear
+parameter. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>SS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-steepening.</p></li>
+<li><p><strong>RS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Raman scattering.</p></li>
+<li><p><strong>GS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the gain saturation.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber amplifier.</p></li>
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doped medium of the fiber amplifier.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="equation-amplifier-non-linear-schrodinger-equation">
+<h1>23. Equation: Amplifier non-linear Schrodinger equation<a class="headerlink" href="#equation-amplifier-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.ampnlse.AmpNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.ampnlse.</code><code class="sig-name descname">AmpNLSE</code><span class="sig-paren">(</span><em class="sig-param">re_eq</em>, <em class="sig-param">alpha=None</em>, <em class="sig-param">alpha_order=1</em>, <em class="sig-param">beta=None</em>, <em class="sig-param">beta_order=2</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">gain_order=1</em>, <em class="sig-param">sigma=2.0</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em>, <em class="sig-param">f_R=0.245</em>, <em class="sig-param">R_0=0.0008</em>, <em class="sig-param">R_L=0.0008</em>, <em class="sig-param">nl_index=None</em>, <em class="sig-param">ATT=True</em>, <em class="sig-param">DISP=True</em>, <em class="sig-param">SPM=True</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">GS=True</em>, <em class="sig-param">medium='sio2'</em>, <em class="sig-param">dopant='yt'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.ampnlse.AmpNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear Schrodinger equations for fiber amplifier.</p>
+<p>Represent the different effects in the NLSE for fiber amplifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>re_eq</strong> (<a class="reference internal" href="#optcom.equations.re_fiber.REFiber" title="optcom.equations.re_fiber.REFiber"><em>REFiber</em></a>) -- A fiber rate equation object.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>gain_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the gain coefficients to take into account.
+(from the Rate Equations resolution)</p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>R_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber start.</p></li>
+<li><p><strong>R_L</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber end.</p></li>
+<li><p><strong>nl_index</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear index. Used to calculate the non linear
+parameter. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>GS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the gain saturation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber amplifier.</p></li>
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doped medium of the fiber amplifier.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.ampnlse.AmpNLSE.op_non_lin">
+<code class="sig-name descname">op_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.ampnlse.AmpNLSE.op_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the non linear effects of the approximated NLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet propagating in the fiber.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Correction wave, use for consistency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The non linear term for the considered wave.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\hat{N} = i \gamma \Big[ (1-f_R) |A|^2
++ f_R \mathcal{F}^{-1}
+\big\{\mathcal{F}\{h_R\}\mathcal{F}\{|A|^2\}
+\big\}\Big]\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-amplifier-general-non-linear-schrodinger-equation">
+<h1>24. Equation: Amplifier general non-linear Schrodinger equation<a class="headerlink" href="#equation-amplifier-general-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.ampgnlse.AmpGNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.ampgnlse.</code><code class="sig-name descname">AmpGNLSE</code><span class="sig-paren">(</span><em class="sig-param">re_eq</em>, <em class="sig-param">alpha=None</em>, <em class="sig-param">alpha_order=1</em>, <em class="sig-param">beta=None</em>, <em class="sig-param">beta_order=2</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">gain_order=1</em>, <em class="sig-param">sigma=2.0</em>, <em class="sig-param">tau_1=0.0122</em>, <em class="sig-param">tau_2=0.032</em>, <em class="sig-param">f_R=0.245</em>, <em class="sig-param">R_0=0.0008</em>, <em class="sig-param">R_L=0.0008</em>, <em class="sig-param">nl_index=None</em>, <em class="sig-param">ATT=True</em>, <em class="sig-param">DISP=True</em>, <em class="sig-param">SPM=True</em>, <em class="sig-param">XPM=False</em>, <em class="sig-param">FWM=False</em>, <em class="sig-param">GS=True</em>, <em class="sig-param">medium='sio2'</em>, <em class="sig-param">dopant='yt'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.ampgnlse.AmpGNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>General non linear Schrodinger equations for fiber amplifier.</p>
+<p>Represent the different effects in the GNLSE for fiber amplifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>re_eq</strong> (<a class="reference internal" href="#optcom.equations.re_fiber.REFiber" title="optcom.equations.re_fiber.REFiber"><em>REFiber</em></a>) -- A fiber rate equation object.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>gain_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the gain coefficients to take into account.
+(from the Rate Equations resolution)</p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM term of the NLSE</p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>R_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber start.</p></li>
+<li><p><strong>R_L</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber end.</p></li>
+<li><p><strong>nl_index</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear index. Used to calculate the non linear
+parameter. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>GS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the gain saturation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber amplifier.</p></li>
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doped medium of the fiber amplifier.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.ampgnlse.AmpGNLSE.op_non_lin">
+<code class="sig-name descname">op_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.ampgnlse.AmpGNLSE.op_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the non linear effects of the approximated NLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The wave packet propagating in the fiber.</p></li>
+<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The ID of the considered wave in the wave packet.</p></li>
+<li><p><strong>corr_wave</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>]) -- Correction wave, use for consistency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The non linear term for the considered wave.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\hat{N} = \mathcal{F}^{-1}\bigg\{i \gamma
+\Big(1+\frac{\omega}{\omega_0}\Big)
+\mathcal{F}\Big\{ (1-f_R) |A|^2
++ f_R \mathcal{F}^{-1}\big\{\mathcal{F}\{h_R\}
+\mathcal{F}\{|A|^2\}\big\}\Big\}\bigg\}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.ampgnlse.AmpGNLSE.term_non_lin">
+<code class="sig-name descname">term_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.ampgnlse.AmpGNLSE.term_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear term of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-abstract-coupled-non-linear-schrodinger-equation">
+<h1>25. Equation: Abstract coupled non-linear Schrodinger equation<a class="headerlink" href="#equation-abstract-coupled-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.abstract_cnlse.AbstractCNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.abstract_cnlse.</code><code class="sig-name descname">AbstractCNLSE</code><span class="sig-paren">(</span><em class="sig-param">nbr_fibers</em>, <em class="sig-param">beta</em>, <em class="sig-param">kappa</em>, <em class="sig-param">sigma_cross</em>, <em class="sig-param">c2c_spacing</em>, <em class="sig-param">core_radius</em>, <em class="sig-param">V</em>, <em class="sig-param">n_0</em>, <em class="sig-param">ASYM</em>, <em class="sig-param">COUP</em>, <em class="sig-param">XPM</em>, <em class="sig-param">medium</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_cnlse.AbstractCNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coupled non linear Schrodinger equations.</p>
+<p>Represent the different effects in the NLSE as well as the
+interaction of NLSEs propagating along each others. Note that
+automatic calculation of the coupling coefficients rely on a formula
+that is only correct for symmetric coupler.</p>
+<dl class="attribute">
+<dt id="optcom.equations.abstract_cnlse.AbstractCNLSE.nbr_eqs">
+<code class="sig-name descname">nbr_eqs</code><a class="headerlink" href="#optcom.equations.abstract_cnlse.AbstractCNLSE.nbr_eqs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of NLSEs in the CNLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbr_fibers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of fibers in the coupler.</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span></p></li>
+<li><p><strong>kappa</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]]]) -- The coupling coefficients. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>sigma_cross</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- Positive term multiplying the XPM term of the NLSE inbetween
+the fibers.</p></li>
+<li><p><strong>c2c_spacing</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The center to center distance between two cores.
+<span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The core radius. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>V</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The fiber parameter.</p></li>
+<li><p><strong>n_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The refractive index outside of the waveguides.</p></li>
+<li><p><strong>ASYM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the asymmetry effects between cores.</p></li>
+<li><p><strong>COUP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the coupling effects between cores.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.abstract_cnlse.AbstractCNLSE.op_non_lin">
+<code class="sig-name descname">op_non_lin</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">id</em>, <em class="sig-param">corr_wave=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.abstract_cnlse.AbstractCNLSE.op_non_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Non linear operator of the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-coupled-approximated-non-linear-schrodinger-equation">
+<h1>26. Equation: Coupled approximated non-linear Schrodinger equation<a class="headerlink" href="#equation-coupled-approximated-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.canlse.CANLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.canlse.</code><code class="sig-name descname">CANLSE</code><span class="sig-paren">(</span><em class="sig-param">nbr_fibers=2, alpha=None, alpha_order=1, beta=None, beta_order=2, gamma=None, kappa=None, sigma=[2.0], sigma_cross=[[0.1]], eta=2.0, T_R=0.003, NA=[0.1], ATT=True, DISP=True, SPM=True, XPM=False, FWM=False, SS=False, RS=False, ASYM=True, COUP=True, approx_type=1, medium='sio2', c2c_spacing=[[15.0]], core_radius=[5.0], V=[2.0], n_0=[1.0]</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.canlse.CANLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coupled non linear Schrodinger equations.</p>
+<p>Represent the different effects in the NLSE as well as the
+interaction of NLSEs propagating along each others. Note that
+automatic calculation of the coupling coefficients rely on a formula
+that is only correct for symmetric coupler.</p>
+<dl class="attribute">
+<dt id="optcom.equations.canlse.CANLSE.nbr_eqs">
+<code class="sig-name descname">nbr_eqs</code><a class="headerlink" href="#optcom.equations.canlse.CANLSE.nbr_eqs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of NLSEs in the CNLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbr_fibers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of fibers in the coupler.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>kappa</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]]]) -- The coupling coefficients. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Positive term multiplying the XPM term of the NLSE.</p></li>
+<li><p><strong>sigma_cross</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- Positive term multiplying the XPM term of the NLSE inbetween
+the fibers.</p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- Positive term multiplying the XPM in other non linear
+terms of the NLSE.</p></li>
+<li><p><strong>T_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The raman coefficient. <span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]) -- The numerical aperture.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>SS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-steepening.</p></li>
+<li><p><strong>RS</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Raman scattering.</p></li>
+<li><p><strong>ASYM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the asymmetry effects between cores.</p></li>
+<li><p><strong>COUP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the coupling effects between cores.</p></li>
+<li><p><strong>approx_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The type of the NLSE approximation.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+<li><p><strong>c2c_spacing</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The center to center distance between two cores.
+<span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The core radius. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>V</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The fiber parameter.</p></li>
+<li><p><strong>n_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The refractive index outside of the waveguides.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="equation-coupled-non-linear-schrodinger-equation">
+<h1>27. Equation: Coupled non-linear Schrodinger equation<a class="headerlink" href="#equation-coupled-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.cnlse.CNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.cnlse.</code><code class="sig-name descname">CNLSE</code><span class="sig-paren">(</span><em class="sig-param">nbr_fibers=2, alpha=None, alpha_order=1, beta=None, beta_order=2, gamma=None, kappa=None, sigma=[2.0], sigma_cross=[[0.1]], tau_1=0.0122, tau_2=0.032, f_R=0.245, NA=[0.1], ATT=True, DISP=True, SPM=True, XPM=False, FWM=False, ASYM=True, COUP=True, medium='sio2', c2c_spacing=[[15.0]], core_radius=[5.0], V=[2.0], n_0=[1.0]</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.cnlse.CNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coupled non linear Schrodinger equations.</p>
+<p>Represent the different effects in the NLSE as well as the
+interaction of NLSEs propagating along each others. Note that
+automatic calculation of the coupling coefficients rely on a formula
+that is only correct for symmetric coupler.</p>
+<dl class="attribute">
+<dt id="optcom.equations.cnlse.CNLSE.nbr_eqs">
+<code class="sig-name descname">nbr_eqs</code><a class="headerlink" href="#optcom.equations.cnlse.CNLSE.nbr_eqs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of NLSEs in the CNLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbr_fibers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of fibers in the coupler.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>kappa</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]]]) -- The coupling coefficients. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Positive term multiplying the XPM term of the NLSE.</p></li>
+<li><p><strong>sigma_cross</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- Positive term multiplying the XPM term of the NLSE inbetween
+the fibers.</p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]) -- The numerical aperture.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>ASYM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the asymmetry effects between cores.</p></li>
+<li><p><strong>COUP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the coupling effects between cores.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+<li><p><strong>c2c_spacing</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The center to center distance between two cores.
+<span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The core radius. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>V</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The fiber parameter.</p></li>
+<li><p><strong>n_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The refractive index outside of the waveguides.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="equation-coupled-general-non-linear-schrodinger-equation">
+<h1>28. Equation: Coupled general non-linear Schrodinger equation<a class="headerlink" href="#equation-coupled-general-non-linear-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.cgnlse.CGNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.cgnlse.</code><code class="sig-name descname">CGNLSE</code><span class="sig-paren">(</span><em class="sig-param">nbr_fibers=2, alpha=None, alpha_order=1, beta=None, beta_order=2, gamma=None, kappa=None, sigma=[2.0], sigma_cross=[[0.1]], tau_1=0.0122, tau_2=0.032, f_R=0.245, NA=[0.1], ATT=True, DISP=True, SPM=True, XPM=False, FWM=False, ASYM=True, COUP=True, medium='sio2', c2c_spacing=[[15.0]], core_radius=[5.0], V=[2.0], n_0=[1.0]</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.cgnlse.CGNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coupled non linear Schrodinger equations.</p>
+<p>Represent the different effects in the NLSE as well as the
+interaction of NLSEs propagating along each others. Note that
+automatic calculation of the coupling coefficients rely on a formula
+that is only correct for symmetric coupler.</p>
+<dl class="attribute">
+<dt id="optcom.equations.cgnlse.CGNLSE.nbr_eqs">
+<code class="sig-name descname">nbr_eqs</code><a class="headerlink" href="#optcom.equations.cgnlse.CGNLSE.nbr_eqs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of NLSEs in the CNLSE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbr_fibers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The number of fibers in the coupler.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the attenuation coefficients.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>alpha_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of alpha coefficients to take into account. (will
+be ignored if alpha values are provided - no file)</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The derivatives of the propagation constant.
+<span class="math notranslate nohighlight">\([km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
+ps^3\cdot km^{-1}, \ldots]\)</span> If a callable is provided,
+variable must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>beta_order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of beta coefficients to take into account. (will
+be ignored if beta values are provided - no file)</p></li>
+<li><p><strong>gamma</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The non linear coefficient.
+<span class="math notranslate nohighlight">\([rad\cdot W^{-1}\cdot km^{-1}]\)</span> If a callable is
+provided, variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>kappa</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]]]) -- The coupling coefficients. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>sigma</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- Positive term multiplying the XPM term of the NLSE.</p></li>
+<li><p><strong>sigma_cross</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- Positive term multiplying the XPM term of the NLSE inbetween
+the fibers.</p></li>
+<li><p><strong>tau_1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The inverse of vibrational frequency of the fiber core
+molecules. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>tau_2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The damping time of vibrations. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>f_R</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The fractional contribution of the delayed Raman response.
+<span class="math notranslate nohighlight">\([]\)</span></p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]]) -- The numerical aperture.</p></li>
+<li><p><strong>ATT</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the attenuation.</p></li>
+<li><p><strong>DISP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the dispersion.</p></li>
+<li><p><strong>SPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the self-phase modulation.</p></li>
+<li><p><strong>XPM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the cross-phase modulation.</p></li>
+<li><p><strong>FWM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the Four-Wave mixing.</p></li>
+<li><p><strong>ASYM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the asymmetry effects between cores.</p></li>
+<li><p><strong>COUP</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, trigger the coupling effects between cores.</p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber.</p></li>
+<li><p><strong>c2c_spacing</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- The center to center distance between two cores.
+<span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The core radius. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>V</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The fiber parameter.</p></li>
+<li><p><strong>n_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The refractive index outside of the waveguides.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="equation-fresnel">
+<h1>29. Equation: Fresnel<a class="headerlink" href="#equation-fresnel" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.fresnel.Fresnel">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.fresnel.</code><code class="sig-name descname">Fresnel</code><a class="headerlink" href="#optcom.equations.fresnel.Fresnel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fresnel equations.</p>
+<p>Represent the Fresnel equations which describe the reflection and
+transmission of light at the interface of two media.</p>
+<dl class="method">
+<dt id="optcom.equations.fresnel.Fresnel.irradiance_p_pol">
+<em class="property">static </em><code class="sig-name descname">irradiance_p_pol</code><span class="sig-paren">(</span><em class="sig-param">n_1</em>, <em class="sig-param">n_2</em>, <em class="sig-param">theta_i</em>, <em class="sig-param">theta_t=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.fresnel.Fresnel.irradiance_p_pol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the p-polarization irradiance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the incident light.</p></li>
+<li><p><strong>n_2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the transmitted light.</p></li>
+<li><p><strong>theta_i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The angle of incidence.</p></li>
+<li><p><strong>theta_t</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The angle of transmission.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The p-polarization irradiance.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[T_p = 1 - R_p\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.fresnel.Fresnel.irradiance_s_pol">
+<em class="property">static </em><code class="sig-name descname">irradiance_s_pol</code><span class="sig-paren">(</span><em class="sig-param">n_1</em>, <em class="sig-param">n_2</em>, <em class="sig-param">theta_i</em>, <em class="sig-param">theta_t=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.fresnel.Fresnel.irradiance_s_pol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the s-polarization irradiance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the incident light.</p></li>
+<li><p><strong>n_2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the transmitted light.</p></li>
+<li><p><strong>theta_i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The angle of incidence.</p></li>
+<li><p><strong>theta_t</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The angle of transmission.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The s-polarization irradiance.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[T_s = 1 - R_s\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.fresnel.Fresnel.reflectance_p_pol">
+<em class="property">static </em><code class="sig-name descname">reflectance_p_pol</code><span class="sig-paren">(</span><em class="sig-param">n_1</em>, <em class="sig-param">n_2</em>, <em class="sig-param">theta_i</em>, <em class="sig-param">theta_t=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.fresnel.Fresnel.reflectance_p_pol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the s-polarization reflectance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the incident light.</p></li>
+<li><p><strong>n_2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the transmitted light.</p></li>
+<li><p><strong>theta_i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The angle of incidence.</p></li>
+<li><p><strong>theta_t</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The angle of transmission.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The p-polarization reflectance.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[R_p = \bigg\lvert \frac{n_1 \cos(\theta_t)
+- n_2\cos(\theta_i)}{n_1 \cos(\theta_t)
++ n_2\cos(\theta_i)} \bigg\rvert^2
+= \Bigg\lvert\frac{n_1\sqrt{1-\big(\frac{n_1}{n_2}
+\sin(\theta_i)\big)^2}
+- n_2\cos(\theta_i)}{n_1\sqrt{1-\big(\frac{n_1}{n_2}
+\sin(\theta_i)\big)^2}
++ n_2\cos(\theta_i) } \Bigg\rvert^2\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.fresnel.Fresnel.reflectance_s_pol">
+<em class="property">static </em><code class="sig-name descname">reflectance_s_pol</code><span class="sig-paren">(</span><em class="sig-param">n_1</em>, <em class="sig-param">n_2</em>, <em class="sig-param">theta_i</em>, <em class="sig-param">theta_t=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.fresnel.Fresnel.reflectance_s_pol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the s-polarization reflectance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the incident light.</p></li>
+<li><p><strong>n_2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]) -- The refractive index of the medium of the transmitted light.</p></li>
+<li><p><strong>theta_i</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The angle of incidence.</p></li>
+<li><p><strong>theta_t</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The angle of transmission.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The s-polarization reflectance.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[R_s = \bigg\lvert \frac{n_1 \cos(\theta_i)
+- n_2\cos(\theta_t)}{n_1 \cos(\theta_i)
++ n_2\cos(\theta_t)} \bigg\rvert^2
+= \Bigg\lvert \frac{n_1\cos(\theta_i)
+-n_2\sqrt{1-\big(\frac{n_1}{n_2}
+\sin(\theta_i)\big)^2}}{n_1\cos(\theta_i)
++ n_2 \sqrt{1-\big(\frac{n_1}{n_2}
+\sin(\theta_i)\big)^2}} \Bigg\rvert^2\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-mccumber">
+<h1>30. Equation: McCumber<a class="headerlink" href="#equation-mccumber" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.mccumber.McCumber">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.mccumber.</code><code class="sig-name descname">McCumber</code><a class="headerlink" href="#optcom.equations.mccumber.McCumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>McCumber relations.</p>
+<p>Represent McCumber relations which give a relationship between the
+effective cross-sections of absorption and emission of light in the
+physics of solid-state lasers. <a class="footnote-reference brackets" href="#id2" id="id1">2</a></p>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\frac{\sigma_e(\omega)}{\sigma_a(\omega)}
+\exp\Big[\frac{\hbar \omega}{k_B T}\Big]
+= \Big(\frac{N_0}{N_1}\Big)_T\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Big(\frac{N_0}{N_1}\Big)_T\)</span> is the thermal
+steady-state ratio of populations at temperature <span class="math notranslate nohighlight">\(T\)</span>.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dd><p>Miniscalco, W.J. and Quimby, R.S., 1991. General procedure
+for the analysis of Er 3+ cross sections. Optics letters,
+16(4), pp.258-260.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.mccumber.McCumber.calc_cross_section_absorption">
+<em class="property">static </em><code class="sig-name descname">calc_cross_section_absorption</code><span class="sig-paren">(</span><em class="sig-param">sigma_e</em>, <em class="sig-param">omega</em>, <em class="sig-param">center_omega</em>, <em class="sig-param">N_0</em>, <em class="sig-param">N_1</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.mccumber.McCumber.calc_cross_section_absorption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the absorption cross section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma_e</strong> -- The emission cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p></li>
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>center_omega</strong> -- The center angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>N_0</strong> -- The population in ground state. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>N_1</strong> -- The population in the excited state. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>T</strong> -- The temperature. <span class="math notranslate nohighlight">\([K]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the absorption cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\sigma_a(\omega) = \sigma_e(\omega)
+\exp\Big[\frac{\hbar (\omega -\omega_0}{k_B T}\Big]
+\Big(\frac{N_0}{N_1}\Big)_T^{-1}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.mccumber.McCumber.calc_cross_section_emission">
+<em class="property">static </em><code class="sig-name descname">calc_cross_section_emission</code><span class="sig-paren">(</span><em class="sig-param">sigma_a</em>, <em class="sig-param">omega</em>, <em class="sig-param">center_omega</em>, <em class="sig-param">N_0</em>, <em class="sig-param">N_1</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.mccumber.McCumber.calc_cross_section_emission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calcul the emission cross section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma_a</strong> -- The absorption cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p></li>
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>center_omega</strong> -- The center angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>N_0</strong> -- The population in ground state. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>N_1</strong> -- The population in the excited state. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>T</strong> -- The temperature. <span class="math notranslate nohighlight">\([K]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the absorption cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\sigma_e(\omega) = \sigma_a(\omega)
+\exp\Big[-\frac{\hbar (\omega - \omega_0)}{k_B T}\Big]
+\Big(\frac{N_0}{N_1}\Big)_T\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-rate-equations-for-fibers">
+<h1>31. Equation: Rate Equations for fibers<a class="headerlink" href="#equation-rate-equations-for-fibers" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.re_fiber.REFiber">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.re_fiber.</code><code class="sig-name descname">REFiber</code><span class="sig-paren">(</span><em class="sig-param">nbr_eqs</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re_fiber.REFiber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rate equations for fibers.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="equation-rate-equations-with-2-levels-for-fiber">
+<h1>32. Equation: Rate Equations with 2 levels for fiber<a class="headerlink" href="#equation-rate-equations-with-2-levels-for-fiber" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.re2_fiber.RE2Fiber">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.re2_fiber.</code><code class="sig-name descname">RE2Fiber</code><span class="sig-paren">(</span><em class="sig-param">sigma_a=None, sigma_e=None, n_core=None, n_clad=None, NA=None, temperature=293.15, tau_meta=840.0, N_T=0.063, core_radius=5.0, clad_radius=62.5, area_doped=None, eta_s=1.26, eta_p=1.41, R_0=0.0008, R_L=0.0008, signal_width=[1.0], medium='sio2', dopant='yt', step_update=False</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rate equations for a 2 levels system in fiber amplifier.</p>
+<p>Represent the rate equations of a 2 levels system in steady state
+with pump power <span class="math notranslate nohighlight">\(P_p\)</span>, signal power <span class="math notranslate nohighlight">\(P_s\)</span> and inversion
+of population <span class="math notranslate nohighlight">\(N_1\)</span> as parameters.</p>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{alignat}{1}
+  &amp;N_1(z) =  \frac{\frac{1}{hcA_c}\Big[\sum^K_{k=1}
+  \Gamma_{s,k}\lambda_k\big[ \sigma_{a,s}(\lambda_k)N_T]
+  P_{s,k}^{\pm}(z) + \sum^L_{l=1}
+  \Gamma_{p,l}\lambda_l\big[\sigma_{a,p}(\lambda_l)N_T
+  \big] P_{p,l}^{\pm}(z)\Big]}
+  {\frac{1}{hcA_c}\Big[\sum^K_{k=1}
+  \Gamma_{s,k}\lambda_k\big[ \sigma_{a,s}(\lambda_k)
+  + \sigma_{e,s}(\lambda_k)\big] P_{s,k}^{\pm}(z)
+  + \sum^L_{l=1} \Gamma_{p,l}\lambda_l
+  \big[\sigma_{a,p}(\lambda_l)+\sigma_{e,p}(\lambda_l)
+  \big] P_{p,l}^{\pm}(z)\Big] - \frac{1}{\tau}}\\
+  &amp;\frac{\partial P_{s,k}^{\pm}(z)}{\partial z}
+  = \pm \bigg[\Gamma_k\Big[\big(\sigma_{a,s}(\lambda_k)
+  + \sigma_{e,s}(\lambda_k)\big)N_1(z)
+  - \sigma_{a,s}(\lambda_k)N_T\Big] P_{s,k}^\pm (z)
+  - \eta_{s,k} P_{s,k}^\pm (z)
+  + \Gamma_k\sigma_{e,s}(\lambda_k) N_1(z)
+  \frac{2hc^2 \Delta\lambda}{\lambda_k^3} \bigg]\\
+  &amp;\frac{\partial P_{p,l}^{\pm}(z)}{\partial z}
+  = \pm \bigg[\Gamma_k\Big[\big(\sigma_{a,p}(\lambda_l)
+  + \sigma_{e,p}(\lambda_l)\big)N_1(z)
+  - \sigma_{a,p}(\lambda_l)N_T\Big] P_{p,l}^\pm (z)
+  - \eta_{p,l} P_{p,l}^\pm (z) \bigg]
+\end{alignat}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma_a</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The absorption cross sections of the signal and the pump
+(1&lt;=len(sigma_a)&lt;=2). <span class="math notranslate nohighlight">\([nm^2]\)</span> If a callable is
+provided, varibale must be wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>sigma_e</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The emission cross sections of the signal and the pump
+(1&lt;=len(sigma_a)&lt;=2). <span class="math notranslate nohighlight">\([nm^2]\)</span> If a callable is
+provided, varibale must be wavelength. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>n_core</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The refractive index of the core. If the medium is not
+recognised by Optcom, at least two elements should be
+provided out of those three: n_core, n_clad, NA.</p></li>
+<li><p><strong>n_clad</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The refractive index of the cladding. If the medium is not
+recognised by Optcom, at least two elements should be
+provided out of those three: n_core, n_clad, NA.</p></li>
+<li><p><strong>NA</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], <code class="docutils literal notranslate"><span class="pre">None</span></code>]) -- The numerical aperture. If the medium is not
+recognised by Optcom, at least two elements should be
+provided out of those three: n_core, n_clad, NA.</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The temperature of the medium. <span class="math notranslate nohighlight">\([K]\)</span></p></li>
+<li><p><strong>tau_meta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The metastable level lifetime. <span class="math notranslate nohighlight">\([\mu s]\)</span></p></li>
+<li><p><strong>N_T</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The total doping concentration. <span class="math notranslate nohighlight">\([nm^{-3}]\)</span></p></li>
+<li><p><strong>core_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the core. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>clad_radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The radius of the cladding. <span class="math notranslate nohighlight">\([\mu m]\)</span></p></li>
+<li><p><strong>area_doped</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The doped area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span> If None, will be
+approximated to the core area.</p></li>
+<li><p><strong>eta_s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The background signal loss. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>eta_p</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The background pump loss. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></li>
+<li><p><strong>R_0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber start.</p></li>
+<li><p><strong>R_L</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) -- The reflectivity at the fiber end.</p></li>
+<li><p><strong>signal_width</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) -- The width of each channel of the signal. <span class="math notranslate nohighlight">\([ps]\)</span></p></li>
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The main medium of the fiber amplifier.</p></li>
+<li><p><strong>dopant</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The doped medium of the fiber amplifier.</p></li>
+<li><p><strong>step_update</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If True, update the signal and pump power from the wave
+arrays at each space step.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.absorption">
+<code class="sig-name descname">absorption</code><span class="sig-paren">(</span><em class="sig-param">step</em>, <em class="sig-param">order</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.absorption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return absorption of the pump and signal. Fit calculated
+absorption and predict main value and derivatives for center
+omegas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The current step of the computation.</p></li>
+<li><p><strong>order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the taylor series expansion (number of deriv.).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The absorption of the fiber at the specified space step.
+<span class="math notranslate nohighlight">\([km^{-1}]\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once after a Stepper ended the
+computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.gain">
+<code class="sig-name descname">gain</code><span class="sig-paren">(</span><em class="sig-param">step</em>, <em class="sig-param">order</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.gain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return gain of the pump and signal. Fit calculated gain
+and predict main value and derivatives for center omegas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The current step of the computation.</p></li>
+<li><p><strong>order</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) -- The order of the taylor series expansion (number of deriv.).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The gain of the fiber at the specified space step.
+<span class="math notranslate nohighlight">\([km^{-1}]\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.get_Gamma">
+<code class="sig-name descname">get_Gamma</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.get_Gamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the overlap factor.
+Assume that omega is part of current center omegas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>step</strong> -- The current step of the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The overlap factor at the specified space step.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.get_eff_area">
+<code class="sig-name descname">get_eff_area</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.get_eff_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the effective area.
+Assume that omega is part of current center omegas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>step</strong> -- The current step of the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The effective area at the specified space step.
+<span class="math notranslate nohighlight">\([\mu m^2]\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.get_n_0">
+<code class="sig-name descname">get_n_0</code><span class="sig-paren">(</span><em class="sig-param">omega</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.get_n_0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ground refractive index of the core.
+Assume that omega is part of current center omegas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The ground refractive index of the core.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.get_n_clad">
+<code class="sig-name descname">get_n_clad</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.get_n_clad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the refractive index of the core.
+Assume that omega is part of current center omegas.
+N.B. : variable step currently not considered, but could be if
+cladding doped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>step</strong> -- The current step of the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The refractive index of the core.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.get_n_core">
+<code class="sig-name descname">get_n_core</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.get_n_core" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the refractive index of the core.
+Assume that omega is part of current center omegas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>step</strong> -- The current step of the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The refractive index of the core at the specified space
+step.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.get_sigma_a">
+<code class="sig-name descname">get_sigma_a</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.get_sigma_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the absorption cross section.
+Assume that omega is part of current center omegas.
+Variable 'step' currently not considered, only for constitency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>step</strong> -- The current step of the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The absorption cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.get_sigma_e">
+<code class="sig-name descname">get_sigma_e</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.get_sigma_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the emission cross section.
+Assume that omega is part of current center omegas.
+Variable 'step' currently not considered, only for constitency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency.  <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>step</strong> -- The current step of the computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The emission cross section. <span class="math notranslate nohighlight">\([nm^2]\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.initial_condition">
+<code class="sig-name descname">initial_condition</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.initial_condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial conditions for shooting method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>) -- The propagating waves.</p></li>
+<li><p><strong>end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) -- If true, boundary counditions at z=L, else at z=0.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If co-propagating signal and pump:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  P_s^+(z=0) &amp;= R_0 P_s^-(z=0) + P_{s,ref}^+(z=0)\\
+  P_p^+(z=0) &amp;= R_0 P_p^-(z=0) + P_{p, ref}^+(z=0)\\
+  P_s^-(z=L) &amp;= R_L P_s^+(z=L)\\
+  P_p^-(z=L) &amp;= R_L P_s^+(z=L)
+\end{split}\end{split}\]</div>
+<p>If counter-propagating signal and pump:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+  P_s^+(z=0) &amp;= R_0 P_s^-(z=0) + P_{s,ref}^+(z=0)\\
+  P_p^+(z=0) &amp;= R_0 P_p^-(z=0)\\
+  P_s^-(z=L) &amp;= R_L P_s^+(z=L)\\
+  P_p^-(z=L) &amp;= R_L P_s^+(z=L)  + P_{p, ref}^-(z=0)
+\end{split}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param">domain</em>, <em class="sig-param">*fields</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once before a Stepper began the
+computation. Pass the time, wavelength and center wavelength
+to all the effects in the equation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called before each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.re2_fiber.RE2Fiber.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">waves</em>, <em class="sig-param">h</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.re2_fiber.RE2Fiber.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called after each step of the computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-resonant-index-change">
+<h1>33. Equation: Resonant index change<a class="headerlink" href="#equation-resonant-index-change" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.resonant_index.ResonantIndex">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.resonant_index.</code><code class="sig-name descname">ResonantIndex</code><span class="sig-paren">(</span><em class="sig-param">medium='yb'</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.resonant_index.ResonantIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the resonant index change. <a class="footnote-reference brackets" href="#id4" id="id3">7</a></p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id3">7</a></span></dt>
+<dd><p>Digonnet, M.J., Sadowski, R.W., Shaw, H.J. and Pantell, R.H.,
+1997. Experimental evidence for strong UV transition
+contribution in the resonant nonlinearity of doped fibers.
+Journal of lightwave technology, 15(2), pp.299-303.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The medium in which the wave propagates.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.resonant_index.ResonantIndex.calc_Q">
+<code class="sig-name descname">calc_Q</code><span class="sig-paren">(</span><em class="sig-param">n_0</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.resonant_index.ResonantIndex.calc_Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Q factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_0</strong> -- The refractive index.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Q factor. <span class="math notranslate nohighlight">\([ps^{-1} nm^{2}]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[Q = \frac{e^2 (n_0^2+2)^2}{72 n_0 m \epsilon_0 c}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.resonant_index.ResonantIndex.lorentzian_lineshape">
+<code class="sig-name descname">lorentzian_lineshape</code><span class="sig-paren">(</span><em class="sig-param">lambda_s</em>, <em class="sig-param">Lambda</em>, <em class="sig-param">lambda_bw</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.resonant_index.ResonantIndex.lorentzian_lineshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the lorentzian lineshape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lambda_s</strong> -- The center wavelength of the wave signal. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+<li><p><strong>Lambda</strong> -- The reference wavelength. <span class="math notranslate nohighlight">\([nm]\)</span>
+(depends on the material)</p></li>
+<li><p><strong>lambda_bw</strong> -- The wavelength bandwidth. <span class="math notranslate nohighlight">\([nm]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The lorentzian lineshape. <span class="math notranslate nohighlight">\([ps]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[g'_{ij}(\lambda_s) = \frac{1}{\pi c}
+\frac{ \frac{1}{\lambda_{ij}} \Big(\frac{1}
+{\lambda_{ij}^2}-\frac{1}{\lambda_{s}^2}\Big)}
+{\Big(\frac{1}{\lambda_{ij}^2}
+-\frac{1}{\lambda_{s}^2}\Big)
++ \Big(\frac{\Delta\lambda_{ij}}
+{\lambda_s \lambda_{ij}^2}\Big)}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="optcom.equations.resonant_index.ResonantIndex.n">
+<code class="sig-name descname">n</code><span class="sig-paren">(</span><em class="sig-param">omega</em>, <em class="sig-param">n_0</em>, <em class="sig-param">N_1</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.resonant_index.ResonantIndex.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the resonant index change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The refractive index change.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\Delta n = Q N_1 S\]</div>
+<p>where:</p>
+<div class="math notranslate nohighlight">
+\[S = -f_{12}\lambda_{12}g'_{12}(\lambda_s)
+\big(1 + \frac{g_1}{g_2}\big) - \sum_{j&gt;2} f_{1j}
+\lambda_{1j}g'_{1j}(\lambda_s)
++ \sum_{j&gt;2} f_{2j}\lambda_{2j}g'_{2j}(\lambda_s)\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="equation-sellmeier">
+<h1>34. Equation: Sellmeier<a class="headerlink" href="#equation-sellmeier" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optcom.equations.sellmeier.Sellmeier">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.sellmeier.</code><code class="sig-name descname">Sellmeier</code><span class="sig-paren">(</span><em class="sig-param">medium='sio2'</em>, <em class="sig-param">Bs=None</em>, <em class="sig-param">Cs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.sellmeier.Sellmeier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sellmeier equations.</p>
+<p>Represent the Sellmeier equations which are empirical relationship
+between refractive index and wavelength for a specific medium. <a class="footnote-reference brackets" href="#id6" id="id5">1</a></p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
+<dd><p>Malitson, I.H., 1965. Interspecimen comparison of the
+refractive index of fused silica. Josa, 55(10), pp.1205-1209.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) -- The medium in which the wave propagates.</p></li>
+<li><p><strong>Bs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- B coefficients.</p></li>
+<li><p><strong>Cs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) -- C coefficients.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="optcom.equations.sellmeier.Sellmeier.n">
+<code class="sig-name descname">n</code><span class="sig-paren">(</span><em class="sig-param">omega</em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.sellmeier.Sellmeier.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Sellmeier equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The refractive index.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[n^2(\lambda) = 1 + \sum_i B_i
+\frac{\lambda^2}{\lambda^2 - C_i}\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Optcom</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html">1. Component: Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-combiner">2. Component: Combiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-continuous-wave">3. Component: Continuous Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-ideal-fiber-coupler">4. Component: Ideal Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-amplifier">5. Component: Fiber Amplifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber-coupler">6. Component: Fiber Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-divider">7. Component: Divider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-fiber">8. Component: Fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-gaussian">9. Component: Gaussian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-modulator">10. Component: Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-mach-zehnder-modulator">11. Component: Mach-Zehnder Modulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-sech">12. Component: Sech</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components/index.html#component-soliton">13. Component: Soliton</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">14. Equation: Abstract coupled equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-abstract-equation">15. Equation: Abstract equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-abstract-refractive-index">16. Equation: Abstract refractive index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-abstract-non-linear-schrodinger-equation">17. Equation: Abstract non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-approximated-non-linear-schrodinger-equation">18. Equation: Approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-non-linear-schrodinger-equations">19. Equation: Non-linear Schrodinger equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-general-non-linear-schrodinger-equation">20. Equation: General non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-abstract-amplifier-non-linear-schrodinger-equation">21. Equation: Abstract amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-amplifier-approximated-non-linear-schrodinger-equation">22. Equation: Amplifier approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-amplifier-non-linear-schrodinger-equation">23. Equation: Amplifier non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-amplifier-general-non-linear-schrodinger-equation">24. Equation: Amplifier general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-abstract-coupled-non-linear-schrodinger-equation">25. Equation: Abstract coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-coupled-approximated-non-linear-schrodinger-equation">26. Equation: Coupled approximated non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-coupled-non-linear-schrodinger-equation">27. Equation: Coupled non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-coupled-general-non-linear-schrodinger-equation">28. Equation: Coupled general non-linear Schrodinger equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-fresnel">29. Equation: Fresnel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-mccumber">30. Equation: McCumber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-rate-equations-for-fibers">31. Equation: Rate Equations for fibers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-rate-equations-with-2-levels-for-fiber">32. Equation: Rate Equations with 2 levels for fiber</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-resonant-index-change">33. Equation: Resonant index change</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#equation-sellmeier">34. Equation: Sellmeier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html">35. Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../solvers/index.html#stepper">36. Stepper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html">37. Effect: Absorption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-abstract-class-for-effect-object">38. Effect: Abstract class for effect object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-asymmetry">39. Effect: Asymmetry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-attenuation">40. Effect: Attenuation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-conversion">41. Effect: Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-correlation">42. Effect: Correlation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-coupling">43. Effect: Coupling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-dispersion">44. Effect: Dispersion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-gain-saturation">45. Effect: Gain saturation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-kerr">46. Effect: Kerr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-pumping">47. Effect: Pumping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-raman-scattering">48. Effect: Raman Scattering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-relaxation">49. Effect: Relaxation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-self-steepening">50. Effect: Self-steepening</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../effects/index.html#effect-stimulated-emission">51. Effect: Stimulated emission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html">52. Layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#taylor">53. Taylor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#domain">54. Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others/index.html#abstract-component">55. Abstract Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html">56. Paramater: Effective area</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-non-linear-coefficient">57. Parameter: Non-linear coefficient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-overlap-factor">58. Parameter: Overlap factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameters/index.html#parameter-v-fiber-parameter">59. Parameter: V fiber parameter</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../components/index.html" title="previous chapter">1. Component: Amplifier</a></li>
+      <li>Next: <a href="../solvers/index.html" title="next chapter">35. Solver</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Sacha Medaer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/equations/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
