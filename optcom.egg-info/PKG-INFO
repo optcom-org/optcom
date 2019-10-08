@@ -1,19 +1,70 @@
 Metadata-Version: 2.1
 Name: optcom
-Version: 0.0.1
-Summary: Optical system simulation
-Home-page: UNKNOWN
+Version: 0.1.0
+Summary: Optical system simulation software
+Home-page: https://github.com/faumedaer/optcom
 Author: Sacha Medaer
-Author-email: sacha@medaer.com
-License: UNKNOWN
-Description: # Example Package
+Author-email: sacha.medaer@fau.de
+License: GNU
+Description: # Optcom
+        > Optical system simulation software.
         
-        This is a simple example package. You can use
-        #[Github-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
-        #to write your content.
+        Optcom is a library which aims to simulate optical systems with an emphasis on optical communnication systems. Optcom has been created with the following objectiv in mind:
+        * Be able to create a non sequential and non directional optical system by assembling individual components.
+        * Be able to choose the set of equations used for the simulation of a component as well as the solver type.
+        * Be able to deal with ultra-short pulses. (~ fs)
+        * Be able to create a new component for python beginners.
+        
+        ![](simple_fiber_example.png)
+        
+        ## Installation
+        Installation should be OS independent.
+        
+        If python3.7 is the default version (as well as for pip):
+        
+        ```sh
+        pip install optcom
+        ```
+        
+        else (make sure to have python3.7 or newer installed):
+        
+        ```sh
+        python3.7 -m pip install optcom
+        ```
+        
+        ## Usage example
+        
+        coming soon ...
+        
+        ## Development setup
+        
+        coming soon ...
+        
+        ## Release History
+        
+        * 0.1.0
+            * The first proper release
+        
+        ## Meta
+        
+        Sacha Medaer - sacha.medaer@fau.de
+        
+        Distributed under the GNU license. See ``LICENSE`` for more information.
+        
+        [https://github.com/faumedaer/optcom](https://github.com/faumedaer/)
+        
+        ## Contributing
+        
+        coming soon ...
+        
+        <!-- Markdown link & img dfn's -->
         
 Platform: UNKNOWN
+Classifier: Natural Language :: English
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
 Classifier: Programming Language :: Python :: 3
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Operating System :: POSIX :: Linux
+Requires-Python: >=3.7.0
 Description-Content-Type: text/markdown

@@ -1,9 +1,5 @@
 # Optcom
-> Optical system simulation software.
-
-[![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
+> Optical system simulation tool.
 
 Optcom is a library which aims to simulate optical systems with an emphasis on optical communnication systems. Optcom has been created with the following objectiv in mind:
 * Be able to create a non sequential and non directional optical system by assembling individual components.
@@ -47,7 +43,7 @@ Sacha Medaer - sacha.medaer@fau.de
 
 Distributed under the GNU license. See ``LICENSE`` for more information.
 
-[https://github.com/yourname/github-link](https://github.com/dbader/)
+[https://github.com/faumedaer/optcom](https://github.com/faumedaer/)
 
 ## Contributing
 
