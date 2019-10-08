@@ -1,7 +1,7 @@
 # Optcom
 > Optical system simulation tool.
 
-Optcom is a library which aims to simulate optical systems with an emphasis on optical communnication systems. Optcom has been created with the following objectiv in mind:
+Optcom is a library which aims to simulate optical systems with an emphasis on optical communnication systems. Optcom has been created with the following objectives in mind:
 * Be able to create a non sequential and non directional optical system by assembling individual components.
 * Be able to choose the set of equations used for the simulation of a component as well as the solver type.
 * Be able to deal with ultra-short pulses. (~ fs)
