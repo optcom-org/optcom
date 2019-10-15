@@ -143,7 +143,7 @@ if __name__ == "__main__":
     import optcom.utils.plot as plot
     import optcom.layout as layout
     import optcom.components.gaussian as gaussian
-    import optcom.components.modulator as modulator
+    import optcom.components.ideal_phase_mod as modulator
     import optcom.domain as domain
     from optcom.utils.utilities_user import temporal_power
 
