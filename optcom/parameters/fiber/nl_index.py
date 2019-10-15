@@ -177,4 +177,4 @@ if __name__ == "__main__":
 
     plot.plot(lambdas, res, x_labels=x_labels, y_labels=y_labels,
               plot_titles=plot_titles, opacity=0.0,
-              y_ranges=[2.5*1e-20, 3.5*1e-20])
+              y_ranges=[(2.5*1e-20, 3.2*1e-20)])

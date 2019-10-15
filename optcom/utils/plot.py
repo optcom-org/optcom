@@ -16,7 +16,7 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import math
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -157,8 +157,8 @@ def add_single_plot(plt_to_add, x_data, y_data,x_label, y_label, x_range,
 def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
          x_labels: Optional[List[str]] = None,
          y_labels: Optional[List[str]] = None,
-         x_ranges: Optional[List[float]] = None,
-         y_ranges: Optional[List[float]] = None,
+         x_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
+         y_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
          plot_linestyles: List[str] = ['-'],
          plot_labels: Optional[List[Optional[str]]] = None,
          plot_titles: Optional[List[str]] = None,
@@ -208,8 +208,8 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
     # Padding ----------------------------------------------------------
     x_labels = util.make_list(x_labels, nbr_graphs)
     y_labels = util.make_list(y_labels, nbr_graphs)
-    x_ranges = util.make_list(x_ranges, nbr_graphs)
-    y_ranges = util.make_list(y_ranges, nbr_graphs)
+    x_ranges = util.make_list(x_ranges, nbr_graphs, None)
+    y_ranges = util.make_list(y_ranges, nbr_graphs, None)
     plot_titles = util.make_list(plot_titles, nbr_graphs, '')
     # Nonexistent field  management (no field recorded in component) ---
     for i in range(len(y_datas)):

@@ -562,5 +562,5 @@ if __name__ == "__main__":
                        .format(str(steps))])
     # -------------------- Plotting results ----------------------------
     plot.plot(times, fields, plot_groups=plot_groups,
-         plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-         plot_labels=plot_labels, opacity=0.3)
+              plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+              plot_labels=plot_labels, opacity=0.3)
