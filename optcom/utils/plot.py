@@ -160,11 +160,11 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
          x_ranges: Optional[List[float]] = None,
          y_ranges: Optional[List[float]] = None,
          plot_linestyles: List[str] = ['-'],
-         plot_labels: List[Optional[Union[str,List[str]]]] = [None],
+         plot_labels: Optional[List[Optional[str]]] = None,
          plot_titles: Optional[List[str]] = None,
          plot_colors: Optional[List[str]] = None,
          plot_groups: Optional[List[int]] = None,
-         split: Optional[bool] = None, opacity: float = 0.2,
+         split: Optional[bool] = None, opacity: List[float] = [0.2],
          fig_title: Optional[str] = None, filename: str = ""):
 
     # N.B. if y_datas comes from field, np.ndarray is multidim
@@ -181,14 +181,10 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
             "than the number of x data, graph creation aborted.")
         return None
     #x_datas, y_datas = util.pad_list_with_last_elem(x_datas, y_datas, True)
-    x_labels = util.make_list(x_labels, len(x_datas))
-    y_labels = util.make_list(y_labels, len(y_datas))
-    x_ranges = util.make_list(x_ranges, len(x_datas))
-    y_ranges = util.make_list(y_ranges, len(y_datas))
     plot_labels = util.make_list(plot_labels, len(x_datas))
     plot_colors = util.make_list(plot_colors, len(x_datas))
     plot_linestyles = util.make_list(plot_linestyles, len(x_datas))
-    plot_titles = util.make_list(plot_titles, len(x_datas), '')
+    opacity = util.make_list(opacity, len(x_datas))
     if (plot_groups is not None):
         plot_groups= util.make_list(plot_groups, len(x_datas))
     # Preparing graph parameters
@@ -209,7 +205,13 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
             nbr_graphs = 1
             graphs = [[i for i in range(len(x_datas))]]
     plot_titles, graphs = util.pad_list_with_last_elem(plot_titles, graphs)
-    # Nonexistent field  management (no field recorded in component)
+    # Padding ----------------------------------------------------------
+    x_labels = util.make_list(x_labels, nbr_graphs)
+    y_labels = util.make_list(y_labels, nbr_graphs)
+    x_ranges = util.make_list(x_ranges, nbr_graphs)
+    y_ranges = util.make_list(y_ranges, nbr_graphs)
+    plot_titles = util.make_list(plot_titles, nbr_graphs, '')
+    # Nonexistent field  management (no field recorded in component) ---
     for i in range(len(y_datas)):
         if (y_datas[i] is None):
                 util.warning_terminal("Try to plot a nonexistent field!")
@@ -227,10 +229,10 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
         plt_to_add = plt.subplot(nbr_row, nbr_col, i+1)
         for plot in graph:
             add_single_plot(plt_to_add, x_datas[plot], y_datas[plot],
-                            x_labels[plot], y_labels[plot], x_ranges[plot],
-                            y_ranges[plot], plot_titles[i],
+                            x_labels[i], y_labels[i], x_ranges[i],
+                            y_ranges[i], plot_titles[i],
                             plot_labels[plot], plot_linestyles[plot],
-                            plot_colors[plot], opacity)
+                            plot_colors[plot], opacity[plot])
     # Finalizing -------------------------------------------------------
     if (fig_title is not None):
         plt.suptitle(fig_title, fontsize=16)

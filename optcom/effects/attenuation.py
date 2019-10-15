@@ -124,7 +124,6 @@ class Attenuation(AbstractEffect):
                     "alpha calculation depending on material.")
             else:
                 self._alpha = self._predict(center_omega, self._order).T
-                print('alpha', self._order, self._alpha)
         else:
             if (len(center_omega) < len(self._alpha)):
                 self._alpha = self._alpha[:len(center_omega)]

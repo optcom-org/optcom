@@ -253,5 +253,5 @@ if __name__ == "__main__":
     plot_titles = ["Original Pulse", "Pulse at the end of the fiber"]
     plot_titles.extend(plot_titles)
 
-    plot.plot(x_datas, y_datas, x_labels = x_labels, y_labels = y_labels,
+    plot.plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
               plot_titles=plot_titles, plot_groups=[0,1,2,3], opacity=0.3)

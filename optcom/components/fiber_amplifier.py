@@ -479,10 +479,10 @@ if __name__ == "__main__":
                temporal_power(pump.fields[0].channels),
                spectral_power(fiber.fields[1].channels),
                temporal_power(fiber.fields[1].channels)]
-    x_labels = ['nu', 'nu', 't', 't', 'nu', 't']
-    y_labels = ['P_nu', 'P_nu', 'P_t', 'P_t', 'P_nu', 'P_t']
+    x_labels = ['nu', 't', 'nu', 't']
+    y_labels = ['P_nu', 'P_t', 'P_nu', 'P_t']
 
-    plot.plot(x_datas, y_datas, x_labels = x_labels, y_labels = y_labels,
+    plot.plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
               plot_groups=[0,0,1,1,2,3], opacity=0.3)
 
 
@@ -506,7 +506,7 @@ if __name__ == "__main__":
     plot_label = (['Signal' for i in range(nbr_ch_s)]
                    + ['ASE forward', 'ASE backward']
                    + ['Pump' for i in range(nbr_ch_p)])
-    plot_labels: List[Optional[List[str]]] = [plot_label, None]
+    plot_labels: List[Optional[str]] = plot_label.append(None)
 
     plot_groups = [0, 1]
 

@@ -18,6 +18,7 @@
 import cmath
 
 from typing import Callable, List, Optional, Sequence, Tuple, Union
+import numpy as np
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
