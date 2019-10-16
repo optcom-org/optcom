@@ -474,6 +474,45 @@ class Dispersion(AbstractEffect):
         """
 
         return Dispersion.calc_dispersion(beta_2, Lambda) * length
+    # ==================================================================
+    @overload
+    @staticmethod
+    def calc_dispersion_length(width: float, beta_2: float) -> float: ...
+    # ------------------------------------------------------------------
+    @overload
+    @staticmethod
+    def calc_dispersion_length(width: Array[float], beta_2: Array[float]
+                               ) -> Array[float]: ...
+    # ------------------------------------------------------------------
+    @staticmethod
+    def calc_dispersion_length(width, beta_2):
+        r"""Calculate dispersion length.
+
+        Parameters
+        ----------
+        width :
+            The power. :math:`[ps]`
+        beta_2 :
+            The GVD term of the dispersion. :math:`[ps^2\cdot km^{-1}]`
+
+        Returns
+        -------
+        :
+            The dispersion length :math:`[km]`
+
+        Notes
+        -----
+
+        .. math::  L_{D} = \frac{T_0^2}{|\beta_2|}
+
+        """
+
+        if (isinstance(width, float)):
+
+            return width**2 / abs(beta_2)
+        else:
+
+            return np.square(width) / np.abs(beta_2)
 
 
 if __name__ == "__main__":

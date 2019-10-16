@@ -122,7 +122,7 @@ class NLCoefficient(AbstractParameter):
         ----------
         power :
             The power. :math:`[W]`
-        nl_index :
+        nl_coeff :
             The non linear coefficient.
             :math:`[rad\cdot W^{-1}\cdot km^{-1}]`
 
