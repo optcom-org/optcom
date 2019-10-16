@@ -437,11 +437,13 @@ class RE2Fiber(REFiber):
         NA = NumericalAperture.calc_NA(self.get_n_core(omega, step),
                                        self.get_n_clad(omega, step))
         res = np.zeros_like(omega)
+        self._eff_area_s.NA = NA
+        self._eff_area_p.NA = NA
         for i in range(len(omega)):
             if (util.is_float_in_list(omega[i], self._center_omega_s)):
-                res[i] = self._eff_area_s(omega[i], NA)
+                res[i] = self._eff_area_s(omega[i])
             else:
-                res[i] = self._eff_area_p(omega[i], NA)
+                res[i] = self._eff_area_p(omega[i])
         # Revert float type of omega -----------------------------------
         if (revert):
             res = res[0]
@@ -695,13 +697,15 @@ class RE2Fiber(REFiber):
         self._Gamma_s = np.zeros(self._shape_step_s)
         for i in range(len(self._center_omega_s)):
             NA = NumericalAperture.calc_NA(self._n_0_s[i], self._n_clad_s[i])
-            self._A_eff_s[i] = self._eff_area_s(self._omega_s[i], NA)
+            self._eff_area_s.NA = NA
+            self._A_eff_s[i] = self._eff_area_s(self._omega_s[i])
             self._Gamma_s[i] = self._overlap_s(self._A_eff_s[i])
         self._A_eff_p = np.zeros(self._shape_step_p)
         self._Gamma_p = np.zeros(self._shape_step_p)
         for i in range(len(self._center_omega_p)):
             NA = NumericalAperture.calc_NA(self._n_0_p[i], self._n_clad_p[i])
-            self._A_eff_p[i] = self._eff_area_s(self._omega_p[i], NA)
+            self._eff_area_p.NA = NA
+            self._A_eff_p[i] = self._eff_area_p(self._omega_p[i])
             self._Gamma_p[i] = self._overlap_p(self._A_eff_p[i])
         # Initiate cross sections for each frequency -------------------
         if (self._absorp is not None):
@@ -927,7 +931,8 @@ class RE2Fiber(REFiber):
             self._n_tot_s[i] = n_0 + delta_n_s
             NA = NumericalAperture.calc_NA(self._n_tot_s[i],
                                            self._n_clad_s[i])
-            self._A_eff_s[i] = self._eff_area_s(self._omega_s[i], NA)
+            self._eff_area_s.NA = NA
+            self._A_eff_s[i] = self._eff_area_s(self._omega_s[i])
             self._Gamma_s[i] = self._overlap_s(self._A_eff_s[i])
         # Pump ---------------------------------------------------------
         for i in range(len(self._center_omega_p)):
@@ -936,7 +941,8 @@ class RE2Fiber(REFiber):
             self._n_tot_p[i] = n_0 + delta_n_p
             NA = NumericalAperture.calc_NA(self._n_tot_p[i],
                                            self._n_clad_p[i])
-            self._A_eff_p[i] = self._eff_area_s(self._omega_p[i], NA)
+            self._eff_area_p.NA = NA
+            self._A_eff_p[i] = self._eff_area_p(self._omega_p[i])
             self._Gamma_p[i] = self._overlap_p(self._A_eff_p[i])
         # N.B.: A_eff in um^2 , must leave to calculate Gamma,
         # otherwise not enough precision (Gamma is adim. anyway)

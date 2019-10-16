@@ -48,6 +48,15 @@ class EffectiveArea(AbstractParameter):
         self._core_radius: float = core_radius
         self._NA: Union[float, Array[float], Callable] = NA
     # ==================================================================
+    @property
+    def NA(self):
+
+        return NA
+    # ------------------------------------------------------------------
+    @NA.setter
+    def NA(self, NA):
+        self._NA = NA
+    # ==================================================================
     @overload
     def __call__(self, omega: float) -> float: ...
     # ------------------------------------------------------------------

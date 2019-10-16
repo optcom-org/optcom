@@ -88,7 +88,7 @@ class GainSaturation(AbstractEffect):
     def center_omega(self) -> Optional[Array[float]]:
 
         return self._center_omega
-    # ==================================================================
+    # ------------------------------------------------------------------
     @center_omega.setter
     def center_omega(self, center_omega: Array[float]) -> None:
         # Overloading to update the betas(\omega)
@@ -99,7 +99,7 @@ class GainSaturation(AbstractEffect):
     def alpha(self) -> Optional[Array[float]]:
 
         return self._alpha
-    # ==================================================================
+    # ------------------------------------------------------------------
     @alpha.setter
     def alpha(self, alpha: Array[float]) -> None:
         self._alpha = alpha

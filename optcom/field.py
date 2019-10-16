@@ -284,7 +284,7 @@ class Field(object):
     def storage(self):
 
         return self._storage
-    # ==================================================================
+    # ------------------------------------------------------------------
     @storage.setter
     def storage(self, storage):
         self._storage = storage

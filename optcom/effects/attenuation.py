@@ -82,7 +82,7 @@ class Attenuation(AbstractEffect):
     def alpha(self) -> List[float]:
 
         return self._alpha
-    # ==================================================================
+    # ------------------------------------------------------------------
     @alpha.setter
     def alpha(self, alpha: List[float]) -> None:
         self._alpha = alpha
@@ -105,7 +105,7 @@ class Attenuation(AbstractEffect):
     def center_omega(self) -> Optional[Array[float]]:
 
         return self._center_omega
-    # ==================================================================
+    # ------------------------------------------------------------------
     @center_omega.setter
     def center_omega(self, center_omega: Array[float]) -> None:
         # Overloading to update the alphas(\omega)

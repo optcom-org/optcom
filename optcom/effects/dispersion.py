@@ -91,7 +91,7 @@ class Dispersion(AbstractEffect):
     def beta(self) -> List[float]:
 
         return self._beta
-    # ==================================================================
+    # ------------------------------------------------------------------
     @beta.setter
     def beta(self, beta: List[float]) -> None:
         self._beta = beta
@@ -114,7 +114,7 @@ class Dispersion(AbstractEffect):
     def center_omega(self) -> Optional[Array[float]]:
 
         return self._center_omega
-    # ==================================================================
+    # ------------------------------------------------------------------
     @center_omega.setter
     def center_omega(self, center_omega: Array[float]) -> None:
         # Overloading to upload the betas(\omega)

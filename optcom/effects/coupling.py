@@ -79,7 +79,7 @@ class Coupling(AbstractEffect):
     def kappa(self) -> List[float]:
 
         return self._kappa
-    # ==================================================================
+    # ------------------------------------------------------------------
     @kappa.setter
     def kappa(self, kappa: List[float]) -> None:
         self._kappa = kappa
@@ -102,7 +102,7 @@ class Coupling(AbstractEffect):
     def center_omega(self) -> Optional[Array[float]]:
 
         return self._center_omega
-    # ==================================================================
+    # ------------------------------------------------------------------
     @center_omega.setter
     def center_omega(self, center_omega: Array[float]) -> None:
         # Overloading to upload the betas(\omega)

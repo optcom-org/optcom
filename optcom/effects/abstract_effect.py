@@ -49,7 +49,7 @@ class AbstractEffect(object):
     def omega(self) -> Array[float]:
 
         return self._omega
-    # ==================================================================
+    # ------------------------------------------------------------------
     @omega.setter
     def omega(self, omega: Optional[Array[float]]) -> None:
         self._omega = omega
@@ -58,7 +58,7 @@ class AbstractEffect(object):
     def time(self) -> Array[float]:
 
         return self._time
-    # ==================================================================
+    # ------------------------------------------------------------------
     @time.setter
     def time(self, time: Optional[Array[float]]) -> None:
         self._time = time
@@ -67,7 +67,7 @@ class AbstractEffect(object):
     def center_omega(self) -> Optional[Array[float]]:
 
         return self._center_omega
-    # ==================================================================
+    # ------------------------------------------------------------------
     @center_omega.setter
     def center_omega(self, center_omega: Array[float]) -> None:
         self._center_omega = center_omega

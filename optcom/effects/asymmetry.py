@@ -85,7 +85,7 @@ class Asymmetry(AbstractEffect):
     def delta(self) -> float:
 
         return self._delta
-    # ==================================================================
+    # ------------------------------------------------------------------
     @delta.setter
     def delta(self, delta: float) -> None:
         self._delta = delta
