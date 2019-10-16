@@ -104,6 +104,41 @@ class NLCoefficient(AbstractParameter):
         c = cst.LIGHT_SPEED * 1e-12    # ps/nm -> ps/km
 
         return (nl_index*omega) / (eff_area*c)
+    # ==================================================================
+    @overload
+    @staticmethod
+    def calc_nl_length(power: float, nl_coeff: float) -> float: ...
+    # ------------------------------------------------------------------
+    @overload
+    @staticmethod
+    def calc_nl_length(power: Array[float], nl_coeff: Array[float]
+                       ) -> Array[float]: ...
+    # ------------------------------------------------------------------
+    @staticmethod
+    def calc_nl_length(power, nl_coeff):
+        r"""Calculate the non linear length.
+
+        Parameters
+        ----------
+        power :
+            The power. :math:`[W]`
+        nl_index :
+            The non linear coefficient.
+            :math:`[rad\cdot W^{-1}\cdot km^{-1}]`
+
+        Returns
+        -------
+        :
+            The non-linear length :math:`[km]`
+
+        Notes
+        -----
+
+        .. math::  L_{NL} = \frac{1}{\gamma P_0}
+
+        """
+
+        return 1 / (power * nl_coeff)
 
 
 if __name__ == "__main__":
