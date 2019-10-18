@@ -162,7 +162,7 @@ class Raman(AbstractEffect):
                 or self._approx_type == cst.approx_type_3):
             for i in range(len(waves)):
                 if (i != id):
-                    res += waves[i]*np.conj(waves[id])
+                    res += waves[i] * np.conj(waves[i])
             res = FFT.dt_to_fft(res, self._omega, 1)
 
         return -1j * self._T_R * self._eta * res

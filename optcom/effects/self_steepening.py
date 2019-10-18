@@ -135,7 +135,7 @@ class SelfSteepening(AbstractEffect):
         if (self._approx_type == cst.approx_type_1):
             for i in range(len(waves)):
                 if (i != id):
-                    res += waves[i]*np.conj(waves[i])*A
+                    res += waves[i] * np.conj(waves[i]) * A
             res = FFT.dt_to_fft(res, self._omega, 1)
             res[corr_wave==0] = 0
             res = np.divide(res, corr_wave, out=res, where=corr_wave!=0)
@@ -155,6 +155,6 @@ class SelfSteepening(AbstractEffect):
     def term_approx(self, waves: Array[cst.NPFT], id: int,
                     corr_wave: Optional[Array[cst.NPFT]] = None
                     ) -> Array[cst.NPFT]:
-        corr_wave = np.ones(waves[id].shape, dtype=cst.NPFT)
 
-        return self.op_approx(waves, id, corr_wave)
+        return self.op_approx(waves, id, np.ones(waves[id].shape,
+                                                 dtype=cst.NPFT))

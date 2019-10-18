@@ -86,7 +86,7 @@ class Kerr(AbstractEffect):
         res = np.zeros(waves[id].shape, dtype=cst.NPFT)
         for i in range(len(waves)):
             if (i != id):
-                res += waves[id] * np.conj(waves[id])
+                res += waves[i] * np.conj(waves[i])
 
         return 1j * self._sigma * res
     # ==================================================================
