@@ -138,7 +138,7 @@ class NLCoefficient(AbstractParameter):
 
         """
 
-        return 1 / (power * nl_coeff)
+        return 1.0 / (power * nl_coeff)
 
 
 if __name__ == "__main__":

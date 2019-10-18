@@ -35,6 +35,12 @@ from optcom.utils.utilities_user import temporal_power, spectral_power, phase,\
 
 mod_utils = ['CSVFit', 'temporal_power', 'spectral_power', 'phase']
 
+#from staticmethod
+from optcom.effects.dispersion import Dispersion
+calc_dispersion_length = Dispersion.calc_dispersion_length
+
+mod_static = ['calc_dispersion_length']
+
 
 #from plot
 from optcom.utils.plot import plot
@@ -43,4 +49,4 @@ mod_plot = ['plot']
 
 
 
-__all__ = mod_comps + mod_root + mod_utils + mod_plot
+__all__ = mod_comps + mod_root + mod_utils + mod_static + mod_plot
