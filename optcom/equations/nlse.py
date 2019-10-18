@@ -119,7 +119,7 @@ class NLSE(AbstractNLSE):
     def op_non_lin(self, waves: Array[cst.NPFT], id: int,
                    corr_wave: Optional[Array[cst.NPFT]] = None
                    ) -> Array[cst.NPFT]:
-        r"""Represent the non linear effects of the approximated NLSE.
+        r"""Represent the non linear effects of the NLSE.
 
         Parameters
         ----------
@@ -149,3 +149,13 @@ class NLSE(AbstractNLSE):
         raman = self._f_R * self._effects_non_lin[1].op(waves, id, corr_wave)
 
         return self._gamma[id] * (kerr + raman)
+    # ==================================================================
+    def term_non_lin(self, waves: Array[cst.NPFT], id: int,
+                   corr_wave: Optional[Array[cst.NPFT]] = None
+                   ) -> Array[cst.NPFT]:
+        r"""Represent the non linear effects of the NLSE.
+        """
+        if (corr_wave is None):
+            corr_wave = waves[id]
+
+        return self.op_non_lin(waves, id, corr_wave) * corr_wave

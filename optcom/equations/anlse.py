@@ -202,3 +202,11 @@ class ANLSE(AbstractNLSE):
         """
 
         return self._gamma[id] * super().op_non_lin(waves, id, corr_wave)
+    # ==================================================================
+    def term_non_lin(self, waves: Array[cst.NPFT], id: int,
+                   corr_wave: Optional[Array[cst.NPFT]] = None
+                   ) -> Array[cst.NPFT]:
+        r"""Represent the non linear effects of the approximated NLSE.
+        """
+
+        return self._gamma[id] * super().term_non_lin(waves, id, corr_wave)

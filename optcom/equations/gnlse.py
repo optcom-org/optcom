@@ -129,7 +129,7 @@ class GNLSE(NLSE):
     def op_non_lin(self, waves: Array[cst.NPFT], id: int,
                    corr_wave: Optional[Array[cst.NPFT]] = None
                    ) -> Array[cst.NPFT]:
-        r"""Represent the non linear effects of the approximated NLSE.
+        r"""Represent the non linear effects of the NLSE.
 
         Parameters
         ----------

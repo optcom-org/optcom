@@ -447,6 +447,7 @@ class Solver(object):
     def ssfm_upwind(f: AbstractEquation, waves: Array[cst.NPFT], h: float,
                     z: float) -> Array[cst.NPFT]:
         pass
+
     # ==================================================================
     @staticmethod
     def rk4ip(f: AbstractEquation, waves: Array[cst.NPFT], h: float, z: float
@@ -455,6 +456,7 @@ class Solver(object):
         if (len(waves) == 1):
             A = copy.deepcopy(waves[0])
             h_h = 0.5 * h
+            waves_temp = copy.deepcopy(waves)
             A_lin = f.exp_term_lin(waves, 0, h_h)
             waves[0] = f.term_non_lin(waves, 0)
             k_0 = h * f.exp_term_lin(waves, 0, h_h)
@@ -465,8 +467,8 @@ class Solver(object):
             waves[0] = A_lin + k_2
             waves[0] = f.exp_term_lin(waves, 0, h_h)
             k_3 = h * f.term_non_lin(waves, 0)
-            waves[0] = A_lin + k_0/6 + (k_1+k_2)/3
-            waves[0] = k_3/6 + f.exp_term_lin(waves, 0, h_h)
+            waves[0] = A_lin + k_0/6.0 + (k_1+k_2)/3.0
+            waves[0] = k_3/6.0 + f.exp_term_lin(waves, 0, h_h)
             return waves
 
         else:
@@ -528,7 +530,6 @@ if __name__ == "__main__":
     nlse_methods = ["ssfm", "ssfm_reduced", "ssfm_symmetric",
                     "ssfm_opti_reduced", "ssfm_super_sym",
                     "ssfm_opti_super_sym", "rk4ip", "rk4ip"]
-
     # ---------------- PDE solvers test --------------------------------
 
     # to do
@@ -545,10 +546,12 @@ if __name__ == "__main__":
         else:
             nl_approx = True
         # Propagation
+        # Put f_R = 0 to have same non-linear operator with nl_approx
         fiber = Fiber(length=2.0, method=method, alpha=[0.046],
                       beta=[0.0, 1.0, -19.83, 0.031], gamma=4.3,
-                      nl_approx=nl_approx, SPM=True, XPM=False, SS=False,
-                      RS=False, approx_type=1, steps=steps, save=True)
+                      nl_approx=nl_approx, SPM=True, f_R=0.0, XPM=False,
+                      SS=False, RS=False, approx_type=1, steps=steps,
+                      save=True)
         lt.link((pulse[0], fiber[0]))
         lt.run(pulse)
         lt.reset()
