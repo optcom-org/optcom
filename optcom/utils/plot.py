@@ -55,10 +55,12 @@ linestyles = ['solid', 'dotted', 'dashed', 'dashdot', (0, (1, 10)), (0, (1, 1)),
               (0, (3, 5, 1, 5, 1, 5)), (0, (3, 10, 1, 10, 1, 10)),
               (0, (3, 1, 1, 1, 1, 1))]
 
-
-linecolors = ['violet', 'orange', 'green', 'red', 'brown', 'pink', 'gray',
-              'olive', 'blue', 'gold', 'black', 'marroon', 'navy']
 '''
+# For color, see https://matplotlib.org/examples/color/named_colors.html
+linecolors = ['red', 'orange', 'greenyellow' ,'violet', 'silver', 'brown',
+              'pink', 'gray', 'black', 'marroon', 'blue', 'navy', 'gold',
+              'cyan', 'palegreen', 'deepskyblue', 'lime',]
+
 
 xy_labels = { "t" : "Time, $t \, (ps)$", \
               "nu" : r"Frequency, $\nu \, (THz)$", \
@@ -133,21 +135,16 @@ def add_single_plot(plt_to_add, x_data, y_data,x_label, y_label, x_range,
         else:
             plot_label_temp = plot_label
         if (not colors_on_plot):
-            if (labels_on_plot or multi_channel):
-                plt_to_add.plot(x_data, y_data[i], ls=plot_linestyle,
-                                label=plot_label_temp)
-            else:
-                plt_to_add.plot(x_data, y_data[i], ls=plot_linestyle)
-            plt_to_add.fill_between(x_data , y_data[i], alpha=opacity)
+            plot_color = linecolors[add_single_plot.counter]
+            add_single_plot.counter += 1
+        if (labels_on_plot or multi_channel):
+            plt_to_add.plot(x_data , y_data[i], ls=plot_linestyle,
+                            c=plot_color, label=plot_label_temp)
         else:
-            if (labels_on_plot or multi_channel):
-                plt_to_add.plot(x_data , y_data[i], ls=plot_linestyle,
-                                c=plot_color, label=plot_label_temp)
-            else:
-                plt_to_add.plot(x_data , y_data[i], ls=plot_linestyle,
-                                c=plot_color)
-            plt_to_add.fill_between(x_data , y_data[i], alpha=opacity,
-                                    facecolor=plot_color)
+            plt_to_add.plot(x_data , y_data[i], ls=plot_linestyle,
+                            c=plot_color)
+        plt_to_add.fill_between(x_data , y_data[i], alpha=opacity,
+                                facecolor=plot_color)
         add_subplot_para(plt_to_add, x_label, y_label, x_range, y_range,
                          plot_title)
         if (labels_on_plot or multi_channel):
@@ -219,7 +216,7 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
                 x_datas[i] = np.zeros(0)
     # Plot graph -------------------------------------------------------
     triangle = 1    # Make pyramid layout if nbr_graphs == 3
-    offset = 0  # Offset for index of plot in layout 
+    offset = 0  # Offset for index of plot in layout
     if (nbr_graphs < 3):
         nbr_row = nbr_graphs
     elif (nbr_graphs == 3):
@@ -231,6 +228,7 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
         nbr_row = 3
     nbr_col = math.ceil(nbr_graphs / nbr_row)
     for i, graph in enumerate(graphs) :
+        add_single_plot.counter = 0 # For own colors if not specified
         if (triangle | i):
             plt_to_add = plt.subplot(nbr_row, nbr_col, i+1+offset)
         else:

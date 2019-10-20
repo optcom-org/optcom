@@ -32,24 +32,27 @@ for i in range(len(beta)):
         y_datas.append(temporal_power(pulse.fields[0].channels))
         x_datas.append(pulse.fields[0].nu)
         y_datas.append(spectral_power(pulse.fields[0].channels))
+        x_datas.append(pulse.fields[0].time)
+        y_datas.append(phase(pulse.fields[0].channels))
     x_datas.append(fiber.fields[1].time)
     y_datas.append(temporal_power(fiber.fields[1].channels))
     x_datas.append(fiber.fields[1].nu)
     y_datas.append(spectral_power(fiber.fields[1].channels))
+    x_datas.append(fiber.fields[1].time)
+    y_datas.append(phase(fiber.fields[1].channels))
 
 
-x_labels = ['t', 'nu']
-y_labels = ['P_t', 'P_nu']
-plot_titles = ["Effect of dispersion and self-phase modulation on Gaussian "
-               "pulse - Temporal power", "Effect of dispersion and self-phase "
-               "modulation on Gaussian pulse - Spectral power"]
+x_labels = ['t', 'nu', 't']
+y_labels = ['P_t', 'P_nu', 'phi']
+plot_titles = ["Temporal power", "Spectral power", "Phase"]
+fig_title = "Effect of dispersion and self-phase modulation on Gaussian Pulse"
 
-plot_groups = [0,1,0,1,0,1]
-plot_labels = ['original pulse', 'original pulse']
-plot_labels.extend([r'w/ $\beta_2 > 0$', r'w/ $\beta_2 > 0$'])
-plot_labels.extend([r'w/ $\beta_2 < 0$', r'w/ $\beta_2 < 0$'])
+plot_groups = 3 * [0,1,2]
+plot_labels = 3 * ['original pulse']
+plot_labels.extend(3* [r'w/ $\beta_2 > 0$'])
+plot_labels.extend(3 *[r'w/ $\beta_2 < 0$'])
 
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
      plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, opacity=0.1)
+     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)

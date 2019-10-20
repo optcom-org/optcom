@@ -1,6 +1,6 @@
 from optcom import *
 
-domain = Domain(samples_per_bit=1024, bit_width=3.0)
+domain = Domain(samples_per_bit=2**(15), bit_width=3.0)
 
 lt = Layout(domain)
 pulse = Gaussian(channels=1, peak_power=[5.0], width=[0.2],
@@ -28,7 +28,7 @@ x_datas.append(fiber.fields[0].nu)
 y_datas.append(spectral_power(pulse.fields[0].channels))
 y_datas.append(spectral_power(fiber.fields[1].channels))
 x_datas.append(pulse.fields[0].time)
-x_datas.append(fiber.fields[0].time)
+x_datas.append(fiber.fields[1].time)
 y_datas.append(phase(pulse.fields[0].channels))
 y_datas.append(phase(fiber.fields[1].channels))
 

@@ -23,24 +23,27 @@ fiber = Fiber(length=10.0, method="ssfm_symmetric",
 
 lt.link((pulse[0], fiber_init[0]), (fiber_init[1], fiber[0]))
 lt.run(pulse)
-x_datas.append(fiber_init.fields[1].time)
-x_datas.append(fiber.fields[0].time)
-y_datas.append(temporal_power(fiber_init.fields[1].channels))
-y_datas.append(temporal_power(fiber.fields[1].channels))
 x_datas.append(fiber_init.fields[1].nu)
 x_datas.append(fiber.fields[0].nu)
 y_datas.append(spectral_power(fiber_init.fields[1].channels))
 y_datas.append(spectral_power(fiber.fields[1].channels))
+x_datas.append(fiber_init.fields[1].time)
+x_datas.append(fiber.fields[0].time)
+y_datas.append(temporal_power(fiber_init.fields[1].channels))
+y_datas.append(temporal_power(fiber.fields[1].channels))
+x_datas.append(fiber_init.fields[1].time)
+x_datas.append(fiber.fields[0].time)
+y_datas.append(phase(fiber_init.fields[1].channels))
+y_datas.append(phase(fiber.fields[1].channels))
 
-x_labels = ['t', 'nu']
-y_labels = ['P_t', 'P_nu']
-plot_titles = ["Effect of raman scattering on Gaussian pulse - Temporal power",
-               "Effect of raman scattering on Gaussian pulse - Spectral power"]
+x_labels = ['nu', 't', 't']
+y_labels = ['P_nu', 'P_t', 'phi']
+plot_titles = ["Spectral power", "Temporal power", "Phase"]
+fig_title = "Effect of raman scattering on Gaussian pulse"
 
-plot_groups = [0,0,1,1]
-plot_labels = ['original pulse', 'w/ raman scattering', 'original pulse',
-               'w/ raman scattering']
+plot_groups = [0,0,1,1,2,2]
+plot_labels = 3 * ['original pulse', 'w/ raman scattering']
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
      plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, opacity=0.1)
+     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)

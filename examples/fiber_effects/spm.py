@@ -25,29 +25,32 @@ for i in range(len(length)):
     lt.run(pulse)
     lt.reset()
     if (not i):
-        x_datas.append(pulse.fields[0].time)
-        y_datas.append(temporal_power(pulse.fields[0].channels))
         x_datas.append(pulse.fields[0].nu)
         y_datas.append(spectral_power(pulse.fields[0].channels))
-    x_datas.append(fiber.fields[0].time)
-    y_datas.append(temporal_power(fiber.fields[1].channels))
+        x_datas.append(pulse.fields[0].time)
+        y_datas.append(temporal_power(pulse.fields[0].channels))
+        x_datas.append(pulse.fields[0].time)
+        y_datas.append(phase(pulse.fields[0].channels))
     x_datas.append(fiber.fields[0].nu)
     y_datas.append(spectral_power(fiber.fields[1].channels))
+    x_datas.append(fiber.fields[0].time)
+    y_datas.append(temporal_power(fiber.fields[1].channels))
+    x_datas.append(fiber.fields[0].time)
+    y_datas.append(phase(fiber.fields[1].channels))
 
-x_labels = ['t', 'nu']
-y_labels = ['P_t', 'P_nu']
-plot_titles = ["Effect of self-phase modulation on Gaussian pulse - "
-               "Temporal power", "Effect of self-phase modulation on Gaussian "
-               "pulse - Spectral power"]
+x_labels = ['nu', 't', 't']
+y_labels = ['P_nu', 'P_t', 'phi']
+plot_titles = ["Spectral power", "Temporal power", "Phase"]
+fig_title = "Effect of self-phase modulation on Gaussian pulse"
 
-plot_groups = [0,1]
-plot_labels = ['original pulse', 'original pulse']
+plot_groups = [0,1,2]
+plot_labels = 3 * ['original pulse']
 for i in range(len(length)):
-    plot_groups.extend([0,1])
-    for j in range(2):
+    plot_groups.extend([0,1,2])
+    for j in range(3):
         plot_labels.append('w/ SPM - {} km'.format(length[i]))
 
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
      plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, opacity=0.1)
+     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)
