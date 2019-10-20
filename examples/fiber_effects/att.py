@@ -1,6 +1,6 @@
 from optcom import *
 
-domain = Domain(samples_per_bit=2**(15), bit_width=3.0)
+domain = Domain(samples_per_bit=512, bit_width=3.0)
 
 lt = Layout(domain)
 pulse = Gaussian(channels=1, peak_power=[5.0], width=[0.2],
@@ -34,9 +34,7 @@ y_datas.append(phase(fiber.fields[1].channels))
 
 x_labels = ['t', 'nu', 't']
 y_labels = ['P_t', 'P_nu', 'phi']
-plot_titles = ["Temporal power",
-               "Spectral power",
-               "Phase"]
+plot_titles = ["Temporal power", "Spectral power", "Phase"]
 fig_title = "Effect of attenuation on Gaussian pulse"
 
 plot_groups = [0,0,1,1,2,2]
@@ -45,4 +43,5 @@ plot_labels = 3 * ['original pulse', 'w/ attenuation']
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
      plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)
+     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
+     filename="./examples/fiber_effects/images/att_effect.png")

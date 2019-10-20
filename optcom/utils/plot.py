@@ -57,7 +57,7 @@ linestyles = ['solid', 'dotted', 'dashed', 'dashdot', (0, (1, 10)), (0, (1, 1)),
 
 '''
 # For color, see https://matplotlib.org/examples/color/named_colors.html
-linecolors = ['red', 'orange', 'greenyellow' ,'violet', 'silver', 'brown',
+linecolors = ['orange', 'red', 'greenyellow' ,'violet', 'silver', 'brown',
               'pink', 'gray', 'black', 'marroon', 'blue', 'navy', 'gold',
               'cyan', 'palegreen', 'deepskyblue', 'lime',]
 
@@ -162,7 +162,8 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
          plot_colors: Optional[List[str]] = None,
          plot_groups: Optional[List[int]] = None,
          split: Optional[bool] = None, opacity: List[float] = [0.2],
-         fig_title: Optional[str] = None, filename: str = ""):
+         fig_title: Optional[str] = None, filename: str = "",
+         resolution: Tuple[float, float] = (1920., 1080.)) -> None:
 
     # N.B. if y_datas comes from field, np.ndarray is multidim
     # initializing -----------------------------------------------------
@@ -245,7 +246,9 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
         plt.suptitle(fig_title, fontsize=16)
     plt.tight_layout()  # Avoiding overlapping texts (legend)
     if (filename != ""):
-        plt.savefig(filename)
+        fig = plt.gcf()
+        fig.set_size_inches(resolution[0]/fig.dpi, resolution[1]/fig.dpi)
+        fig.savefig(filename, bbox_inches='tight')
         util.print_terminal("Graph has been saved on filename '{}'"
                             .format(filename))
     else:
