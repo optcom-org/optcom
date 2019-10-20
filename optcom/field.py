@@ -374,15 +374,19 @@ class Field(object):
         return A * np.conj(A)
     # ==================================================================
     @staticmethod
-    def phase(A: Array) -> Array:
+    def phase(A: Array, unwrap: bool = True) -> Array:
 
         if (A is not None):
             if (A.ndim > 1):
                 phase = np.zeros(A.shape)
                 for i in range(A.shape[0]):
                     phase[i] = np.angle(A[i])
+                    if (unwrap):
+                        phase[i] = np.unwrap(phase[i])
             else:
                 phase = np.angle(A)
+                if (unwrap):
+                    phase = np.unwrap(phase[i])
 
             return phase
 
