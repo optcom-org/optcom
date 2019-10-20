@@ -15,7 +15,7 @@ y_datas = []
 for i in range(len(beta)):
     fiber = Fiber(length=5.0, method="ssfm_symmetric", beta=beta[i],
                   nl_approx=True, ATT=False, DISP=True, SPM=False, SS=False,
-                  RS=False, steps=steps, medium='sio2')
+                  RS=False, steps=steps, medium='sio2', save=True)
 
     lt.link((pulse[0], fiber[0]))
     lt.run(pulse)
@@ -29,9 +29,9 @@ for i in range(len(beta)):
         y_datas.append(phase(pulse.fields[0].channels))
     x_datas.append(fiber.fields[1].time)
     y_datas.append(temporal_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[1].nu)
+    x_datas.append(fiber.fields[0].nu)
     y_datas.append(spectral_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[1].time)
+    x_datas.append(fiber.fields[0].time)
     y_datas.append(phase(fiber.fields[1].channels))
 
 

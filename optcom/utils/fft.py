@@ -18,6 +18,7 @@
 from typing import Optional
 
 import numpy as np
+import pyfftw
 from nptyping import Array
 
 import optcom.utils.constants as cst
@@ -46,7 +47,7 @@ class FFT(object):
         if (count):
             FFT.inc_fft_counter()
 
-        return np.fft.ifft(A)
+        return pyfftw.interfaces.numpy_fft.ifft(A)
     # ==================================================================
     @staticmethod
     def ifft(A: NpArray, count: bool = True) -> NpArray:
@@ -54,7 +55,7 @@ class FFT(object):
         if (count):
             FFT.inc_fft_counter()
 
-        return np.fft.fft(A)
+        return pyfftw.interfaces.numpy_fft.fft(A)
     # ==================================================================
     @staticmethod
     def fftshift(A: NpArray) -> NpArray:
@@ -65,6 +66,27 @@ class FFT(object):
     def ifftshift(A: NpArray) -> NpArray:
 
         return np.fft.fftshift(A)
+    # ==================================================================
+    # fourier transform error management -------------------------------
+    @staticmethod
+    def fft_mult_ifft(A: NpArray, B: NpArray) -> NpArray:
+
+        if (np.sum(B) == B.size):
+
+            return A
+        else:
+
+            return FFT.fft(B * FFT.ifft(A))
+    # ==================================================================
+    @staticmethod
+    def ifft_mult_fft(A: NpArray, B: NpArray) -> NpArray:
+
+        if (np.sum(B) == B.size):
+
+            return A
+        else:
+
+            return FFT.ifft(B * FFT.fft(A))
     # ==================================================================
     # fourier transform properties -------------------------------------
     @staticmethod

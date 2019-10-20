@@ -168,10 +168,10 @@ class Solver(object):
         channels.
 
         """
-        old_waves = copy.deepcopy(waves)
         for i in range(len(waves)):
+            waves[i] = f.exp_term_non_lin(waves, i, h, waves[i])
             waves[i] = f.exp_term_lin(waves, i, h)
-            waves[i] = f.exp_term_non_lin(old_waves, i, h, waves[i])
+            #print(waves[i])
 
         return waves
     # ==================================================================

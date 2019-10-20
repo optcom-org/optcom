@@ -276,8 +276,8 @@ class AbstractEquation(object):
         if (corr_wave is None):
             corr_wave = waves[id]
 
-        return FFT.ifft(self.exp_op_lin(waves, id, h, corr_wave)
-                        * FFT.fft(corr_wave))
+        return FFT.ifft_mult_fft(corr_wave,
+                                 self.exp_op_lin(waves, id, h, corr_wave))
     # ==================================================================
     def exp_term_non_lin(self, waves: Array[cst.NPFT], id: int, h: float,
                          corr_wave: Optional[Array[cst.NPFT]] = None

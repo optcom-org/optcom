@@ -1,21 +1,19 @@
 from optcom import *
 
-domain = Domain(samples_per_bit=512, bit_width=3.0)
+domain = Domain(samples_per_bit=1024, bit_width=3.0)
 
 lt = Layout(domain)
 pulse = Gaussian(channels=1, peak_power=[5.0], width=[0.2],
-                 center_lambda=[1550.0])#, chirp=[5.0])
+                 center_lambda=[1550.0])
 
 alpha = 0.046
-steps = int(1e4)
-
+steps = int(1e3)
 x_datas = []
 y_datas = []
 
-fiber = Fiber(length=5.0, method="ssfm_symmetric", alpha=alpha,
-              nl_approx=True, ATT=True, DISP=False,
-              SPM=False, SS=False, RS=False, steps=steps, medium='sio2',
-              save=True)
+fiber = Fiber(length=5.0, method="ssfm", alpha=alpha,
+              nl_approx=True, ATT=True, DISP=False, SPM=False, SS=False,
+              RS=False, steps=steps, medium='sio2', save=True)
 
 lt.link((pulse[0], fiber[0]))
 lt.run(pulse)

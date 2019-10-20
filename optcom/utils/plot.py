@@ -245,9 +245,9 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
     if (fig_title is not None):
         plt.suptitle(fig_title, fontsize=16)
     plt.tight_layout()  # Avoiding overlapping texts (legend)
+    fig = plt.gcf()
+    fig.set_size_inches(resolution[0]/fig.dpi, resolution[1]/fig.dpi)
     if (filename != ""):
-        fig = plt.gcf()
-        fig.set_size_inches(resolution[0]/fig.dpi, resolution[1]/fig.dpi)
         fig.savefig(filename, bbox_inches='tight')
         util.print_terminal("Graph has been saved on filename '{}'"
                             .format(filename))

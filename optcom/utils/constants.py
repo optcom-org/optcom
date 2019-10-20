@@ -11,6 +11,7 @@ FIELD_TO_PORT = {OPTI:OPTI_PORTS, ELEC:ELEC_PORTS, ANY:ANY_PORTS}
 
 # field numpy type
 NPFT = np.clongdouble
+#NPFT = np.complex
 #NP_REAL_FIELD_TYPE = np.longdouble
 
 #

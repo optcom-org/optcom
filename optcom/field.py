@@ -374,7 +374,7 @@ class Field(object):
         return A * np.conj(A)
     # ==================================================================
     @staticmethod
-    def phase(A: Array, unwrap: bool = True) -> Array:
+    def phase(A: Array, unwrap: bool = False) -> Array:
 
         if (A is not None):
             if (A.ndim > 1):
