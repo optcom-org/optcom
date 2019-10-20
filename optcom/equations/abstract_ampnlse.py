@@ -168,6 +168,7 @@ class AbstractAmpNLSE(AbstractNLSE):
         self._iter = -1 # -1 bcs increment in the first init. cond.
         self._waves_s_ref = np.zeros((self._len_eq(0), domain.samples))
         self._waves_p_ref = np.zeros((self._len_eq(1), domain.samples))
+        self._call_counter = 0
     # ==================================================================
     def set(self, waves: Array[cst.NPFT], h: float, z: float) -> None:
         super().set(waves, h, z)

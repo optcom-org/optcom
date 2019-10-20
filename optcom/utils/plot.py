@@ -218,15 +218,24 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
                 y_datas[i] = np.zeros(0)
                 x_datas[i] = np.zeros(0)
     # Plot graph -------------------------------------------------------
-    if (nbr_graphs < 4):
+    triangle = 1    # Make pyramid layout if nbr_graphs == 3
+    offset = 0  # Offset for index of plot in layout 
+    if (nbr_graphs < 3):
         nbr_row = nbr_graphs
+    elif (nbr_graphs == 3):
+        nbr_row = 2
+        triangle = 0
     elif (nbr_graphs == 4):
         nbr_row = 2
     else:
         nbr_row = 3
     nbr_col = math.ceil(nbr_graphs / nbr_row)
     for i, graph in enumerate(graphs) :
-        plt_to_add = plt.subplot(nbr_row, nbr_col, i+1)
+        if (triangle | i):
+            plt_to_add = plt.subplot(nbr_row, nbr_col, i+1+offset)
+        else:
+            plt_to_add = plt.subplot(nbr_row, nbr_col-1, i+1+offset)
+            offset += 1
         for plot in graph:
             add_single_plot(plt_to_add, x_datas[plot], y_datas[plot],
                             x_labels[i], y_labels[i], x_ranges[i],

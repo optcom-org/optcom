@@ -119,6 +119,7 @@ class AbstractNLSE(AbstractEquation):
             else:
                 for i in range(len(self._gamma), len(self._center_omega)):
                     self._gamma = np.hstack((self._gamma, self._gamma[-1]))
+        print('gamma: ', self._gamma)
     # ==================================================================
     def set(self, waves: Array[cst.NPFT], h: float, x: float) -> None:
         """This function is called before each step of the computation.

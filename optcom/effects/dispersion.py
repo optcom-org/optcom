@@ -120,6 +120,7 @@ class Dispersion(AbstractEffect):
         # Overloading to upload the betas(\omega)
         self.update(center_omega)
         self._center_omega = center_omega
+        print(self._beta)
     # ==================================================================
     def update(self, center_omega: Optional[Array[float]] = None,
                class_n: Optional[Callable] = None) -> None:
