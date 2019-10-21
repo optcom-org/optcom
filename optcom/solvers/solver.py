@@ -171,7 +171,6 @@ class Solver(object):
         for i in range(len(waves)):
             waves[i] = f.exp_term_non_lin(waves, i, h, waves[i])
             waves[i] = f.exp_term_lin(waves, i, h)
-            #print(waves[i])
 
         return waves
     # ==================================================================
@@ -215,11 +214,11 @@ class Solver(object):
 
         """
         h_h = 0.5 * h
-        old_waves = copy.deepcopy(waves)
+        A_L = np.zeros(waves.shape, dtype=cst.NPFT)
         for i in range(len(waves)):
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            A_L[i] = f.exp_term_lin(waves, i, h_h)
         for i in range(len(waves)):
-            waves[i] = f.exp_term_non_lin(old_waves, i, h, waves[i])
+            waves[i] = f.exp_term_non_lin(waves, i, h, A_L[i])
             waves[i] = f.exp_term_lin(waves, i, h_h)
 
         return waves

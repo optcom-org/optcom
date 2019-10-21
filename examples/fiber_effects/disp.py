@@ -1,13 +1,13 @@
 from optcom import *
 
-domain = Domain(samples_per_bit=1024, bit_width=30.0)
+domain = Domain(samples_per_bit=2048, bit_width=14.0)
 
 lt = Layout(domain)
-pulse = Gaussian(channels=1, peak_power=[10.0], width=[1.0],
+pulse = Gaussian(channels=1, peak_power=[5.0], width=[1.0],
                  center_lambda=[1550.0])
 
-beta  = [[.0, 1.0, .0, .0], [.0, .0, 1.0, .0], [.0, .0, .0, 1.0]]
-steps = int(1e3)
+beta  = [[.0, 0.5, .0, .0], [.0, .0, 0.5, .0], [.0, .0, .0, 0.75]]
+steps = int(1e5)
 
 x_datas = []
 y_datas = []
@@ -32,7 +32,7 @@ for i in range(len(beta)):
     x_datas.append(fiber.fields[0].nu)
     y_datas.append(spectral_power(fiber.fields[1].channels))
     x_datas.append(fiber.fields[0].time)
-    y_datas.append(phase(fiber.fields[1].channels))
+    y_datas.append(phase(fiber.fields[1].channels, False))
 
 
 x_labels = ['t', 'nu', 't']
@@ -46,7 +46,9 @@ for i in range(len(beta)):
     plot_groups.extend([0,1,2])
     for j in range(3):
         plot_labels.append(r'w/ $\beta_{}$'.format(i+1))
+x_ranges = [None, (191.5, 195.5), None]
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-     plot_titles=plot_titles, plot_groups=plot_groups,
+     x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
      plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)
+#     filename="./examples/fiber_effects/images/disp_effect.png")

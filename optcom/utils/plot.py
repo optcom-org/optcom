@@ -57,7 +57,7 @@ linestyles = ['solid', 'dotted', 'dashed', 'dashdot', (0, (1, 10)), (0, (1, 1)),
 
 '''
 # For color, see https://matplotlib.org/examples/color/named_colors.html
-linecolors = ['orange', 'red', 'greenyellow' ,'violet', 'silver', 'brown',
+linecolors = ['violet', 'orange', 'red', 'greenyellow', 'silver', 'brown',
               'pink', 'gray', 'black', 'marroon', 'blue', 'navy', 'gold',
               'cyan', 'palegreen', 'deepskyblue', 'lime',]
 
@@ -166,7 +166,7 @@ def plot(x_datas: List[Array[float]], y_datas: List[Array[float]],
          resolution: Tuple[float, float] = (1920., 1080.)) -> None:
 
     # N.B. if y_datas comes from field, np.ndarray is multidim
-    # initializing -----------------------------------------------------
+    # Initializing -----------------------------------------------------
     plt.clf()
     # Managing x and y labels ------------------------------------------
     x_labels = check_xy_labels(x_labels, xy_labels)

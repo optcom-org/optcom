@@ -39,14 +39,14 @@ class Taylor(object):
 
         Parameters
         ----------
-        derivative : numpy.ndarray of float
+        derivative :
             The derivatives of the function to approximate.
-        x_diff : numpy.ndarray of float
+        x_diff :
             The values of the variables.
 
         Returns
         -------
-        float
+        :
             Taylor series evaluation.
 
         Notes

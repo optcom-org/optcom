@@ -9,11 +9,11 @@ pulse = Gaussian(channels=1, peak_power=[power], width=[width],
                  center_lambda=[1550.0])
 beta_2 = 20.0
 beta = [[.0, .0, beta_2], [.0, .0, -beta_2]]
-steps = int(1e3)
+steps = int(1e4)
 
 #N^2 = L_D / L_{NL} where L_{NL} = 1 / (\gamma * power)
 L_D = calc_dispersion_length(width, beta_2)
-N_2 = 3.0
+N_2 = 0.03
 gamma = N_2 / (L_D * power)
 
 x_datas = []
@@ -51,8 +51,10 @@ plot_groups = 3 * [0,1,2]
 plot_labels = 3 * ['original pulse']
 plot_labels.extend(3* [r'w/ $\beta_2 > 0$'])
 plot_labels.extend(3 *[r'w/ $\beta_2 < 0$'])
+x_ranges = [None, (191.5, 195.5), None]
 
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-     plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)
+     x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
+     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
+     filename="./examples/fiber_effects/images/disp_spm_effect_n2_0_03.png")

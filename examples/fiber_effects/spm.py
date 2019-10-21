@@ -16,9 +16,9 @@ length = [0.5, 2.5, 5.0]
 
 for i in range(len(length)):
 
-    fiber = Fiber(length=length[i], method="ssfm_symmetric",
-                  gamma=gamma, nl_approx=True, ATT=False, DISP=False,
-                  SPM=True, SS=False, RS=False, steps=steps, medium='sio2',
+    fiber = Fiber(length=length[i], method="ssfm_symmetric", gamma=gamma,
+                  nl_approx=True, ATT=False, DISP=False, SPM=True, SS=False,
+                  RS=False, steps=steps, medium='sio2',
                   save=True)
 
     lt.link((pulse[0], fiber[0]))
@@ -49,8 +49,9 @@ for i in range(len(length)):
     plot_groups.extend([0,1,2])
     for j in range(3):
         plot_labels.append('w/ SPM - {} km'.format(length[i]))
-
+x_ranges = [None, (6.5, 8.5), (6.5, 8.5)]
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-     plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)
+     x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
+     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
+     filename="./examples/fiber_effects/images/spm_effect.png")

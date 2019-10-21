@@ -1,6 +1,6 @@
 from optcom import *
 
-domain = Domain(samples_per_bit=1024, bit_width=3.0)
+domain = Domain(samples_per_bit=1024, bit_width=2.0)
 
 lt = Layout(domain)
 pulse = Gaussian(channels=1, peak_power=[5.0], width=[0.2],
@@ -12,9 +12,9 @@ steps = int(1e4)
 x_datas = []
 y_datas = []
 
-fiber = Fiber(length=5.0, method="ssfm_symmetric",
-              gamma=gamma, nl_approx=True, ATT=False, DISP=False,
-              SPM=False, SS=True, RS=False, steps=steps, medium='sio2',
+fiber = Fiber(length=5.0, method="ssfm_symmetric", gamma=gamma,
+              nl_approx=True, ATT=False, DISP=False, SPM=False, SS=True,
+              RS=False, steps=steps, medium='sio2',
               save=True)
 
 lt.link((pulse[0], fiber[0]))
@@ -39,8 +39,10 @@ fig_title = "Effect of self-steepening on Gaussian pulse"
 
 plot_groups = [0,0,1,1,2,2]
 plot_labels = 3 * ['original pulse', 'w/ self-steepening']
+x_ranges = [None, (182., 205.), None]
 
 
 plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-     plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)
+     x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
+     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
+     filename="./examples/fiber_effects/images/ss_effect.png")
