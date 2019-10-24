@@ -200,9 +200,11 @@ class Stepper(object):
         elapsed_time = time.time() - start
         self._print_computation_state(elapsed_time)
         # Decoding -----------------------------------------------------
+        ind = 0
         for i, field in enumerate(output_fields):
             for j in range(len(field)):
-                field[j] = waves[i*len(output_fields) + j]
+                field[j] = waves[ind]
+                ind += 1
 
         return output_fields
     # ==================================================================
