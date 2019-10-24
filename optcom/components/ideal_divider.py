@@ -148,13 +148,13 @@ if __name__ == "__main__":
     plot_labels: List[Optional[str]] = [None]
     plot_labels.extend(["port {}".format(str(i)) for i in range(arms)])
 
-    fields = [temporal_power(pulse.fields[0].channels)]
-    times = [pulse.fields[0].time]
+    y_datas = [temporal_power(pulse[0][0].channels)]
+    x_datas = [pulse[0][0].time]
     for i in range(1, arms+1):
-        fields.append(temporal_power(divider.fields[i].channels))
-        times.append(divider.fields[i].time)
+        y_datas.append(temporal_power(divider[i][0].channels))
+        x_datas.append(divider[i][0].time)
 
 
-    plot.plot(times, fields, plot_groups=plot_groups, plot_titles=plot_titles,
-              x_labels=['t'], y_labels=['P_t'], plot_labels=plot_labels,
-              opacity=0.3)
+    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+                plot_labels=plot_labels, opacity=0.3)

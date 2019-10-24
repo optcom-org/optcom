@@ -181,5 +181,5 @@ if __name__ == "__main__":
     y_labels = ['gamma']
     plot_titles = ["Non linear coefficient of Silica"]
 
-    plot.plot(lambdas, res, x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, opacity=0.0)
+    plot.plot2d(lambdas, res, x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, opacity=0.0)

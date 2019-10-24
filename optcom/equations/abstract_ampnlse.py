@@ -102,7 +102,6 @@ class AbstractAmpNLSE(AbstractNLSE):
         self._re: REFiber = re
         self._R_L: float = R_L
         self._R_0: float = R_0
-        self._delay_time: Array[float]
         self._coprop: bool
         # Effects ------------------------------------------------------
         self._att_ind: int = -1
@@ -163,7 +162,7 @@ class AbstractAmpNLSE(AbstractNLSE):
     def open(self, domain: Domain, *fields: List[Field]) -> None:
         # Bypass open in parent to avoid gamma calculation (in set here)
         AbstractEquation.open(self, domain, *fields)
-        self._delay_time = np.zeros(self._center_omega.shape)
+        self._delays = np.zeros((len(self._center_omega), 1))
         # Initiate counter ---------------------------------------------
         self._iter = -1 # -1 bcs increment in the first init. cond.
         self._waves_s_ref = np.zeros((self._len_eq(0), domain.samples))

@@ -28,6 +28,7 @@ from optcom.domain import Domain
 from optcom.equations.abstract_equation import AbstractEquation
 from optcom.field import Field
 from optcom.solvers.solver import Solver
+from optcom.storage import Storage
 
 
 STEP_METHOD_TYPE = Callable[[Array[cst.NPFT], List[Solver], int, bool],
@@ -46,6 +47,18 @@ SHOOTING  = "shooting"
 
 
 class Stepper(object):
+    """Compute equations resolution by managing step size and calling
+    Solver.
+
+    Attributes
+    ----------
+    save_all : int
+        If True, will save all channels of all fields at each space
+        step during the equation resolution. The number of step
+        recorded depends on the :attr:`memory_storage` attribute
+        of :class:`layout.Layout`.
+
+    """
 
     def __init__(self, eqs: List[AbstractEquation],
                  method: List[str] = [cst.DEFAULT_SOLVER],
@@ -82,8 +95,7 @@ class Stepper(object):
             If True, will save all channels of all fields at each space
             step during the equation resolution. The number of step
             recorded depends on the :attr:`memory_storage` attribute
-            of :class:`layout.Layout`. The recorded channels can be
-            accessed with the attribute :attr:`storage`.
+            of :class:`layout.Layout`.
 
         """
         self._eqs: List[AbstractEquation] = util.make_list(eqs)
@@ -113,13 +125,19 @@ class Stepper(object):
             solver_sequence = solver_sequence
         self._solver_seq_ids: List[List[int]] =\
             self._get_seq_ids(solver_sequence)
-        self._error = error
-        self._save_all = save_all
+        self._error: float = error
+        self.save_all: bool = save_all
+        self._storage: Storage = Storage()
     # ==================================================================
     @property
-    def equations(self):
+    def equations(self) -> List[AbstractEquation]:
 
         return self._eqs
+    # ==================================================================
+    @property
+    def storage(self) -> Storage:
+
+        return self._storage
     # ==================================================================
     def __call__(self, domain: Domain, *fields: List[Field]) -> List[Field]:
         """
@@ -146,10 +164,11 @@ class Stepper(object):
         for i in range(1, len(output_fields)):
             waves = np.vstack((waves, output_fields[i][:]))
         # Memory and saving management ---------------------------------
-        if (self._save_all):
+        if (self.save_all):
             memory = domain.memory * 1e9  # Gb -> b
             self._max_nbr_steps = int(memory / (waves.itemsize*waves.size))
-            self._storage = np.array([], dtype=cst.NPFT)
+            self._channels = np.array([], dtype=cst.NPFT)
+            self._storage = Storage()
         # Computing ----------------------------------------------------
         start = time.time()
         # N.B.: Make sure to not call open or close several times on the
@@ -162,19 +181,28 @@ class Stepper(object):
             waves = self._stepper_method[ids[0]](waves, solvers, eqs,
                                                  self._steps[ids[0]],
                                                  self._step_method[ids[0]])
+        # Saving computation parameters and waves ----------------------
+        # To compute before closing bcs take parameters from fields
+        if (self.save_all):
+            time_ = np.ones((self._channels.shape)) * domain.time
+            for i, field in enumerate(output_fields):
+                for j in range(len(field)):
+                    time_[i*len(output_fields) + j] += field.delays[j]
+            delays = self._eqs[-1].delays
+            if (delays.size):
+                for i in range(len(delays)):
+                    time_[i] += delays[i].reshape((-1,1))
+            self._storage.append(self._channels, self._space, time_)
+        # Closing ------------------------------------------------------
         for eq in util.unique(self._eqs):
             eq.close(domain, *fields)
         # Print time and solver info -----------------------------------
         elapsed_time = time.time() - start
         self._print_computation_state(elapsed_time)
         # Decoding -----------------------------------------------------
-        ind = 0
         for i, field in enumerate(output_fields):
-            if (self._save_all):
-                field.storage = self._storage[:,ind:ind+len(field),:]
             for j in range(len(field)):
-                field[j] = waves[ind]
-                ind += 1
+                field[j] = waves[i*len(output_fields) + j]
 
         return output_fields
     # ==================================================================
@@ -231,7 +259,7 @@ class Stepper(object):
                     start: Optional[int] = None) -> Array[cst.NPFT]:
         # Saving management --------------------------------------------
         enough_space: bool
-        if (self._save_all):
+        if (self.save_all):
             if (self._max_nbr_steps):
                 enough_space = True
                 # N.B. -1 when modulo is zero
@@ -242,19 +270,25 @@ class Stepper(object):
                 enough_space = False
                 nbr_steps = 2
                 util.warning_terminal("Not enough space for storage.")
-            size_storage = (nbr_steps,) + waves.shape
-            self._storage = np.zeros(size_storage, dtype=cst.NPFT)
+            size_storage = (waves.shape[0], nbr_steps, waves.shape[1])
+            self._channels = np.zeros(size_storage, dtype=cst.NPFT)
+            self._space = np.zeros(0)
         # Computation --------------------------------------------------
         zs, h = np.linspace(0.0, self._length, steps+1, True, True)
         zs = zs[:-1]
 
-        if (start is not None and self._save_all and enough_space):
+        # Need to make it storage dependent here
+        if (start is not None and self.save_all and enough_space):
             if (start > 0):
                 for i in range(start):
-                    self._storage[i] = waves
+                    for j in range(len(waves)):
+                        self._channels[j][i] = waves[j]
+                    self._space = np.append(self._space, zs[i])
             if (start < -1):
                 for i in range(1, abs(start)):
-                    self._storage[-i] = waves
+                    for j in range(len(waves)):
+                        self._channels[j][-i] = waves[j]
+                    self._space = np.append(self._space, zs[-i])
 
         if (forward):
             iter_method = 1
@@ -268,8 +302,10 @@ class Stepper(object):
         for i in range(start, stop, iter_method):
             for id in range(len(solvers)):
                 waves = solvers[id](waves, h, zs[i])
-            if (self._save_all and enough_space and not i%save_step):
-                self._storage[int(i/save_step)] = waves
+            if (self.save_all and enough_space and not i%save_step):
+                for j in range(len(waves)):
+                    self._channels[j][int(i/save_step)] = waves[j]
+                self._space = np.append(self._space, zs[i])
 
         return waves
     # ==================================================================

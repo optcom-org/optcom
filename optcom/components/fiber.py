@@ -210,6 +210,8 @@ class Fiber(AbstractPassComp):
         output_ports: List[int] = []
         output_fields: List[Field] = []
         output_fields = self._stepper(domain, fields)
+        if (self._stepper.save_all):
+            self.storages.append(self._stepper.storage)
         output_ports = self.output_ports(ports)
 
         return output_ports, output_fields
@@ -240,18 +242,18 @@ if __name__ == "__main__":
     lt.link((pulse[0], fiber[0]))
     lt.run(pulse)
 
-    x_datas = [pulse.fields[0].nu, fiber.fields[1].nu,
-               pulse.fields[0].time, fiber.fields[1].time]
+    x_datas = [pulse[0][0].nu, fiber[1][0].nu,
+               pulse[0][0].time, fiber[1][0].time]
 
-    y_datas = [spectral_power(pulse.fields[0].channels),
-               spectral_power(fiber.fields[1].channels),
-               temporal_power(pulse.fields[0].channels),
-               temporal_power(fiber.fields[1].channels)]
+    y_datas = [spectral_power(pulse[0][0].channels),
+               spectral_power(fiber[1][0].channels),
+               temporal_power(pulse[0][0].channels),
+               temporal_power(fiber[1][0].channels)]
 
     x_labels = ['nu', 'nu', 't', 't']
     y_labels = ['P_nu', 'P_nu', 'P_t', 'P_t']
     plot_titles = ["Original Pulse", "Pulse at the end of the fiber"]
     plot_titles.extend(plot_titles)
 
-    plot.plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, plot_groups=[0,1,2,3], opacity=0.3)
+    plot.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, plot_groups=[0,1,2,3], opacity=0.3)

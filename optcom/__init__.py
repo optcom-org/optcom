@@ -1,5 +1,5 @@
 __name__ = "optcom"
-__version__ = "1.0.0"
+__version__ = "0.1.0"
 # need Docstring doc
 
 # from components
@@ -43,9 +43,9 @@ mod_static = ['calc_dispersion_length']
 
 
 #from plot
-from optcom.utils.plot import plot
+from optcom.utils.plot import plot2d, plot3d
 
-mod_plot = ['plot']
+mod_plot = ['plot2d', 'plot3d']
 
 
 

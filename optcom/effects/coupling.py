@@ -260,5 +260,6 @@ if __name__ == "__main__":
     plot_titles = ['Coupling coefficient as a function of the wavelength '
                    'for norm. spacing = {}'.format(norm_d)]
 
-    plot.plot(Lambda, kappas, x_labels=['Lambda'], y_labels=['Kappa km^{-1}'],
-              plot_titles=plot_titles, split=True, opacity=0.0)
+    plot.plot2d(Lambda, kappas, x_labels=['Lambda'],
+                y_labels=['Kappa km^{-1}'], plot_titles=plot_titles,
+                split=True, opacity=0.0)

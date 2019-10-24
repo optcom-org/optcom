@@ -21,18 +21,18 @@ for i in range(len(beta)):
     lt.run(pulse)
     lt.reset()
     if (not i):
-        x_datas.append(pulse.fields[0].time)
-        y_datas.append(temporal_power(pulse.fields[0].channels))
-        x_datas.append(pulse.fields[0].nu)
-        y_datas.append(spectral_power(pulse.fields[0].channels))
-        x_datas.append(pulse.fields[0].time)
-        y_datas.append(phase(pulse.fields[0].channels))
-    x_datas.append(fiber.fields[1].time)
-    y_datas.append(temporal_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[0].nu)
-    y_datas.append(spectral_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[0].time)
-    y_datas.append(phase(fiber.fields[1].channels, False))
+        x_datas.append(pulse[0][0].time)
+        y_datas.append(temporal_power(pulse[0][0].channels))
+        x_datas.append(pulse[0][0].nu)
+        y_datas.append(spectral_power(pulse[0][0].channels))
+        x_datas.append(pulse[0][0].time)
+        y_datas.append(phase(pulse[0][0].channels))
+    x_datas.append(fiber[1][0].time)
+    y_datas.append(temporal_power(fiber[1][0].channels))
+    x_datas.append(fiber[0][0].nu)
+    y_datas.append(spectral_power(fiber[1][0].channels))
+    x_datas.append(fiber[0][0].time)
+    y_datas.append(phase(fiber[1][0].channels, False))
 
 
 x_labels = ['t', 'nu', 't']
@@ -48,7 +48,8 @@ for i in range(len(beta)):
         plot_labels.append(r'w/ $\beta_{}$'.format(i+1))
 x_ranges = [None, (191.5, 195.5), None]
 
-plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-     x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1)
-#     filename="./examples/fiber_effects/images/disp_effect.png")
+plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
+       x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
+       plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
+       triangle_layout=True,
+       filename="./examples/fiber_effects/images/disp_effect.png")

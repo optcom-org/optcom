@@ -521,8 +521,8 @@ if __name__ == "__main__":
     plot_groups = []
     plot_labels = []
     plot_titles = []
-    times = []
-    fields = []
+    x_datas = []
+    y_datas = []
 
     pde_methods = ["euler", "rk4"]
 
@@ -555,14 +555,14 @@ if __name__ == "__main__":
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves
-        times.append(fiber.fields[1].time)
-        fields.append(temporal_power(fiber.fields[1].channels))
+        x_datas.append(fiber[1][0].time)
+        y_datas.append(temporal_power(fiber[1][0].channels))
         plot_groups.append(0)
 
     plot_labels.extend(nlse_methods)
     plot_titles.extend(["NLSE pde solvers test with n={}"
                        .format(str(steps))])
     # -------------------- Plotting results ----------------------------
-    plot.plot(times, fields, plot_groups=plot_groups,
-              plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-              plot_labels=plot_labels, opacity=0.3)
+    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+                plot_labels=plot_labels, opacity=0.3)

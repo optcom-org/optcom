@@ -175,6 +175,6 @@ if __name__ == "__main__":
     y_labels = ['n_2']
     plot_titles = ["Non linear index of Silica from fitting formula"]
 
-    plot.plot(lambdas, res, x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, opacity=0.0,
-              y_ranges=[(2.5*1e-20, 3.2*1e-20)])
+    plot.plot2d(lambdas, res, x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, opacity=0.0,
+                y_ranges=[(2.5*1e-20, 3.2*1e-20)])

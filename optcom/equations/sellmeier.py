@@ -133,5 +133,5 @@ if __name__ == "__main__":
     y_labels = ['Refractive index']
     plot_titles = ["Refractive index of Silica from Sellmeier equations"]
 
-    plot.plot(Lambda, n, x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, opacity=0.0)
+    plot.plot2d(Lambda, n, x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, opacity=0.0)

@@ -1,6 +1,6 @@
 from optcom import *
 
-domain = Domain(samples_per_bit=1024, bit_width=40.0)
+domain = Domain(samples_per_bit=1024, bit_width=20.0)
 
 lt = Layout(domain)
 power = 5.0
@@ -28,18 +28,18 @@ for i in range(len(beta)):
     lt.run(pulse)
     lt.reset()
     if (not i):
-        x_datas.append(pulse.fields[0].time)
-        y_datas.append(temporal_power(pulse.fields[0].channels))
-        x_datas.append(pulse.fields[0].nu)
-        y_datas.append(spectral_power(pulse.fields[0].channels))
-        x_datas.append(pulse.fields[0].time)
-        y_datas.append(phase(pulse.fields[0].channels))
-    x_datas.append(fiber.fields[1].time)
-    y_datas.append(temporal_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[1].nu)
-    y_datas.append(spectral_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[1].time)
-    y_datas.append(phase(fiber.fields[1].channels))
+        x_datas.append(pulse[0][0].time)
+        y_datas.append(temporal_power(pulse[0][0].channels))
+        x_datas.append(pulse[0][0].nu)
+        y_datas.append(spectral_power(pulse[0][0].channels))
+        x_datas.append(pulse[0][0].time)
+        y_datas.append(phase(pulse[0][0].channels))
+    x_datas.append(fiber[1][0].time)
+    y_datas.append(temporal_power(fiber[1][0].channels))
+    x_datas.append(fiber[1][0].nu)
+    y_datas.append(spectral_power(fiber[1][0].channels))
+    x_datas.append(fiber[1][0].time)
+    y_datas.append(phase(fiber[1][0].channels))
 
 
 x_labels = ['t', 'nu', 't']
@@ -54,7 +54,8 @@ plot_labels.extend(3 *[r'w/ $\beta_2 < 0$'])
 x_ranges = [None, (191.5, 195.5), None]
 
 
-plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-     x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
-     filename="./examples/fiber_effects/images/disp_spm_effect_n2_0_03.png")
+plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
+       x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
+       plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
+       triangle_layout=True,
+       filename="./examples/fiber_effects/images/disp_spm_effect_n2_0_03.png")

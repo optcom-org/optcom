@@ -242,7 +242,10 @@ if __name__ == "__main__":
 
     lt.run(soli)
 
-    plot.plot([soli.fields[0].time, soli.fields[0].nu],
-              [temporal_power(soli.fields[0].channels),
-              spectral_power(soli.fields[0].channels)], ["t","nu"],
-              ["P_t", "P_nu"], plot_titles=["Soliton pulse"],  split=True)
+    x_datas = [soli[0][0].time, soli[0][0].nu]
+    y_datas = [temporal_power(soli[0][0].channels),
+               spectral_power(soli[0][0].channels)]
+
+    plot.plot2d(x_datas, y_datas, x_labels=["t","nu"],
+                y_labels=["P_t", "P_nu"],
+                plot_titles=["Soliton pulse"], split=True)

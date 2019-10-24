@@ -168,13 +168,13 @@ if __name__ == "__main__":
     plot_groups = [0,0,0,1]
     plot_labels = ['port 0', 'port 1', 'port 2', None]
 
-    fields = [temporal_power(pulse_1.fields[0].channels),
-              temporal_power(pulse_2.fields[0].channels),
-              temporal_power(pulse_3.fields[0].channels),
-              temporal_power(pm.fields[1].channels)]
+    y_datas = [temporal_power(pulse_1[0][0].channels),
+               temporal_power(pulse_2[0][0].channels),
+               temporal_power(pulse_3[0][0].channels),
+               temporal_power(pm[1][0].channels)]
 
-    times = [pulse_1.fields[0].time, pulse_2.fields[0].time,
-             pulse_3.fields[0].time, pm.fields[1].time]
+    x_datas = [pulse_1[0][0].time, pulse_2[0][0].time, pulse_3[0][0].time,
+               pm[1][0].time]
 
     lt.reset()
     pm = modulator.IdealPhaseMod()
@@ -197,15 +197,15 @@ if __name__ == "__main__":
     plot_groups.extend([2,2,2,3])
     plot_labels.extend(['port 0', 'port 1', 'port 2', None])
 
-    fields.extend([temporal_power(pulse_1.fields[0].channels),
-                   temporal_power(pulse_2.fields[0].channels),
-                   temporal_power(pulse_3.fields[0].channels),
-                   temporal_power(pm.fields[1].channels)])
+    y_datas.extend([temporal_power(pulse_1[0][0].channels),
+                    temporal_power(pulse_2[0][0].channels),
+                    temporal_power(pulse_3[0][0].channels),
+                    temporal_power(pm[1][0].channels)])
 
-    times.extend([pulse_1.fields[0].time, pulse_2.fields[0].time,
-                  pulse_3.fields[0].time, pm.fields[1].time])
+    x_datas.extend([pulse_1[0][0].time, pulse_2[0][0].time, pulse_3[0][0].time,
+                    pm[1][0].time])
 
 
-    plot.plot(times, fields, plot_labels=plot_labels,
-              plot_groups=plot_groups, plot_titles=plot_titles, x_labels=['t'],
-              y_labels=['P_t'], opacity=0.3)
+    plot.plot2d(x_datas, y_datas, plot_labels=plot_labels,
+                plot_groups=plot_groups, plot_titles=plot_titles,
+                x_labels=['t'], y_labels=['P_t'], opacity=0.3)

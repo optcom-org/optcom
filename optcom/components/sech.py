@@ -224,7 +224,10 @@ if __name__ == "__main__":
 
     lt.run(sech)
 
-    plot.plot([sech.fields[0].time, sech.fields[0].nu],
-              [temporal_power(sech.fields[0].channels),
-              spectral_power(sech.fields[0].channels)], ["t","nu"],
-              ["P_t", "P_nu"], plot_titles=["Sech pulse"],  split=True)
+    x_datas = [sech[0][0].time, sech[0][0].nu]
+    y_datas = [temporal_power(sech[0][0].channels),
+               spectral_power(sech[0][0].channels)]
+
+    plot.plot2d(x_datas, y_datas, x_labels=["t","nu"],
+                y_labels=["P_t", "P_nu"], plot_titles=["Sech pulse"],
+                split=True)

@@ -552,5 +552,5 @@ if __name__ == "__main__":
     y_labels.append('dispersion_slope')
     plot_titles.append('Dispersion slope of Silica')
 
-    plot.plot(x_data, y_data, x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, split=True, opacity=0.0)
+    plot.plot2d(x_data, y_data, x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, split=True, opacity=0.0)

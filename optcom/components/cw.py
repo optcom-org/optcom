@@ -161,9 +161,11 @@ if __name__ == "__main__":
 
     plot_titles = ["CW pulse temporal power", "CW pulse spectral power",
                    "CW pulse phase"]
+    x_datas = [cw[0][0].time, cw[0][0].nu, cw[0][0].time]
+    y_datas = [temporal_power(cw[0][0].channels),
+               spectral_power(cw[0][0].channels),
+               phase(cw[0][0].channels)]
 
-    plot.plot([cw.fields[0].time, cw.fields[0].nu, cw.fields[0].time],
-              [temporal_power(cw.fields[0].channels),
-               spectral_power(cw.fields[0].channels),
-               phase(cw.fields[0].channels)], ["t","nu","t"],
-               ["P_t", "P_nu", "phi"], plot_titles=plot_titles, split=True)
+    plot.plot2d(x_datas, y_datas, x_labels=["t","nu","t"],
+                y_labels=["P_t", "P_nu", "phi"], plot_titles=plot_titles,
+                split=True, opacity=0.2)

@@ -278,6 +278,8 @@ class FiberCoupler(AbstractPassComp):
                 else:
                     fields_2.append(fields[i])
             output_fields = self._stepper(domain, fields_1, fields_2)
+            if (self._stepper.save_all):
+                self.storages.append(self._stepper.storage)
 
         return self.output_ports(ports), output_fields
 
@@ -344,11 +346,11 @@ if __name__ == "__main__":
     lt.run(pulse_1)
     #lt.run(pulse_1, pulse_2)
 
-    fields = [temporal_power(pulse_1.fields[0].channels),
-              temporal_power(coupler.fields[2].channels),
-              temporal_power(coupler.fields[3].channels)]
-    time = [pulse_1.fields[0].time, coupler.fields[2].time,
-            coupler.fields[3].time]
+    y_datas = [temporal_power(pulse_1[0][0].channels),
+               temporal_power(coupler[2][0].channels),
+               temporal_power(coupler[3][0].channels)]
+    x_datas = [pulse_1[0][0].time, coupler[2][0].time,
+               coupler[3][0].time]
     plot_groups = [0, 1, 2]
     plot_titles = ["Original pulse", "Pulse coming out of the coupler with " +
                     "Lk = {}".format(str(round(length*kappa_,2)))]
@@ -357,6 +359,6 @@ if __name__ == "__main__":
     plot_labels = ["port 0", "port 2", "port 3"]
 
 
-    plot.plot(time, fields, plot_groups=plot_groups, plot_titles=plot_titles,
-              x_labels=['t'], y_labels=['P_t'], plot_labels=plot_labels,
-              opacity=0.3)
+    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+                plot_labels=plot_labels, opacity=0.3)

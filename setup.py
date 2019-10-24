@@ -16,13 +16,15 @@ setuptools.setup(
     license="GNU",
     packages=setuptools.find_packages(exclude=("tests",)),
     include_package_data=True,	# controls whether non-code files are copied when package is installed
-    install_requires=["scipy", "numpy", "matplotlib", "nptyping", "pillow"],
+    install_requires=["scipy", "numpy", "matplotlib", "nptyping", "pillow",
+                      "pyfftw"],
     classifiers=[
         "Natural Language :: English",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "License :: OSI Approved :: GNU General Public License v3 or later "
+        "(GPLv3+)",
         "Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.7",
       	"Operating System :: POSIX :: Linux",
     ],
 )

@@ -1,5 +1,6 @@
-scipy
-numpy
 matplotlib
 nptyping
+numpy
 pillow
+pyfftw
+scipy

@@ -167,7 +167,7 @@ if __name__ == "__main__":
     random_phase_bis = random() * math.pi
     phase_shifts = [[random_phase, random_phase], [math.pi/2,0.0],
                     [random_phase, random_phase_bis]]
-    fields = []
+    y_datas = []
 
     plot_titles = ["Original pulse"]
 
@@ -178,7 +178,7 @@ if __name__ == "__main__":
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves
-        fields.append(temporal_power(mz.fields[1].channels))
+        y_datas.append(temporal_power(mz[1][0].channels))
         if (isinstance(phase_shift[0], float)):
             temp_phase = phase_shift
         else:
@@ -195,11 +195,11 @@ if __name__ == "__main__":
     lt.link((pulse[0], mz[0]))
     lt.run(pulse)
     # Plot parameters and get waves
-    fields.append(temporal_power(mz.fields[1].channels))
+    y_datas.append(temporal_power(mz[1][0].channels))
     plot_titles += ["Pulses coming out of the {}".format(default_name)]
 
-    fields  = [temporal_power(pulse.fields[0].channels)] + fields
-    time = [pulse.fields[0].time, mz.fields[1].time]
+    y_datas  = [temporal_power(pulse[0][0].channels)] + y_datas
+    x_datas = [pulse[0][0].time, mz[1][0].time]
 
-    plot.plot(time, fields, split=True, plot_titles=plot_titles,
-              x_labels=['t'], y_labels=['P_t'], opacity=0.3)
+    plot.plot2d(x_datas, y_datas, split=True, plot_titles=plot_titles,
+                x_labels=['t'], y_labels=['P_t'], opacity=0.3)

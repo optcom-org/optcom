@@ -135,9 +135,9 @@ if __name__ == "__main__":
     plot_titles = (["Original pulse", "Pulses coming out of the {} with gain "
                     "{} dB."
                     .format(default_name, gain)])
-    fields = [temporal_power(pulse.fields[0].channels),
-              temporal_power(amp.fields[1].channels)]
-    times = [pulse.fields[0].time, amp.fields[1].time]
+    y_datas = [temporal_power(pulse[0][0].channels),
+               temporal_power(amp[1][0].channels)]
+    x_datas = [pulse[0][0].time, amp[1][0].time]
 
     pulse = gaussian.Gaussian(channels=1, peak_power=[10.0])
     peak_power = 15.0
@@ -147,8 +147,8 @@ if __name__ == "__main__":
     lt.run(pulse)
     plot_titles.extend(["Pulses coming out of the {} with target peak power "
                         "{} W.".format(default_name, peak_power)])
-    fields.extend([temporal_power(amp.fields[1].channels)])
-    times.extend([amp.fields[1].time])
+    y_datas.extend([temporal_power(amp[1][0].channels)])
+    x_datas.extend([amp[1][0].time])
 
     pulse = gaussian.Gaussian(channels=1, peak_power=[10.0])
     gain_fct = lambda t: 1e-1*t
@@ -158,10 +158,11 @@ if __name__ == "__main__":
     lt.run(pulse)
     plot_titles.extend(["Pulses coming out of the {} with gain: f(t) = t."
                         .format(default_name)])
-    fields.extend([temporal_power(amp.fields[1].channels)])
-    times.extend([amp.fields[1].time])
+    y_datas.extend([temporal_power(amp[1][0].channels)])
+    x_datas.extend([amp[1][0].time])
 
     plot_groups = [0,1,2,3]
 
-    plot.plot(times, fields, plot_groups=plot_groups, plot_titles=plot_titles,
-              x_labels=['t'], y_labels=['P_t'], opacity=0.3)
+    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+                opacity=0.3)

@@ -3,3 +3,4 @@ numpy>=1.1
 matplotlib>=3.1
 nptyping>=0.2
 pillow>=6.2
+pyfftw>=0.11.1

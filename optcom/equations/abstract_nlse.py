@@ -101,7 +101,6 @@ class AbstractNLSE(AbstractEquation):
             nl_index = NLIndex(medium)
             eff_area = EffectiveArea(core_radius, NA)
             self._predict_gamma = NLCoefficient(nl_index, eff_area)
-        self._delay_time: Array[float]
     # ==================================================================
     @property
     def gamma(self):
@@ -110,7 +109,7 @@ class AbstractNLSE(AbstractEquation):
     # ==================================================================
     def open(self, domain: Domain, *fields: List[Field]) -> None:
         super().open(domain, *fields)
-        self._delay_time = np.zeros(self._center_omega.shape)
+        self._delays = np.zeros((len(self._center_omega), 0))
         if (self._predict_gamma is not None):
             self._gamma = self._predict_gamma(self._center_omega)
         else:
@@ -125,19 +124,23 @@ class AbstractNLSE(AbstractEquation):
         """This function is called before each step of the computation.
         """
         # Perform change of variable T = t - \beta_1 z to ignore GV
-        for i in range(len(waves)):
-            if (self._disp_ind != -1):  # if dispersion
+        if (self._delays.size):
+            to_add = self._delays[:,-1].reshape(-1,1)
+        else:
+            to_add = np.zeros((len(self._center_omega), 1))
+        self._delays = np.hstack((self._delays, to_add))
+        if (self._disp_ind != -1):  # if dispersion
+            for i in range(len(waves)):
                 beta = self._effects_lin[self._disp_ind][i]
                 if (len(beta) > 1):  # if there is beta_1
-                    self._delay_time[i] += beta[1] * h
+                    self._delays[i][-1] += beta[1] * h
     # ==================================================================
     def close(self, domain: Domain, *fields: List[Field]) -> None:
         # update the time array of each field with GV delay
-        super().close(domain, *fields)
         index = 0
         if (fields):
             for field_list in fields:
                 for field in field_list:
-                    field.delay(self._delay_time[index:index+len(field)])
+                    field.add_delay(self._delays[index:index+len(field)][:,-1])
                     index += len(field)
-        self._delay_time = np.array([])
+        super().close(domain, *fields)

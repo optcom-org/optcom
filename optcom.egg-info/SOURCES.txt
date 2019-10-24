@@ -5,7 +5,10 @@ setup.py
 optcom/__init__.py
 optcom/domain.py
 optcom/field.py
+optcom/field_back_up.py
 optcom/layout.py
+optcom/layout_back_up.py
+optcom/storage.py
 optcom.egg-info/PKG-INFO
 optcom.egg-info/SOURCES.txt
 optcom.egg-info/dependency_links.txt
@@ -13,6 +16,7 @@ optcom.egg-info/requires.txt
 optcom.egg-info/top_level.txt
 optcom/components/__init__.py
 optcom/components/abstract_component.py
+optcom/components/abstract_component_back_up.py
 optcom/components/abstract_pass_comp.py
 optcom/components/abstract_start_comp.py
 optcom/components/cw.py
@@ -26,6 +30,7 @@ optcom/components/ideal_divider.py
 optcom/components/ideal_fiber_coupler.py
 optcom/components/ideal_mz.py
 optcom/components/ideal_phase_mod.py
+optcom/components/port.py
 optcom/components/sech.py
 optcom/components/soliton.py
 optcom/effects/__init__.py
@@ -36,7 +41,6 @@ optcom/effects/attenuation.py
 optcom/effects/conversion.py
 optcom/effects/correlation.py
 optcom/effects/coupling.py
-optcom/effects/coupling_back_up.py
 optcom/effects/dispersion.py
 optcom/effects/gain_saturation.py
 optcom/effects/kerr.py
@@ -81,6 +85,7 @@ optcom/solvers/solver.py
 optcom/solvers/stepper.py
 optcom/utils/__init__.py
 optcom/utils/constants.py
+optcom/utils/cont_array.py
 optcom/utils/csv_fit.py
 optcom/utils/fft.py
 optcom/utils/plot.py

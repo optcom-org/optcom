@@ -131,8 +131,8 @@ if __name__ == "__main__":
     plot_labels: List[Optional[str]] = [None]
     plot_groups: List[Optional[int]] = [0]
     plot_titles: List[Optional[str]] = ["Original pulse"]
-    fields = []
-    time = []
+    y_datas = []
+    x_datas = []
 
     for i in range(4):
         # Propagation
@@ -142,18 +142,18 @@ if __name__ == "__main__":
         lt.reset()
         # Plot parameters and get waves
         port_saved = ((i | 1) + 2) % 4
-        fields.append(temporal_power(coupler.fields[port_saved-1].channels))
-        fields.append(temporal_power(coupler.fields[port_saved].channels))
-        time.append(coupler.fields[port_saved-1].time)
-        time.append(coupler.fields[port_saved].time)
+        y_datas.append(temporal_power(coupler[port_saved-1][0].channels))
+        y_datas.append(temporal_power(coupler[port_saved][0].channels))
+        x_datas.append(coupler[port_saved-1][0].time)
+        x_datas.append(coupler[port_saved][0].time)
         plot_labels += ["port " + str(port_saved-1), "port " + str(port_saved)]
         plot_groups += [i+1, i+1]
         plot_titles += ["Pulses coming out of the {} from input port {} with "
                         "ratios {}".format(default_name, i, ratios_ports[i])]
 
-    fields= [temporal_power(pulse.fields[0].channels)] + fields
-    time = [pulse.fields[0].time] + time
+    y_datas= [temporal_power(pulse[0][0].channels)] + y_datas
+    x_datas = [pulse[0][0].time] + x_datas
 
-    plot.plot(time, fields,
-              plot_groups=plot_groups, plot_titles=plot_titles, x_labels=['t'],
-              y_labels=['P_t'], plot_labels=plot_labels, opacity=0.3)
+    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups, plot_titles=plot_titles,
+                x_labels=['t'], y_labels=['P_t'], plot_labels=plot_labels,
+                opacity=0.3)

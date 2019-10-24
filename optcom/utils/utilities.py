@@ -378,44 +378,65 @@ def combine_to_one_array(x_data):
 def auto_pad(x_data, y_data, value_left=0.0, value_right=0.0):
     # consider x_data and y_data have same dim
     # and all arrays of x_data or y_data have same step size.
-
+    x_data_new = np.array([])
+    y_data_new = np.array([])
     if (x_data.ndim > 1):  # more than one x array
         if (x_data.shape[1] != y_data.shape[1]):
             warning_terminal("auto_pad utilities function is not made to "
-                "work with different x and y data size")
-        min_value = x_data[0][0]
-        max_value = x_data[0][-1]
-        for i in range(1, x_data.shape[0]):
-            if (min_value > x_data[i][0]):
-                min_value = x_data[i][0]
-            if (max_value < x_data[i][-1]):
-                max_value = x_data[i][-1]
-        dx = x_data[0][1] - x_data[0][0]
-        values = (value_left, value_right)
-        x_samples = int(round(((max_value - min_value) / dx) + 1))
-        for i in range(x_data.shape[0]):
-            pad_left = int(round((x_data[i][0] - min_value) / dx))
-            pad_right = int(round((max_value - x_data[i][-1]) / dx))
-            # Arbitrarely changing padding if rounding effect didn't
-            # work out. (should make that more clear)
-            y_samples = pad_left + pad_right + y_data.shape[1]
-            while (y_samples != x_samples):
-                if (y_samples > x_samples):
-                    pad_left -= 1
-                else:
-                    pad_left += 1
-                y_samples = pad_left + pad_right + y_data.shape[1]
-            array_to_add = np.pad(y_data[i], (pad_left, pad_right),
-                                  'constant', constant_values=values)
-            if (not i):
-                y_data_new = array_to_add.reshape((1,-1))
+                "work with different x and y data size.")
+        if (x_data.ndim == 2):
+            min_value = x_data[0][0]
+            max_value = x_data[0][-1]
+            nbr_dec_first = str(x_data[0][0])[::-1].find('.')
+            nbr_dec_last = str(x_data[0][-1])[::-1].find('.')
+            flag = True
+            for i in range(1, x_data.shape[0]):
+                flag = (x_data[0][0] == round(x_data[i][0], nbr_dec_first)
+                        and x_data[0][-1] == round(x_data[i][-1], nbr_dec_last)
+                        and flag)
+                if (min_value > x_data[i][0]):
+                    min_value = x_data[i][0]
+                if (max_value < x_data[i][-1]):
+                    max_value = x_data[i][-1]
+            if (not flag):  # Avoid computation if no need
+                dx = x_data[0][1] - x_data[0][0]
+                values = (value_left, value_right)
+                x_samples = int(round(((max_value - min_value) / dx) + 1))
+                y_data_new = np.zeros((y_data.shape[0], x_samples))
+                for i in range(x_data.shape[0]):
+                    pad_left = int(round((x_data[i][0] - min_value) / dx))
+                    pad_right = int(round((max_value - x_data[i][-1]) / dx))
+                    # Arbitrarely changing padding if rounding effect didn't
+                    # work out. (should make that more clear)
+                    y_samples = pad_left + pad_right + y_data.shape[1]
+                    while (y_samples != x_samples):
+                        if (y_samples > x_samples):
+                            pad_left -= 1
+                        else:
+                            pad_left += 1
+                        y_samples = pad_left + pad_right + y_data.shape[1]
+                    y_data_new[i] = np.pad(y_data[i], (pad_left, pad_right),
+                                           'constant', constant_values=values)
+                x_data_new = np.linspace(min_value, max_value, x_samples, True)
             else:
-                y_data_new = np.vstack((y_data_new, array_to_add))
-        x_data = np.linspace(min_value, max_value, x_samples, True)
+                y_data_new = y_data
+                x_data_new = x_data[0]
+        elif (x_data.ndim == 3):
+            x_shape = x_data.shape
+            y_shape = y_data.shape
+            x_data_shaped = x_data.reshape((x_shape[0]*x_shape[1], x_shape[2]))
+            y_data_shaped = y_data.reshape((y_shape[0]*y_shape[1], y_shape[2]))
+            x_data_new, y_data_new = auto_pad(x_data_shaped, y_data_shaped,
+                                              value_left, value_right)
+            y_data_new = y_data_new.reshape((y_shape[0], y_shape[1],
+                                             y_data_new.shape[1]))
+        else:
+            warning_terminal("auto_pad does not accept tensor with more than "
+                "3 dimensions.")
     else:
         y_data_new = y_data.reshape(1,-1)
 
-    return x_data, y_data_new
+    return x_data_new, y_data_new
 
 
 def fit_data(x, y, fill_down=0.0, fill_up=0.0, extrapolate=False):

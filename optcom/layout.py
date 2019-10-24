@@ -24,12 +24,12 @@ import optcom.utils.utilities as util
 from optcom.components.abstract_component import AbstractComponent
 from optcom.components.abstract_pass_comp import AbstractPassComp
 from optcom.components.abstract_start_comp import AbstractStartComp
+from optcom.components.port import Port
 from optcom.domain import Domain
 from optcom.field import Field
 
 Comp = AbstractComponent
 Comp_Item = Tuple[AbstractComponent, int]
-Link = Tuple[Comp_Item, Comp_Item]
 
 
 class Layout(object):
@@ -81,9 +81,9 @@ class Layout(object):
         if (self._comps):
             util.print_terminal("Structure of layout '{}':".format(self.name))
             for comp in self._comps:
-                for port_nbr in range(len(comp)):
-                    if (comp.get_neighbor(port_nbr) is not None):
-                            comp.print_port_state(port_nbr)
+                for port in comp:
+                    if (not port.is_free()):
+                        print(port)
         else:
             util.print_terminal("Layout '{}' is empty".format(self.name))
 
@@ -105,132 +105,116 @@ class Layout(object):
                 self._comps.append(comp)
                 self._nbr_comps += 1
     # ==================================================================
-    def _add_edge(self, comp_1: AbstractComponent, port_comp_1: int,
-                  comp_2: AbstractComponent, port_comp_2: int,
-                  unidir: bool = False) -> None:
+    def _add_edge(self, port_1: Port, port_2: Port, unidir: bool = False
+                  ) -> None:
         """Add a new edge in the Layout
 
         The edge can be either unidirectionnal or bidirectionnal.  In
-        case of bidirectionnal edge, only the first component is linked
+        case of unidirectionnal edge, only the first component is linked
         to the second one.
 
         Parameters
         ----------
-        comp_1 : AbstractComponent
-            The first component of the edge.
-        port_comp_1 :
-            The port of the first component.
-        comp_2 : AbstractComponent
-            The second component of the edge.
-        port_comp_2 :
-            The port of the second component.
+        port_1 : Port
+            The first port of the edge.
+        port_2 : Port
+            The second port of the edge.
         unidir :
             If True, unidirectionnal link.
 
         """
         # Adding new edge ----------------------------------------------
-        if (comp_1.is_port_free(port_comp_1)
-                and comp_2.is_port_free(port_comp_2) and comp_1 != comp_2):
-            self.add_comp(comp_1)
-            self.add_comp(comp_2)
-            comp_1.link_to(port_comp_1, comp_2, port_comp_2)
+        free_ports = port_1.is_free() and port_2.is_free()
+        if (free_ports and port_1.comp != port_2.comp):
+            self.add_comp(port_1.comp)
+            self.add_comp(port_2.comp)
+            port_1.link_to(port_2)
             if (unidir):    # Undirected edge
-                comp_2.link_to(port_comp_2, comp_1, cst.UNIDIR_PORT)
+                port_2.link_unidir_to(port_1)
             else:   # Directed edge
-                comp_2.link_to(port_comp_2, comp_1, port_comp_1)
+                port_2.link_to(port_1)
         # Edge can not be added ----------------------------------------
         else:
             util.warning_terminal("Linking of component '{}' and component "
                 "'{}' has encountered a problem, action aborted:"
-                .format(comp_1.name, comp_2.name))
-            if (comp_1 == comp_2):
+                .format(port_1.comp.name, port_2.comp.name))
+            if (port_1.comp == port_2.comp):
                 util.print_terminal("Component '{}' can not be linked to "
-                    "itself".format(comp_1.name), '')
+                    "itself".format(port_1.comp.name), '')
             else:
-                comp_1.print_port_state(port_comp_1)
-                comp_2.print_port_state(port_comp_2)
+                print(port_1)
+                print(port_2)
     # ==================================================================
-    def _del_edge(self, comp_1: AbstractComponent, port_comp_1: int,
-                  comp_2: AbstractComponent, port_comp_2: int) -> None:
+    def _del_edge(self, port_1: Port, port_2: Port) -> None:
         """Delete an edge in the Layout.
 
         Parameters
         ----------
-        comp_1 : AbstractComponent
-            The first component of the edge.
-        port_comp_1 : int
-            The port of the first component.
-        comp_2 : AbstractComponent
-            The second component of the edge.
-        port_comp_2 : int
-            The port of the second component.
+        port_1 : Port
+            The first port of the edge.
+        port_2 : Port
+            The second port of the edge.
 
         """
-        link = (comp_1.is_linked_to(port_comp_1, comp_2, port_comp_2)
-                and comp_2.is_linked_to(port_comp_2, comp_1, port_comp_1))
-        link_unidir = (comp_1.is_linked_to(port_comp_1, comp_2, port_comp_2)
-                       and comp_2.is_linked_unidir_to(port_comp_2, comp_1))
+        link = (port_1.is_linked_to(port_2) and port_2.is_linked_to(port_1))
         # Link suppression ---------------------------------------------
-        if (link or link_unidir):
-            comp_1.del_port(port_comp_1)
-            comp_2.del_port(port_comp_2)
+        if (link):
+            port_1.reset()
+            port_2.reset()
         # Link does not exist ------------------------------------------
         else:
             util.warning_terminal("Can not delete a nonexistent edge from "
                 "port {} of component '{}' to port {} of component '{}', "
                 "action aborted:"
-                .format(port_comp_1, comp_1.name, port_comp_2, comp_2.name))
-            comp_1.print_port_state(port_comp_1)
-            comp_2.print_port_state(port_comp_2)
+                .format(port_1.port, port_1.comp.name, port_2.port,
+                        port_2.comp.name))
+            print(port_1)
+            print(port_2)
     # ==================================================================
-    def link(self, *links: Link) -> None:
+    def link(self, *links: List[Tuple[Port, Port]]) -> None:
         """Add a series of bidirectionnal edges in the Layout.
 
         Parameters
         ----------
         links :
-            Each tuple of the list contains the components to be linked
-            as well as their respective ports.
+            Each tuple of the list contains the ports to be linked.
 
         """
 
         for edge in links:
-            self._add_edge(edge[0][0], edge[0][1], edge[1][0],
-                           edge[1][1], False)
+            self._add_edge(edge[0], edge[1], False)
     # ==================================================================
-    def link_unidir(self, *links: Link) -> None:
+    def link_unidir(self, *links: List[Tuple[Port, Port]]) -> None:
         """Add a series of unidirectionnal edges in the Layout
 
         Parameters
         ----------
         links :
-            Each tuple of the list contains the components to be linked
-            as well as their respective ports.
+            Each tuple of the list contains the ports to be linked.
 
         """
         for edge in links:
-            self._add_edge(edge[0][0], edge[0][1], edge[1][0],
-                           edge[1][1], True)
+            self._add_edge(edge[0], edge[1], True)
     # ==================================================================
-    def del_link(self, *links: Link) -> None:
+    def del_link(self, *links: List[Tuple[Port, Port]]) -> None:
         """Delete a series of edges in the Layout.
 
         Parameters
         ----------
         links:
-            Each tuple of the list contains the components to be linked
-            as well as their respective ports.
+            Each tuple of the list contains the ports of the link to be
+            deleted.
 
         """
         for edge in links:
-            self._del_edge(edge[0][0], edge[0][1], edge[1][0], edge[1][1])
+            self._del_edge(edge[0], edge[1])
     # ==================================================================
     def reset(self) -> None:
         """Reset (i.e. empty) the Layout."""
 
         for comp in self._comps:
-            for port_nbr in range(len(comp)):
-                comp.del_port(port_nbr)
+            for port in comp:
+                port.reset()
         self._comps = []
         self._nbr_comps = 0
         # Reset structure data
@@ -377,7 +361,7 @@ class Layout(object):
 
         return ports, fields
     # ==================================================================
-    # Port in constraint ===============================================
+    # Port in constraint -----------------------------------------------
     def _update_port_in(self, comp: AbstractComponent, ports: List[int],
                         fields: List[Field]) -> None:
         return None
@@ -386,7 +370,7 @@ class Layout(object):
                          neighbor: AbstractComponent, port: int, field: Field,
                          input_port: int) -> bool:
         """Check if the port allows an input."""
-        flag = neighbor.is_port_type_in(input_port)
+        flag = neighbor[input_port].is_type_in()
         if (not flag):
             util.warning_terminal( "Port {} of component {} does not "
                 "accept input, field will be ignored."
@@ -400,7 +384,7 @@ class Layout(object):
 
         return [], []
     # ==================================================================
-    # Port valid constraint ============================================
+    # Port valid constraint --------------------------------------------
     def _update_port_valid(self, comp: AbstractComponent, ports: List[int],
                            fields: List[Field]) -> None:
         return None
@@ -409,7 +393,7 @@ class Layout(object):
                             neighbor: AbstractComponent, port: int,
                             field: Field, input_port: int) -> bool:
         """Check if type of field correspond to type of port."""
-        flag = neighbor.is_port_type_valid(input_port, field)
+        flag = neighbor[input_port].is_type_valid(field.type)
         if (not flag):
             util.warning_terminal("Wrong field type to enter port {} "
                 "of component {}, field will be ignored."
@@ -423,7 +407,7 @@ class Layout(object):
 
         return [], []
     # ==================================================================
-    # Max pass constraint ==============================================
+    # Max pass constraint ----------------------------------------------
     def _update_max_pass(self, comp: AbstractComponent, ports: List[int],
                          fields: List[Field]) -> None:
         return None
@@ -471,17 +455,17 @@ class Layout(object):
         """Propagate one Field"""
         # Recording field ----------------------------------------------
         if (comp.save or (comp in self._leaf_comps)):
-            comp.save_field(output_port, output_field)
+            comp[output_port].save_field(output_field)
         # Propagate output_field to neighbors of comp ------------------
         neighbor: Optional[AbstractPassComp] = None
-        potential_neighbor = comp.get_neighbor(output_port)
+        potential_neighbor = comp[output_port].ngbr_comp
         if (isinstance(potential_neighbor, AbstractPassComp)): # no starter
             neighbor = potential_neighbor
         if (neighbor is not None):
-            input_port_neighbor = comp.get_port_neighbor(output_port)
-            if (input_port_neighbor != cst.UNIDIR_PORT):
+            input_port_neighbor = comp[output_port].ngbr_port
+            if (not neighbor[input_port_neighbor].is_unidir()):
                 if (neighbor.save):       # Recording field
-                    neighbor.save_field(input_port_neighbor, output_field)
+                    neighbor[input_port_neighbor].save_field(output_field)
                 # Valid propagation management -----------------------------
                 util.print_terminal("Component '{}' has sent a signal from "
                                     "port {} to port {} of component '{}'."
@@ -587,9 +571,8 @@ class Layout(object):
         if (len(comp) == 1):
             degree = 1
         else:
-            for port in range(len(comp)):
-                if (not comp.is_port_free(port)
-                        and comp.is_port_type_out(port)):
+            for port in comp:
+                if (not port.is_free() and port.is_type_out()):
                     degree += 1
 
         return degree
@@ -622,8 +605,8 @@ if __name__ == "__main__":
     print(lt)
     lt.del_link((a[1],b[2]),(a[2],b[0]))  # Not valid
     lt.del_link((a[2],b[1]))    # Valid
-    lt.del_link((a[3],b[2]))    # Not Valid
-    lt.del_link((b[2],a[3]), (b[2],a[3]))    # Valid
+    lt.del_link((a[3],b[2]))    # Valid (even if unidir in the other direction)
+    lt.del_link((b[2],a[3]))    # Not Valid
     print(lt)
     lt.reset()
     print(lt)

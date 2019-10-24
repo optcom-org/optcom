@@ -135,11 +135,9 @@ class Field(object):
         self._nbr_channels: int = 0
         self._channels: Array[cst.NPFT, self._nbr_channels, self._samples] =\
             np.array([], dtype=cst.NPFT)
-        self._storage: Array[cst.NPFT, ..., self._nbr_channels,
-                              self._samples] = np.array([], dtype=cst.NPFT)
         self._center_omega: Array[float, 1, self._nbr_channels] =\
             np.array([], dtype=float)
-        self._delay_time: Array[float, 1, self._nbr_channels] =\
+        self._delays: Array[float, self._nbr_channels] =\
             np.array([], dtype=float)
     # ==================================================================
     def __getitem__(self, key: Union[int, slice]) -> Array[cst.NPFT, 1,...]:
@@ -158,7 +156,7 @@ class Field(object):
 
         self._channels = np.delete(self._channels, key, axis=0)
         self._center_omega = np.delete(self._center_omega, key, axis=0)
-        self._delay_time = np.delete(self._delay_time, key, axis=0)
+        self._delays = np.delete(self._delays, key)
         self._nbr_channels -= 1
     # ==================================================================
     def __len__(self) -> int:
@@ -231,8 +229,8 @@ class Field(object):
     def time(self) -> Array[float]:
         time = np.zeros((self._nbr_channels, self._samples))
         if (self._nbr_channels):
-            for i in range(len(self._delay_time)):
-                time[i] = (self._domain.time+self._delay_time[i])
+            for i in range(len(self._delays)):
+                time[i] = (self._domain.time+self._delays[i])
 
         return time
     # ==================================================================
@@ -261,9 +259,9 @@ class Field(object):
         return self._center_omega
     # ==================================================================
     @property
-    def delay_time(self):
+    def delays(self):
 
-        return self._delay_time
+        return self._delays
     # ==================================================================
     @property
     def channels(self):
@@ -280,36 +278,11 @@ class Field(object):
 
         return self._nbr_channels
     # ==================================================================
-    @property
-    def storage(self):
-
-        return self._storage
-    # ------------------------------------------------------------------
-    @storage.setter
-    def storage(self, storage):
-        self._storage = storage
-    # ==================================================================
     # Methods ==========================================================
     # ==================================================================
-    def delay(self, delay_time: Array[float, 1,...]) -> None:
-        self._delay_time += delay_time
-    # ==================================================================
-    def extend(self, field: Field) -> None:
-        if (self._samples == field.samples):
-            if (self.type == field.type):
-                self._nbr_channels += field.nbr_channels
-                self._channels = np.vstack((self._channels, field.channels))
-                self._center_omega = np.hstack((self._center_omega,
-                                                field.center_omega))
-                self._delay_time = np.hstack((self._delay_time,
-                                              field.delay_time))
-                self._storage = np.hstack((self._storage, field.storage))
-            else:
-                util.warning_terminal("Two fields of different types can "
-                    "not be extended to each other")
-        else:
-            util.warning_terminal("Two fields with different number of "
-                "samples can not be extended to each other.")
+    def add_delay(self, delays: Array[float]) -> None:
+
+        self._delays += delays
     # ==================================================================
     def add(self, field: Field) -> None:
         if (self._samples == field.samples):
@@ -330,7 +303,7 @@ class Field(object):
                 "samples can not be added to each other.")
     # ==================================================================
     def append(self, channel: Array[cst.NPFT, 1, ...],
-               center_omega: float, delay_time: float = 0.0):
+               center_omega: float, delay: float = 0.0):
 
         success = True
         if (self._channels.size):
@@ -345,7 +318,10 @@ class Field(object):
             self._channels = np.array([channel.astype(cst.NPFT)])
         if (success):
             self._center_omega = np.append(self._center_omega, center_omega)
-            self._delay_time = np.append(self._delay_time, delay_time)
+            if (self._delays.size):
+                self._delays = np.append(self._delays, delay)
+            else:
+                self._delays = np.array([delay])
             self._nbr_channels += 1
     # ==================================================================
     def reset_channel(self, channel_nbr: int = None) -> None:
@@ -355,7 +331,7 @@ class Field(object):
             if (channel_nbr < self._channels.shape[0]):
                 self._channels[channel_nbr] =\
                     np.zeros(self._channels[channel_nbr].shape, dtype=cst.NPFT)
-                self._delay_time[channel_nbr] = 0.0
+                self._delays[channel_nbr] = 0.0
             else:
                 util.warning_terminal("The channel number {} requested to be "
                     "reset does not exist".format(channel_nbr))
@@ -363,7 +339,7 @@ class Field(object):
             for i in range(self._channels.shape[0]):
                 self._channels[i] =\
                     np.zeros(self._channels[i].shape, dtype=cst.NPFT)
-                self._delay_time[i] = 0.0
+                self._delays[i] = 0.0
     # ==================================================================
     # Static and class methods =========================================
     # ==================================================================
@@ -435,126 +411,5 @@ class Field(object):
         else:
             util.warning_terminal("Can not get spectral power of a "
                 "nonexistent field, request ignored, return null field")
-
-        return None
-
-
-class EmptyField(Field):
-    """Dummy field object to represent an empty field. Rewrite all
-    getters from Field and return None. Rewrite all operations
-    overloading and set emptyfield as the neutral elements for all.
-    """
-
-    def __init__(self) -> None:
-
-        return None
-    # ==================================================================
-    def __getitem__(self, key):
-
-        return None
-    # ==================================================================
-    def __setitem__(self, key, channel):
-
-        return None
-    # ==================================================================
-    def __delitem__(self, key):
-
-        return None
-    # ==================================================================
-    def __iadd__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __isub__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __imul__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __itruediv__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __add__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __sub__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __mul__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __truediv__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __radd__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __rsub__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __rmul__(self, operand):
-
-        return operand
-    # ==================================================================
-    def __rtruediv__(self, operand):
-
-        return operand
-    # ==================================================================
-    @property
-    def time(self):
-
-        return None
-    # ==================================================================
-    @property
-    def omega(self):
-
-        return None
-    # ==================================================================
-    @property
-    def nu(self):
-
-        return None
-    # ==================================================================
-    @property
-    def center_omega(self):
-
-        return None
-    # ==================================================================
-    @property
-    def delay_time(self):
-
-        return None
-    # ==================================================================
-    @property
-    def channels(self):
-
-        return None
-    # ==================================================================
-    @property
-    def samples(self):
-
-        return None
-    # ==================================================================
-    @property
-    def nbr_channels(self):
-
-        return None
-    # ==================================================================
-    @property
-    def storage(self):
-
-        return None
-    # ==================================================================
-    @storage.setter
-    def storage(self, storage):
 
         return None

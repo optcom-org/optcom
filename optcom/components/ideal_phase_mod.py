@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     chirps = [0.0, 1.0]
     phase_shifts = [cst.PI, lambda t: cst.PI/2]
-    fields = []
+    y_datas = []
 
     plot_groups: List[int] = []
     plot_titles: List[str] = []
@@ -145,8 +145,8 @@ if __name__ == "__main__":
             lt.run(pulse)
             lt.reset()
             # Plot parameters and get waves
-            fields.append(phase(pulse.fields[0].channels))
-            fields.append(phase(mod.fields[1].channels))
+            y_datas.append(phase(pulse[0][0].channels))
+            y_datas.append(phase(mod[1][0].channels))
             plot_groups += [count, count]
             count += 1
             plot_labels += ["Original pulse", "Exit pulse"]
@@ -158,9 +158,8 @@ if __name__ == "__main__":
                             "shift {}".format(default_name, str(chirp),
                                               str(round(temp_phase,2)))]
 
-    time = [pulse.fields[0].time, mod.fields[1].time]
+    x_datas = [pulse[0][0].time, mod[1][0].time]
 
-    plot.plot(time, fields,
-              plot_groups=plot_groups, plot_titles=plot_titles,
-              plot_labels=plot_labels,
-              x_labels=['t'], y_labels=['phi'], opacity=0.3)
+    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups, plot_titles=plot_titles,
+                plot_labels=plot_labels, x_labels=['t'], y_labels=['phi'],
+                opacity=0.3)

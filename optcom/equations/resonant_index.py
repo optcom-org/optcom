@@ -249,6 +249,6 @@ if __name__ == "__main__":
     plot_titles.append("Resonant index change with n_0 from Silica Sellmeier "
                        "equations. (pumped)")
 
-    plot.plot([Lambda, Lambda], delta_n_data, x_labels=x_labels,
-              y_labels=y_labels, plot_titles=plot_titles, split=True,
-              opacity=0.0)
+    plot.plot2d([Lambda, Lambda], delta_n_data, x_labels=x_labels,
+                y_labels=y_labels, plot_titles=plot_titles, split=True,
+                opacity=0.0)

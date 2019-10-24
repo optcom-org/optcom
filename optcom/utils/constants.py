@@ -18,9 +18,8 @@ NPFT = np.clongdouble
 STR_SEPARATOR_TERMINAL: str = "----------------------------------------------"\
                               "---------------------------------\n"# 79 charact
 
-#
-UNIDIR_PORT: int = -1   # Can not be a positiv integer
-
 
 AUTO_PAD_PLOT: bool = True # pad the different channels array of one field
                     # automatically to display all channel on one graph
+
+DEF_3D_PLOT = "plot_surface"

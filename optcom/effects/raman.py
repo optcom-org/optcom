@@ -386,6 +386,6 @@ if __name__ == "__main__":
 
     plot_titles = ['Raman response function', 'Raman gain']
 
-    plot.plot(x_data, y_data, x_labels=['t'], y_labels=['h_R'],
-              plot_groups=[0,0,0], plot_titles=plot_titles, opacity=0.0,
-              plot_labels=plot_labels)
+    plot.plot2d(x_data, y_data, x_labels=['t'], y_labels=['h_R'],
+                plot_groups=[0,0,0], plot_titles=plot_titles, opacity=0.0,
+                plot_labels=plot_labels)

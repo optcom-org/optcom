@@ -234,7 +234,10 @@ if __name__ == "__main__":
 
     lt.run(gssn)
 
-    plot.plot([gssn.fields[0].time, gssn.fields[0].nu],
-              [temporal_power(gssn.fields[0].channels),
-              spectral_power(gssn.fields[0].channels)], ["t","nu"],
-              ["P_t", "P_nu"], plot_titles=["Gaussian pulse"],  split=True)
+    x_datas = [gssn[0][0].time, gssn[0][0].nu]
+    y_datas = [temporal_power(gssn[0][0].channels),
+               spectral_power(gssn[0][0].channels)]
+
+    plot.plot2d(x_datas, y_datas, x_labels=["t","nu"],
+                y_labels=["P_t", "P_nu"],
+                plot_titles=["Gaussian pulse"], split=True)

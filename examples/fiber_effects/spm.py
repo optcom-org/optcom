@@ -1,9 +1,9 @@
 from optcom import *
 
-domain = Domain(samples_per_bit=1024, bit_width=15.0)
+domain = Domain(samples_per_bit=1024, bit_width=30.0)
 
 lt = Layout(domain)
-chirp = 0.0
+chirp = 5.0
 pulse = Gaussian(channels=1, peak_power=[5.0], width=[0.2],
                  center_lambda=[1550.0], chirp=[chirp])
 
@@ -25,18 +25,18 @@ for i in range(len(length)):
     lt.run(pulse)
     lt.reset()
     if (not i):
-        x_datas.append(pulse.fields[0].nu)
-        y_datas.append(spectral_power(pulse.fields[0].channels))
-        x_datas.append(pulse.fields[0].time)
-        y_datas.append(temporal_power(pulse.fields[0].channels))
-        x_datas.append(pulse.fields[0].time)
-        y_datas.append(phase(pulse.fields[0].channels))
-    x_datas.append(fiber.fields[0].nu)
-    y_datas.append(spectral_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[0].time)
-    y_datas.append(temporal_power(fiber.fields[1].channels))
-    x_datas.append(fiber.fields[0].time)
-    y_datas.append(phase(fiber.fields[1].channels))
+        x_datas.append(pulse[0][0].nu)
+        y_datas.append(spectral_power(pulse[0][0].channels))
+        x_datas.append(pulse[0][0].time)
+        y_datas.append(temporal_power(pulse[0][0].channels))
+        x_datas.append(pulse[0][0].time)
+        y_datas.append(phase(pulse[0][0].channels))
+    x_datas.append(fiber[0][0].nu)
+    y_datas.append(spectral_power(fiber[1][0].channels))
+    x_datas.append(fiber[0][0].time)
+    y_datas.append(temporal_power(fiber[1][0].channels))
+    x_datas.append(fiber[0][0].time)
+    y_datas.append(phase(fiber[1][0].channels))
 
 x_labels = ['nu', 't', 't']
 y_labels = ['P_nu', 'P_t', 'phi']
@@ -49,9 +49,10 @@ for i in range(len(length)):
     plot_groups.extend([0,1,2])
     for j in range(3):
         plot_labels.append('w/ SPM - {} km'.format(length[i]))
-x_ranges = [None, (6.5, 8.5), (6.5, 8.5)]
+x_ranges = [None, (13.5, 16.5), (13.5, 16.5)]
 
-plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-     x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
-     plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
-     filename="./examples/fiber_effects/images/spm_effect.png")
+plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
+       x_ranges=x_ranges, plot_titles=plot_titles, plot_groups=plot_groups,
+       plot_labels=plot_labels, fig_title=fig_title, opacity=0.1,
+       triangle_layout=True,
+       filename="./examples/fiber_effects/images/spm_effect_chirp5.png")

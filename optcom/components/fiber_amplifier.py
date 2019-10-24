@@ -383,6 +383,8 @@ class FiberAmplifier(AbstractPassComp):
             self._stepper.start_shooting_forward()
         # Compute ------------------------------------------------------
         output_fields = self._stepper(domain, fields, pump_fields)
+        if (self._stepper.save_all):
+            self.storages.append(self._stepper.storage)
         # Record RE parameters -----------------------------------------
         re = self._stepper.equations[0]
         # If shooting method stops earlier than expected, those values
@@ -471,19 +473,23 @@ if __name__ == "__main__":
     lt.link((pulse[0], fiber[0]), (pump[0], fiber[2]))
     lt.run(pulse, pump)
 
-    x_datas = [pulse.fields[0].nu, pump.fields[0].nu, pulse.fields[0].time,
-               pump.fields[0].time, fiber.fields[1].nu, fiber.fields[1].time]
-    y_datas = [spectral_power(pulse.fields[0].channels),
-               spectral_power(pump.fields[0].channels),
-               temporal_power(pulse.fields[0].channels),
-               temporal_power(pump.fields[0].channels),
-               spectral_power(fiber.fields[1].channels),
-               temporal_power(fiber.fields[1].channels)]
+    x_datas = [pulse[0][0].nu, pump[0][0].nu,
+               pulse[0][0].time, pump[0][0].time,
+               np.vstack((fiber[1][0].nu, fiber[1][1].nu)),
+               np.vstack((fiber[1][0].time, fiber[1][1].time))]
+    y_datas = [spectral_power(pulse[0][0].channels),
+               spectral_power(pump[0][0].channels),
+               temporal_power(pulse[0][0].channels),
+               temporal_power(pump[0][0].channels),
+               spectral_power(np.vstack((fiber[1][0].channels,
+                                         fiber[1][1].channels))),
+               temporal_power(np.vstack((fiber[1][0].channels,
+                                         fiber[1][1].channels)))]
     x_labels = ['nu', 't', 'nu', 't']
     y_labels = ['P_nu', 'P_t', 'P_nu', 'P_t']
 
-    plot.plot(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-              plot_groups=[0,0,1,1,2,3], opacity=0.3)
+    plot.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
+                plot_groups=[0,0,1,1,2,3], opacity=0.3)
 
 
     x_data_raw = np.linspace(0.0, length, steps)
@@ -514,6 +520,6 @@ if __name__ == "__main__":
                    'fiber amplifier.', 'Inversion of population evolution '
                    'along the fiber amplifier.']
 
-    plot.plot(x_data, y_data, x_labels=['z'], y_labels=['P_t', 'Inversion of '
-              'population'], plot_titles=plot_titles,
-              plot_labels=plot_labels, plot_groups=plot_groups, opacity=0.3)
+    plot.plot2d(x_data, y_data, x_labels=['z'], y_labels=['P_t',
+                'Inversion of population'], plot_titles=plot_titles,
+                plot_labels=plot_labels, plot_groups=plot_groups, opacity=0.3)

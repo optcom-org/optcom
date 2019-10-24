@@ -217,6 +217,6 @@ if __name__ == "__main__":
         plot_titles.append("Emission ross sections {} from data file"
                            .format(dopant_name))
 
-    plot.plot(x_data, y_data, x_labels=['Lambda'], y_labels=['sigma_e'],
-              split=True, plot_colors='red', plot_titles=plot_titles,
-              plot_linestyles='-.', opacity=0.0)
+    plot.plot2d(x_data, y_data, x_labels=['Lambda'], y_labels=['sigma_e'],
+                split=True, plot_colors='red', plot_titles=plot_titles,
+                plot_linestyles='-.', opacity=0.0)

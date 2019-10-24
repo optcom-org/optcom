@@ -35,10 +35,16 @@ class AbstractEquation(object):
         self._effects_non_lin: List[AbstractEffect] = []
         self._effects_all: List[AbstractEffect] = []
         self._op_type: str = ""
-        self._center_omega: Array[float]
-        self._omega: Array[float]
+        self._center_omega: Array[float] = np.array([])
+        self._omega: Array[float] = np.array([])
+        self._delays: Array[float] = np.array([])
     # ==================================================================
     def __call__(self, vectors: Array, h: float, z: float) -> Array: ...
+    # ==================================================================
+    @property
+    def delays(self):
+
+        return self._delays
     # ==================================================================
     def open(self, domain: Domain, *fields: List[Field]) -> None:
         """This function is called once before a Stepper began the
@@ -71,6 +77,7 @@ class AbstractEquation(object):
         # Reset main array for further pass
         self._center_omega = np.array([])
         self._omega = np.array([])
+        self._delays: Array[float] = np.array([])
 
         return None
     # ==================================================================
