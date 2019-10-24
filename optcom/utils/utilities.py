@@ -434,6 +434,7 @@ def auto_pad(x_data, y_data, value_left=0.0, value_right=0.0):
             warning_terminal("auto_pad does not accept tensor with more than "
                 "3 dimensions.")
     else:
+        x_data_new = x_data
         y_data_new = y_data.reshape(1,-1)
 
     return x_data_new, y_data_new
