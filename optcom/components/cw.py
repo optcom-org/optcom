@@ -73,6 +73,7 @@ class CW(AbstractStartComp):
     def __init__(self, name: str = default_name, channels: int = 1,
                  center_lambda: List[float] = [cst.DEF_LAMBDA],
                  peak_power: List[float] = [1e-3],
+                 total_power: Optional[List[float]] = None,
                  offset_nu: List[float] = [0.0], init_phi: List[float] = [0.0],
                  save: bool = False) -> None:
         r"""
@@ -86,6 +87,9 @@ class CW(AbstractStartComp):
             The center wavelength of the channels. :math:`[nm]`
         peak_power :
             Peak power of the pulses. :math:`[W]`
+        total_power :
+            Total power of the pulses. :math:`[W]` (peak_power will be
+            ignored if total_power provided)
         offset_nu :
             The offset frequency. :math:`[THz]`
         init_phi :
@@ -101,6 +105,7 @@ class CW(AbstractStartComp):
         util.check_attr_type(channels, 'channels', int)
         util.check_attr_type(center_lambda, 'center_lambda', float, list)
         util.check_attr_type(peak_power, 'peak_power', float, list)
+        util.check_attr_type(total_power, 'total_power', None, float, list)
         util.check_attr_type(offset_nu, 'offset_nu', float, list)
         util.check_attr_type(init_phi, 'init_phi', float, list)
         # Attr ---------------------------------------------------------
@@ -108,6 +113,9 @@ class CW(AbstractStartComp):
         self.center_lambda: List[float] = util.make_list(center_lambda,
                                                          channels)
         self.peak_power: List[float] = util.make_list(peak_power, channels)
+        self.total_power: List[float] = []
+        if (total_power is not None):
+            self.total_power =  util.make_list(total_power, channels)
         self.offset_nu: List[float] = util.make_list(offset_nu, channels)
         self.init_phi: List[float] = util.make_list(init_phi, channels)
     # ==================================================================
@@ -124,11 +132,18 @@ class CW(AbstractStartComp):
                     "{} is bigger than half the frequency window, offset will "
                     "be ignored.".format(str(i), self.name))
         # Field initialization -----------------------------------------
+        if (self.total_power):
+            peak_power: List[float] = []
+            for i in range(len(self.total_power)):
+                peak_power.append(self.total_power[i]/domain.samples)
+        else:
+            peak_power = self.peak_power
+        print('peak power', peak_power)
         for i in range(self.channels):   # Nbr of channels
             res = np.zeros(domain.time.shape, dtype=cst.NPFT)
             phi = (self.init_phi[i]
                    - Domain.nu_to_omega(self.offset_nu[i])*domain.time)
-            res += math.sqrt(self.peak_power[i]) * np.exp(1j*phi)
+            res += math.sqrt(peak_power[i]) * np.exp(1j*phi)
             field.append(res, Domain.lambda_to_omega(self.center_lambda[i]))
 
         output_fields.append(field)

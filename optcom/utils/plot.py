@@ -140,6 +140,8 @@ def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
     colors_on_plot = plot_color is not None
     if (multi_channel):
         plot_label = util.make_list(plot_label, len(y_data))
+    print('in plot', x_data.shape, y_data.shape)
+    print(x_data)
     for i in range(len(y_data)):
         if (multi_channel):
             if (labels_on_plot):
