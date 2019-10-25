@@ -23,6 +23,7 @@ from nptyping import Array
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.domain import Domain
+from optcom.effects.abstract_effect import AbstractEffect
 from optcom.effects.attenuation import Attenuation
 from optcom.effects.dispersion import Dispersion
 from optcom.equations.abstract_equation import AbstractEquation
@@ -85,11 +86,16 @@ class AbstractNLSE(AbstractEquation):
         super().__init__()
         self._medium: str = medium
         self._disp_ind: int = -1
+        self._delays_effects: List[AbstractEffect] = []
         if (ATT):
-            self._effects_lin.append(Attenuation(alpha, alpha_order))
+            self._effects_lin.append(Attenuation(alpha, alpha_order,
+                                                 skip_taylor=[1]))
+            self._delays_effects.append(self._effects_lin[-1])
         if (DISP):
-            self._effects_lin.append(Dispersion(beta, beta_order))
+            self._effects_lin.append(Dispersion(beta, beta_order,
+                                                start_taylor=2))
             self._disp_ind = len(self._effects_lin) - 1
+            self._delays_effects.append(self._effects_lin[-1])
         self._gamma: Array[float]
         self._predict_gamma: Optional[Callable] = None
         if (gamma is not None):
@@ -124,16 +130,27 @@ class AbstractNLSE(AbstractEquation):
         """This function is called before each step of the computation.
         """
         # Perform change of variable T = t - \beta_1 z to ignore GV
+        step = int(round(x/h))
         if (self._delays.size):
             to_add = self._delays[:,-1].reshape(-1,1)
         else:
-            to_add = np.zeros((len(self._center_omega), 1))
-        self._delays = np.hstack((self._delays, to_add))
-        if (self._disp_ind != -1):  # if dispersion
+            # Step should be mainly = 0 but can be other if shooting
+            to_add = np.zeros((len(self._center_omega), step+1))
+        if (self._delays.shape[1] <= step):
+            self._delays = np.hstack((self._delays, to_add))
+        #if (self._disp_ind != -1):  # if dispersion
+        #    for i in range(len(waves)):
+        #        beta = self._effects_lin[self._disp_ind][i]
+        #        if (len(beta) > 1):  # if there is beta_1
+        #            self._delays[i][-1] += beta[1] * h
+        if (self._delays_effects):  # if dispersion
             for i in range(len(waves)):
-                beta = self._effects_lin[self._disp_ind][i]
-                if (len(beta) > 1):  # if there is beta_1
-                    self._delays[i][-1] += beta[1] * h
+                for effect in self._delays_effects:
+                    delay_factors = effect[i]
+                    #print('effect: ', len(delay_factors), effect)
+                    if (len(delay_factors) > 1):
+                    #    print('effect delaying ', effect)
+                        self._delays[i][-1] += delay_factors[1] * h
     # ==================================================================
     def close(self, domain: Domain, *fields: List[Field]) -> None:
         # update the time array of each field with GV delay

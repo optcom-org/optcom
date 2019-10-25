@@ -20,6 +20,8 @@ from __future__ import annotations
 import copy
 from typing import Any, List
 
+import numpy as np
+
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 #from optcom.components.abstract_component import AbstractComponent
@@ -138,6 +140,57 @@ class Port(object):
     def type(self, type: int) -> None:
 
         self._type = type
+    # ==================================================================
+    @property
+    def nbr_channels(self) -> int:
+        """Return the number of channels by adding all channels of all
+        fields.
+        """
+        res = 0
+        for i in range(len(self._fields)):
+            res += self._fields[i].nbr_channels
+
+        return res
+    # ==================================================================
+    @property
+    def channels(self) -> Array[cst.NPFT]:
+        """Return a list of all channels arrays of all fields.
+        """
+        res = []
+        for i in range(len(self._fields)):
+            res.append(self._fields[i].channels)
+
+        return res
+    # ==================================================================
+    @property
+    def time(self) -> Array[float]:
+        """Return a list of all times arrays of all fields.
+        """
+        res = []
+        for i in range(len(self._fields)):
+            res.append(self._fields[i].time)
+
+        return res
+    # ==================================================================
+    @property
+    def omega(self) -> Array[float]:
+        """Return a list of all angular frequency arrays of all fields.
+        """
+        res = []
+        for i in range(len(self._fields)):
+            res.append(self._fields[i].omega)
+
+        return res
+    # ==================================================================
+    @property
+    def nu(self) -> Array[float]:
+        """Return a list of all frequency arrays of all fields.
+        """
+        res = []
+        for i in range(len(self._fields)):
+            res.append(self._fields[i].nu)
+
+        return res
     # ==================================================================
     def reset(self) -> None:
         self._ngbr_comp = None

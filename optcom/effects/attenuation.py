@@ -42,7 +42,7 @@ class Attenuation(AbstractEffect):
 
     def __init__(self, alpha: Optional[Union[List[float], Callable]] = None,
                  order: int = 1, medium: str = cst.DEF_FIBER_MEDIUM,
-                 start_taylor: int = 0) -> None:
+                 start_taylor: int = 0, skip_taylor: List[int] = []) -> None:
         r"""
         Parameters
         ----------
@@ -65,6 +65,7 @@ class Attenuation(AbstractEffect):
         self._order: int = order
         self._medium: str = medium
         self._start_taylor: int = start_taylor
+        self._skip_taylor: List[int] = skip_taylor
         self._predict: Optional[Callable] = None
         self._alpha: Array[float]
         self._future_eq_to_calc_alpha: bool = False
@@ -135,6 +136,7 @@ class Attenuation(AbstractEffect):
            corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
         """The operator of the attenuation effect."""
 
-        op = Taylor.series(self._alpha[id], self._omega, self._start_taylor)
+        op = Taylor.series(self._alpha[id], self._omega, self._start_taylor,
+                           skip=self._skip_taylor)
 
         return -0.5 * op

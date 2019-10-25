@@ -32,7 +32,7 @@ class Taylor(object):
         return None
     @staticmethod
     def series(derivative: Array[float], x_diff: Array[float],
-               start: Optional[int] = 0, stop: Optional[int] = None
+               start: int = 0, stop: int = -1, skip: List[int] = []
                ) -> Array[float]:
         r"""Calculate the Taylor series according to the given
         parameters.
@@ -61,10 +61,11 @@ class Taylor(object):
         res = np.zeros(x_diff.shape, dtype=cst.NPFT)
         facto_i = math.factorial(start)
         x_power = np.power(x_diff, start)
-        if (stop is None):
+        if (stop == -1):
             stop = len(derivative)
         for i in range(start, stop):
-            res += derivative[i] * x_power / facto_i
+            if (i not in skip):
+                res += derivative[i] * x_power / facto_i
             x_power *= x_diff
             facto_i *= i+1
 

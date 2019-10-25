@@ -185,11 +185,14 @@ class Stepper(object):
         # To compute before closing bcs take parameters from fields
         if (self.save_all):
             time_ = np.ones((self._channels.shape)) * domain.time
+            ind = 0
             for i, field in enumerate(output_fields):
                 for j in range(len(field)):
-                    time_[i*len(output_fields) + j] += field.delays[j]
+                    time_[ind] += field.delays[j]
+                    ind += 1
             delays = self._eqs[-1].delays
             if (delays.size):
+                print(delays.shape, time_.shape)
                 for i in range(len(delays)):
                     time_[i] += delays[i].reshape((-1,1))
             self._storage.append(self._channels, self._space, time_)

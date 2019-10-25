@@ -170,13 +170,14 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
                    z_label, x_range, y_range, z_range, plot_title, plot_color,
                    opacity, plot_type):
     x_data_temp = np.asarray(x_data)
+    print('in ploooooooooooooot', x_data_temp.shape)
     x_data_temp = np.asarray(x_data)
     if (x_data_temp.ndim > 1):  # Else single time array, nothing to pad
         if (x_data_temp.ndim == 2):
             temp = np.ones(z_data.shape)
-            for i in range(len(x_data_temp)):
+            for i in range(len(temp)):
                 temp[i] = (np.ones((z_data.shape[1], z_data.shape[2]))
-                           * x_data_temp[i])
+                           * x_data_temp)
             x_data_temp = temp
         x_data = np.array([])
         z_data_temp = np.asarray(z_data)
@@ -192,11 +193,11 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
             if (plot3d_types[plot_type][1] == 'color'):
                 getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data[i],
                                                color=plot_color,
-                                               #rcount=100, ccount=100,
+                                               rcount=100, ccount=100,
                                                alpha=opacity)
             else:
                 getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data[i],
-                                               #rcount=200, ccount=200,
+                                               rcount=100, ccount=100,
                                                alpha=opacity)
         else:
             ravel_x = np.ravel(mesh_x)

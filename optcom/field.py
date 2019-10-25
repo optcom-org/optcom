@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import copy
 import operator
-from typing import Any, Union
+from typing import Any, List, Union, overload
 
 import numpy as np
 from nptyping import Array
@@ -349,12 +349,25 @@ class Field(object):
 
         return A * np.conj(A)
     # ==================================================================
+    @overload
     @staticmethod
-    def phase(A: Array, unwrap: bool = False) -> Array:
+    def phase(A: Array, unwrap: bool) -> Array: ...
+    # ------------------------------------------------------------------
+    @overload
+    @staticmethod
+    def phase(A: List[Array], unwrap: bool) -> List[Array]: ...
+    # ------------------------------------------------------------------
+    @staticmethod
+    def phase(A, unwrap=False):
+        if (isinstance(A, List)):
+            res = []
+            for i in range(len(A)):
+                res.append(Field.phase(A[i], unwrap))
 
-        if (A is not None):
+            return res
+        else:
+            phase = np.zeros(A.shape)
             if (A.ndim > 1):
-                phase = np.zeros(A.shape)
                 for i in range(A.shape[0]):
                     phase[i] = np.angle(A[i])
                     if (unwrap):
@@ -365,15 +378,26 @@ class Field(object):
                     phase = np.unwrap(phase[i])
 
             return phase
-
-        return None
     # ==================================================================
+    @overload
     @staticmethod
-    def temporal_power(A: Array, normalize: bool = False) -> Array:
+    def temporal_power(A: Array, normalize: bool) -> Array: ...
+    # ------------------------------------------------------------------
+    @overload
+    @staticmethod
+    def temporal_power(A: List[Array], normalize: bool) -> List[Array]: ...
+    # ------------------------------------------------------------------
+    @staticmethod
+    def temporal_power(A, normalize=False):
+        if (isinstance(A, List)):
+            res = []
+            for i in range(len(A)):
+                res.append(Field.temporal_power(A[i], normalize))
 
-        if (A is not None):
+            return res
+        else:
+            P = np.zeros(A.shape)
             if (A.ndim > 1):
-                P = np.zeros(A.shape)
                 for i in range(A.shape[0]):
                     P[i]  = np.real(Field.sq_mod(A[i]))
                     if (normalize):
@@ -384,18 +408,26 @@ class Field(object):
                     P /= np.amax(P)
 
             return P
-        else:
-            util.warning_terminal("Can not get temporal power of a "
-                "nonexistent field, request ignored, return null field")
-
-        return None
     # ==================================================================
+    @overload
     @staticmethod
-    def spectral_power(A: Array, normalize: bool = False):
+    def spectral_power(A: Array, normalize: bool) -> Array: ...
+    # ------------------------------------------------------------------
+    @overload
+    @staticmethod
+    def spectral_power(A: List[Array], normalize: bool) -> List[Array]: ...
+    # ------------------------------------------------------------------
+    @staticmethod
+    def spectral_power(A, normalize=False):
+        if (isinstance(A, List)):
+            res = []
+            for i in range(len(A)):
+                res.append(Field.spectral_power(A[i], normalize))
 
-        if (A is not None):
+            return res
+        else:
+            P = np.zeros(A.shape)
             if (A.ndim > 1):    # multidimensional
-                P = np.zeros(A.shape)
                 for i in range(A.shape[0]):
                     P[i] = np.real(Field.sq_mod(FFT.fft(A[i])))
                     if (normalize):
@@ -408,8 +440,3 @@ class Field(object):
                 P = FFT.ifftshift(P)
 
             return np.real(P)  # np.real to remove 0j
-        else:
-            util.warning_terminal("Can not get spectral power of a "
-                "nonexistent field, request ignored, return null field")
-
-        return None

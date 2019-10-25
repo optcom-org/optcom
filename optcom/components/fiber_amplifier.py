@@ -104,7 +104,6 @@ class FiberAmplifier(AbstractPassComp):
                  area_doped: Optional[float] = None,
                  eta_s: float = cst.ETA_SIGNAL, eta_p: float = cst.ETA_PUMP,
                  R_0: float = cst.R_0, R_L: float = cst.R_L,
-                 signal_width: List[float] = [1.0],
                  nl_index: Optional[Union[float, Callable]] = None,
                  ATT: bool = True, DISP: bool = True, SPM: bool = True,
                  XPM: bool = False, FWM: bool = False, SS: bool = False,
@@ -203,8 +202,6 @@ class FiberAmplifier(AbstractPassComp):
             The reflectivity at the fiber start.
         R_L :
             The reflectivity at the fiber end.
-        signal_width :
-            The width of each channel of the signal. :math:`[ps]`
         nl_index :
             The non linear index. Used to calculate the non linear
             parameter. :math:`[m^2\cdot W^{-1}]`
@@ -281,7 +278,6 @@ class FiberAmplifier(AbstractPassComp):
         util.check_attr_type(eta_p, 'eta_p', float)
         util.check_attr_type(R_0, 'R_0', float)
         util.check_attr_type(R_L, 'R_L', float)
-        util.check_attr_type(signal_width, 'signal_width', list)
         util.check_attr_type(nl_index, 'nl_index', None, float, Callable)
         util.check_attr_type(ATT, 'ATT', bool)
         util.check_attr_type(DISP, 'DISP', bool)
@@ -304,8 +300,7 @@ class FiberAmplifier(AbstractPassComp):
         step_update: bool = False if (solver_order == 'following') else True
         re = RE2Fiber(sigma_a, sigma_e, n_core, n_clad, NA, temperature,
                       tau_meta, N_T, core_radius, clad_radius, area_doped,
-                      eta_s, eta_p, R_0, R_L, signal_width, medium, dopant,
-                      step_update)
+                      eta_s, eta_p, R_0, R_L, medium, dopant, step_update)
         if (nl_approx):
             nlse = AmpANLSE(re, alpha, alpha_order, beta, beta_order, gamma,
                             gain_order, sigma, eta, T_R, R_0, R_L, nl_index,
@@ -415,11 +410,10 @@ if __name__ == "__main__":
     lt = layout.Layout(domain.Domain(samples_per_bit=512, bit_width=5.0,
                                      memory_storage=1.0))
     nbr_ch_s = 3
-    signal_width = [0.1, 0.2, 0.1]
     or_p = 1e-4
     pulse = gaussian.Gaussian(channels=nbr_ch_s,
                               peak_power=[1.6*or_p, 1.3*or_p, 1.2*or_p],
-                              width=signal_width,
+                              width=[0.1, 0.2, 0.1],
                               center_lambda=[1030.0, 1025.0, 1019.0])
     nbr_ch_p = 2
     #pump = gaussian.Gaussian(channels=nbr_ch_p, peak_power=[45.0, 35.0],
@@ -466,7 +460,6 @@ if __name__ == "__main__":
                            core_radius=r_core, clad_radius=r_clad,
                            temperature=temperature, tau_meta=tau_meta,
                            N_T=N_T, eta_s=eta_s, eta_p=eta_p, R_0=R_0, R_L=R_L,
-                           signal_width=signal_width,
                            medium=medium, dopant=dopant, steps=steps,
                            solver_order='alternating', error=error,
                            propagate_pump=True, save_all=True)

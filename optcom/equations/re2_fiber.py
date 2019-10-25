@@ -90,7 +90,6 @@ class RE2Fiber(REFiber):
                  area_doped: Optional[float] = None,
                  eta_s: float = cst.ETA_SIGNAL, eta_p: float = cst.ETA_PUMP,
                  R_0: float = cst.R_0, R_L: float = cst.R_L,
-                 signal_width: List[float] = [1.0],
                  medium: str = cst.DEF_FIBER_MEDIUM,
                  dopant: str = cst.DEF_FIBER_DOPANT,
                  step_update: bool = False) -> None:
@@ -138,8 +137,6 @@ class RE2Fiber(REFiber):
             The reflectivity at the fiber start.
         R_L :
             The reflectivity at the fiber end.
-        signal_width :
-            The width of each channel of the signal. :math:`[ps]`
         medium :
             The main medium of the fiber amplifier.
         dopant :
@@ -179,8 +176,6 @@ class RE2Fiber(REFiber):
         self._coprop: bool = True
 
         self._step_update: bool = step_update
-
-        self._signal_width = signal_width
 
         self._medium: str = medium
         self._dopant: str = dopant
@@ -659,10 +654,8 @@ class RE2Fiber(REFiber):
         # Iniate array for center omegas data --------------------------
         self._center_omega_s = self._in_eq_waves(self._center_omega, 0)
         self._center_omega_p = self._in_eq_waves(self._center_omega, 1)
-        # Signal channel width ----------------------------------------
-        signal_width = np.array(util.make_list(self._signal_width,
-                                               len(self._center_omega_s)))
-        self._width_omega_s = (1.0 / signal_width) * 2.0 * cst.PI
+        # Signal frequency step size -----------------------------------
+        self._domega = domain.domega
         # Initiate the variables array - power and pop. density --------
         self._shape_step_s = (len(self._center_omega_s), self._samples)
         self._power_s_f = np.zeros((1,)+self._shape_step_s)
@@ -913,7 +906,7 @@ class RE2Fiber(REFiber):
             if (self._signal_on):
                 self._power_s_b[self._step] =\
                     self._calc_power_s(self._step+1, h, False)
-                self._power_s_b[self._step] += self._power_ase_b[self._step]
+                self._power_s_b[self._step] -= self._power_ase_b[self._step]
             self._power_p_b[self._step] =\
                 self._calc_power_p(self._step+1, h, False)
 
@@ -1001,14 +994,14 @@ class RE2Fiber(REFiber):
         ase = np.zeros(self._shape_step_s)
         for i in range(len(self._center_omega_s)):
             ase += (cst.H/(2*cst.PI**2)*self._Gamma_s*self._sigma_e_s
-                    *self._N_1[step]*self._omega_s*self._width_omega_s[i]*z)
+                    *self._N_1[step]*self._omega_s*self._domega*z)
         ase *= 1e18  #  nm^2 kg ps^-3 -> W = m^2 kg s^-3
         if (forward):
 
             return ase
         else:
 
-            return -1*ase
+            return ase
     # ==================================================================
     def _calc_power_p(self, step: int, z: float, forward: bool = True
                       ) -> Array[float]:

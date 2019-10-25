@@ -80,6 +80,7 @@ class AbstractCoupledEquation(AbstractEquation):
                                                 field.center_omega))
                 self._omega_all = np.vstack((self._omega_all, field.omega))
 
+        self._delays = np.zeros((len(self._center_omega), 0))
         self._omega = FFT.fftshift(domain.omega)
 
         effects = ["lin", "non_lin", "all"]

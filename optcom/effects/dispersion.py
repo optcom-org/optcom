@@ -46,7 +46,7 @@ class Dispersion(AbstractEffect):
 
     def __init__(self, beta: Optional[Union[List[float], Callable]] = None,
                  order: int = 2, medium: str = cst.DEF_FIBER_MEDIUM,
-                 start_taylor: int = 2) -> None:
+                 start_taylor: int = 0,  skip_taylor: List[int] = []) -> None:
         r"""
         Parameters
         ----------
@@ -68,7 +68,8 @@ class Dispersion(AbstractEffect):
         super().__init__()
         self._order: int =  order
         self._medium: str = medium
-        self._start_taylor: int = start_taylor # 2 due to change of var
+        self._start_taylor: int = start_taylor
+        self._skip_taylor: List[int] = skip_taylor
         self._predict: Optional[Callable] = None
         self._beta: Array[float]
         self._class_n: Optional[Callable] = None
@@ -149,7 +150,8 @@ class Dispersion(AbstractEffect):
            corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
         """The operator of the dispersion effect."""
 
-        op = Taylor.series(self._beta[id], self._omega, self._start_taylor)
+        op = Taylor.series(self._beta[id], self._omega, self._start_taylor,
+                           skip=self._skip_taylor)
 
         return 1j * op
     # ==================================================================

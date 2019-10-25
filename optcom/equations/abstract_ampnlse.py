@@ -25,6 +25,7 @@ from nptyping import Array
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.domain import Domain
+from optcom.effects.abstract_effect import AbstractEffect
 from optcom.effects.attenuation import Attenuation
 from optcom.effects.dispersion import Dispersion
 from optcom.effects.gain_saturation import GainSaturation
@@ -110,12 +111,17 @@ class AbstractAmpNLSE(AbstractNLSE):
         self._gain_ind: int = -1
         self._gain_order: int = gain_order
         self._beta_order: int = beta_order
+        self._delays_effects: List[AbstractEffect] = []
         if (ATT):
-            self._effects_lin.append(Attenuation(alpha, alpha_order))
+            self._effects_lin.append(Attenuation(alpha, alpha_order,
+                                                 skip_taylor=[1]))
             self._att_ind = len(self._effects_lin) - 1
+            self._delays_effects.append(self._effects_lin[-1])
         if (DISP):
-            self._effects_lin.append(Dispersion(beta, beta_order))
+            self._effects_lin.append(Dispersion(beta, beta_order,
+                                                start_taylor=2))
             self._disp_ind = len(self._effects_lin) - 1
+            self._delays_effects.append(self._effects_lin[-1])
         if (GS):
             start_taylor_gain = 1
             self._effects_lin.append(GainSaturation(re, [0.0]))
@@ -124,7 +130,9 @@ class AbstractAmpNLSE(AbstractNLSE):
             start_taylor_gain = 0
         alpha_temp = [0.0 for i in range(self._gain_order+1)]
         self._effects_lin.append(Attenuation(alpha_temp,
-                                             start_taylor=start_taylor_gain))
+                                             start_taylor=start_taylor_gain,
+                                             skip_taylor=[1]))
+        self._delays_effects.append(self._effects_lin[-1])
         self._gain_ind = len(self._effects_lin) - 1
         # Gamma --------------------------------------------------------
         self._nl_index: Union[float, Callable] = NLIndex(medium=medium) if\
@@ -162,7 +170,7 @@ class AbstractAmpNLSE(AbstractNLSE):
     def open(self, domain: Domain, *fields: List[Field]) -> None:
         # Bypass open in parent to avoid gamma calculation (in set here)
         AbstractEquation.open(self, domain, *fields)
-        self._delays = np.zeros((len(self._center_omega), 1))
+        self._delays = np.zeros((len(self._center_omega), 0))
         # Initiate counter ---------------------------------------------
         self._iter = -1 # -1 bcs increment in the first init. cond.
         self._waves_s_ref = np.zeros((self._len_eq(0), domain.samples))

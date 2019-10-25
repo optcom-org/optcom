@@ -381,6 +381,7 @@ def auto_pad(x_data, y_data, value_left=0.0, value_right=0.0):
     x_data_new = np.array([])
     y_data_new = np.array([])
     if (x_data.ndim > 1):  # more than one x array
+        print('x_datain auto pad', x_data.shape)
         if (x_data.shape[1] != y_data.shape[1]):
             warning_terminal("auto_pad utilities function is not made to "
                 "work with different x and y data size.")
@@ -394,13 +395,16 @@ def auto_pad(x_data, y_data, value_left=0.0, value_right=0.0):
                 flag = (x_data[0][0] == round(x_data[i][0], nbr_dec_first)
                         and x_data[0][-1] == round(x_data[i][-1], nbr_dec_last)
                         and flag)
+                #print(flag, x_data[0][0], x_data[i][0], x_data[0][-1], x_data[i][-1])
                 if (min_value > x_data[i][0]):
                     min_value = x_data[i][0]
                 if (max_value < x_data[i][-1]):
                     max_value = x_data[i][-1]
             if (not flag):  # Avoid computation if no need
+                print('yyyyyyyyyyyyyyyyyyes I got in')
                 dx = x_data[0][1] - x_data[0][0]
                 values = (value_left, value_right)
+                print('paca aut', max_value, min_value, dx)
                 x_samples = int(round(((max_value - min_value) / dx) + 1))
                 y_data_new = np.zeros((y_data.shape[0], x_samples))
                 for i in range(x_data.shape[0]):

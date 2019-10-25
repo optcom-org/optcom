@@ -50,26 +50,46 @@ class Storage(object):
     def nbr_channels(self) -> int:
 
         return self._nbr_channels
+    # ------------------------------------------------------------------
+    @nbr_channels.setter
+    def nbr_channels(self, nbr_channels: int) -> None:
+        self._nbr_channels = nbr_channels
     # ==================================================================
     @property
     def samples(self) -> int:
 
         return self._samples
+    # ------------------------------------------------------------------
+    @samples.setter
+    def samples(self, samples: int) -> None:
+        self._samples = samples
     # ==================================================================
     @property
     def channels(self) -> Array[cst.NPFT]:
 
         return self._channels
+    # ------------------------------------------------------------------
+    @channels.setter
+    def channels(self, channels: Array[cst.NPFT]) -> None:
+        self._channels = channels
     # ==================================================================
     @property
     def space(self) -> Array[float]:
 
         return np.ones((self._nbr_channels, self._space.shape[0]))*self._space
+    # ------------------------------------------------------------------
+    @space.setter
+    def space(self, space: Array[float]) -> None:
+        self._space = space[0]
     # ==================================================================
     @property
     def time(self) -> Array[float]:
 
         return self._time
+    # ------------------------------------------------------------------
+    @time.setter
+    def time(self, time: Array[float]) -> None:
+        self._time = time
     # ==================================================================
     def append(self, channels, space, time) -> None:
         self._channels = channels
@@ -81,11 +101,28 @@ class Storage(object):
     def extend(self, storage: Storage) -> None:
         check_channels = (self._nbr_channels == storage.nbr_channels)
         check_samples = (self._samples == storage.samples)
-        if (check_channels and check_samples):
-            self._channels = np.hstack((self._channels, storage.channels))
-            self._time = np.hstack((self._time, storage.time))
-            space_to_add = storage.space + np.sum(self._space)
+        if (check_samples):
+            channels = storage.channels
+            time = storage.time
+            if (not check_channels):
+                diff = storage.nbr_channels-self._nbr_channels
+                if (diff > 0):
+                    to_add = np.zeros(((diff,) + self.channels[0].shape))
+                    self.channels = np.vstack((self.channels, to_add))
+                    to_add = np.zeros(((diff,) + self.time[0].shape))
+                    self.time = np.vstack((self.time, to_add))
+                    self._nbr_channels = storage.nbr_channels
+                else:
+                    to_add = np.zeros(((abs(diff),) + channels[0].shape))
+                    channels = np.vstack((channels, to_add))
+                    to_add = np.zeros(((abs(diff),) + time[0].shape))
+                    time = np.vstack((time, to_add))
+            self.channels = np.hstack((self.channels, channels))
+            self.time = np.hstack((self.time, time))
+            space_to_add = storage.space[0] + np.sum(self._space)
             self._space = np.hstack((self._space, space_to_add))
         else:
             util.warning_terminal("Storages extension aborted: same number of "
-                "samples and same number of channels is needed for extension.")
+                "samples is needed for extension.")
+
+        return self
