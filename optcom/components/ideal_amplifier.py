@@ -62,8 +62,8 @@ class IdealAmplifier(AbstractPassComp):
 
     def __init__(self, name: str = default_name,
                  gain: Union[float, Callable] = 1.0,
-                 peak_power: Optional[float] = None, save: bool = False
-                 ) -> None:
+                 peak_power: Optional[float] = None, save: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None) -> None:
         """
         Parameters
         ----------
@@ -77,11 +77,16 @@ class IdealAmplifier(AbstractPassComp):
             The target peak power to reach. :math:`[W]`
         save :
             If True, the last wave to enter/exit a port will be saved.
+        max_nbr_pass :
+            No fields will be propagated if the number of
+            fields which passed through a specific port exceed the
+            specified maximum number of pass for this port.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.ANY_ALL, cst.ANY_ALL]
-        super().__init__(name, default_name, ports_type, save)
+        super().__init__(name, default_name, ports_type, save,
+                         max_nbr_pass=max_nbr_pass)
         # Attr types check ---------------------------------------------
         util.check_attr_type(gain, 'gain', int, float, Callable)
         util.check_attr_type(peak_power, 'peak_power', None, int, float)

@@ -64,8 +64,7 @@ class FiberCoupler(AbstractPassComp):
     _nbr_instances_with_default_name: int = 0
 
     def __init__(self, name: str = default_name, length: float = 1.0,
-                 max_nbr_pass: Optional[List[int]] = None, nbr_fibers: int = 2,
-                 alpha: OPTIONAL_LIST_CALL_FLOAT = None,
+                 nbr_fibers: int = 2, alpha: OPTIONAL_LIST_CALL_FLOAT = None,
                  alpha_order: int = 1,
                  beta: OPTIONAL_LIST_CALL_FLOAT = None,
                  beta_order: int = 2,
@@ -86,7 +85,8 @@ class FiberCoupler(AbstractPassComp):
                  core_radius: List[float] = [cst.CORE_RADIUS],
                  V: List[float] = [cst.V], n_0: List[float] = [cst.REF_INDEX],
                  method: str = "rk4ip", steps: int = 100, save: bool = False,
-                 save_all: bool = False, wait: bool = False) -> None:
+                 save_all: bool = False, wait: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None) -> None:
         r"""
         Parameters
         ----------

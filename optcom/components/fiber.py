@@ -72,7 +72,8 @@ class Fiber(AbstractPassComp):
                  RS: bool = False, approx_type: int = cst.DEFAULT_APPROX_TYPE,
                  method: str = "rk4ip", steps: int = 100,
                  medium: str = cst.DEF_FIBER_MEDIUM, save: bool = False,
-                 save_all: bool = False) -> None:
+                 save_all: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None) -> None:
         r"""
         Parameters
         ----------
@@ -149,11 +150,16 @@ class Fiber(AbstractPassComp):
         save_all :
             If True, save the wave at each spatial step in the
             component.
+        max_nbr_pass :
+            No fields will be propagated if the number of
+            fields which passed through a specific port exceed the
+            specified maximum number of pass for this port.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.OPTI_ALL, cst.OPTI_ALL]
-        super().__init__(name, default_name, ports_type, save)
+        super().__init__(name, default_name, ports_type, save,
+                         max_nbr_pass=max_nbr_pass)
         # Attr types check ---------------------------------------------
         util.check_attr_type(length, 'length', float)
         util.check_attr_type(alpha, 'alpha', None, Callable, float, List)

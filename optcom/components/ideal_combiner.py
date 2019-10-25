@@ -67,7 +67,8 @@ class IdealCombiner(AbstractPassComp):
 
     def __init__(self, name: str = default_name, arms: int = 2,
                  combine: bool = False, ratios: Optional[List[float]] = None,
-                 wait: bool = True, save: bool = False) -> None:
+                 wait: bool = True, save: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None) -> None:
         """
         Parameters
         ----------
@@ -85,11 +86,16 @@ class IdealCombiner(AbstractPassComp):
             index-number port.
         save :
             If True, the last wave to enter/exit a port will be saved.
+        max_nbr_pass :
+            No fields will be propagated if the number of
+            fields which passed through a specific port exceed the
+            specified maximum number of pass for this port.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.ANY_IN for i in range(arms)] + [cst.ANY_OUT]
-        super().__init__(name, default_name, ports_type, save, wait=wait)
+        super().__init__(name, default_name, ports_type, save, wait=wait,
+                         max_nbr_pass=max_nbr_pass)
         # Check types attr ---------------------------------------------
         util.check_attr_type(arms, 'arms', int)
         util.check_attr_type(combine, 'combine', bool)

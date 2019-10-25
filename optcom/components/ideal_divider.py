@@ -67,7 +67,8 @@ class IdealDivider(AbstractPassComp):
 
     def __init__(self, name: str = default_name, arms: int = 2,
                  divide: bool = True, ratios: Optional[List[float]] = None,
-                 save: bool = False) -> None:
+                 save: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None) -> None:
         """
         Parameters
         ----------
@@ -84,11 +85,16 @@ class IdealDivider(AbstractPassComp):
             index-number port.
         save :
             If True, the last wave to enter/exit a port will be saved.
+        max_nbr_pass :
+            No fields will be propagated if the number of
+            fields which passed through a specific port exceed the
+            specified maximum number of pass for this port.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.OPTI_IN] + [cst.OPTI_OUT for i in range(arms)]
-        super().__init__(name, default_name, ports_type, save)
+        super().__init__(name, default_name, ports_type, save,
+                         max_nbr_pass=max_nbr_pass)
         # Check types attr ---------------------------------------------
         util.check_attr_type(arms, 'arms', int)
         util.check_attr_type(divide, 'combine', bool)

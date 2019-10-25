@@ -181,6 +181,34 @@ if __name__ == "__main__":
                spectral_power(cw[0][0].channels),
                phase(cw[0][0].channels)]
 
-    plot.plot2d(x_datas, y_datas, x_labels=["t","nu","t"],
-                y_labels=["P_t", "P_nu", "phi"], plot_titles=plot_titles,
+    #plot.plot2d(x_datas, y_datas, x_labels=["t","nu","t"],
+    #            y_labels=["P_t", "P_nu", "phi"], plot_titles=plot_titles,
+    #            split=True, opacity=0.2)
+
+    samples = int(2**(10))
+    bit_width = 3.
+    lt = layout.Layout(Domain(samples_per_bit=samples, bit_width=bit_width))
+
+    channels = 1
+    center_lambda = [1552.0, 1549.0, 1596.0]
+    peak_power = [1e-3, 2e-3, 6e-3]
+    total_power = [1e-3]
+    offset_nu = [0.0, 1.56, -1.6]
+    init_phi = [1.0, 1.0, 0.0]
+
+    cw = CW(channels=channels, center_lambda=center_lambda,
+            peak_power=peak_power, offset_nu=offset_nu, init_phi=init_phi,
+            save=True)
+
+    lt.run(cw)
+
+    plot_titles = ["CW pulse spectral power"]
+    x_datas = [cw[0][0].nu]
+    y_datas = [spectral_power(cw[0][0].channels)]
+
+    for i in range((int(samples/2)-4), (int(samples/2)+4)):
+        print(y_datas[0][0][i])
+
+    plot.plot2d(x_datas, y_datas, x_labels=["nu"],
+                y_labels=["P_nu"], plot_titles=plot_titles,
                 split=True, opacity=0.2)

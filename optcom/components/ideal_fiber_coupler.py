@@ -62,7 +62,7 @@ class IdealFiberCoupler(AbstractPassComp):
 
     def __init__(self, name: str = default_name,
                  ratios_ports: List[List[float]] = [[0.5, 0.5]],
-                 max_nbr_pass: Optional[List[int]] = None, save: bool = False,
+                 save: bool = False, max_nbr_pass: Optional[List[int]] = None
                  ) -> None:
         """
         Parameters
@@ -72,11 +72,12 @@ class IdealFiberCoupler(AbstractPassComp):
         ratios_ports :
             Each element of the list contain a list with the two
             dividing percentages for the two output ports.
-        max_nbr_pass :
-            The maximum number of times a field can enter at the
-            corresponding index-number port.
         save :
             If True, the last wave to enter/exit a port will be saved.
+        max_nbr_pass :
+            No fields will be propagated if the number of
+            fields which passed through a specific port exceed the
+            specified maximum number of pass for this port.
 
         """
         # Parent constructor -------------------------------------------
