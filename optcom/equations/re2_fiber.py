@@ -670,8 +670,10 @@ class RE2Fiber(REFiber):
         self._N_1 = np.zeros(1)
         # Initiate refractive index ------------------------------------
         if (self._calc_n_core):
+            print(self._omega_s)
             self._n_0_s = self._calc_n_core.n(self._omega_s)
             self._n_0_p = self._calc_n_core.n(self._omega_p)
+            print('flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaag')
         else:
             self._n_0_s = np.ones(self._shape_step_s) * self._n_0_s_value
             self._n_0_p = np.ones(self._shape_step_p) * self._n_0_p_value
@@ -939,6 +941,7 @@ class RE2Fiber(REFiber):
             self._Gamma_p[i] = self._overlap_p(self._A_eff_p[i])
         # N.B.: A_eff in um^2 , must leave to calculate Gamma,
         # otherwise not enough precision (Gamma is adim. anyway)
+    # ==================================================================
     def close(self, domain: Domain, *fields: List[Field]) -> None:
         super().close(domain, *fields)
     # ==================================================================

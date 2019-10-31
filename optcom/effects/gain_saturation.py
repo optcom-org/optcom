@@ -111,7 +111,7 @@ class GainSaturation(AbstractEffect):
         res = 0.0
         power = np.zeros(waves[id].shape, dtype=cst.NPFT)
         for i in range(len(waves)):
-            power += waves[i] * np.conj(waves[id])  # |A|^2
+            power += waves[i] * np.conj(waves[id]) #* self.dtime # |A|^2 * dt
 
         res = (-0.5*self._alpha[id]
                * np.exp(self._factor[id]*np.real(np.sum(power))))

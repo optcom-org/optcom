@@ -93,6 +93,8 @@ class AbstractCoupledEquation(AbstractEquation):
                         effect_list[i][j][k].time = domain.time
                         effect_list[i][j][k].center_omega =\
                             self._center_omega
+                        effect_list[i][j][k].domega = domain.domega
+                        effect_list[i][j][k].dtime = domain.dtime
     # ==================================================================
     def close(self, domain: Domain, *fields: List[Field]) -> None:
         """This function is called once after a Stepper ended the

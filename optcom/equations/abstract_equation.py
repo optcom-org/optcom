@@ -69,6 +69,8 @@ class AbstractEquation(object):
                 effect_list[i].omega = self._omega
                 effect_list[i].time = domain.time
                 effect_list[i].center_omega = self._center_omega
+                effect_list[i].domega = domain.domega
+                effect_list[i].dtime = domain.dtime
     # ==================================================================
     def close(self, domain: Domain, *fields: List[Field]) -> None:
         """This function is called once after a Stepper ended the

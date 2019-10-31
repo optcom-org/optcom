@@ -44,6 +44,8 @@ class AbstractEffect(object):
         self._omega: Optional[Array[float]] = omega
         self._time: Optional[Array[float]] = time
         self._center_omega: Optional[Array[float]] = center_omega
+        self._domega: Optional[float] = None
+        self._dtime: Optional[float] = None
     # ==================================================================
     @property
     def omega(self) -> Array[float]:
@@ -71,7 +73,24 @@ class AbstractEffect(object):
     @center_omega.setter
     def center_omega(self, center_omega: Array[float]) -> None:
         self._center_omega = center_omega
+    # ==================================================================
+    @property
+    def domega(self) -> Optional[float]:
 
+        return self._domega
+    # ------------------------------------------------------------------
+    @domega.setter
+    def domega(self, domega: float) -> None:
+        self._domega = domega
+    # ==================================================================
+    @property
+    def dtime(self) -> Optional[float]:
+
+        return self._dtime
+    # ------------------------------------------------------------------
+    @dtime.setter
+    def dtime(self, dtime: float) -> None:
+        self._dtime = dtime
     # ==================================================================
     def op(self, waves: Array[cst.NPFT], id: int,
            corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:

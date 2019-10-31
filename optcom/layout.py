@@ -15,7 +15,7 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -507,15 +507,23 @@ class Layout(object):
             if (output_ports[i] != -1):     # Explicit no propag. port policy
                 self._init_propagation(comp, output_ports[i], output_fields[i])
     # ==================================================================
-    def run(self, *starter_comps: AbstractStartComp) -> None:
+    def run(self, *starters: Union[AbstractStartComp, List[AbstractStartComp]]
+            ) -> None:
         """Launch the simulation.
 
         Parameters
         ----------
-        starter_comps : AbstractStartComp
+        starter_comps : AbstractStartComp or list of AbstractStartComp
             The components from which the simulation starts.
 
         """
+        starter_comps = []
+        for starter in starters:
+            if (isinstance(starter, List)):
+                for substarter in starter:
+                    starter_comps.append(substarter)
+            else:
+                starter_comps.append(starter)
         for starter in starter_comps:
             self.add_comp(starter)
         self._get_structure()

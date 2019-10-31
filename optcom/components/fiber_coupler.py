@@ -184,6 +184,10 @@ class FiberCoupler(AbstractPassComp):
         wait :
             If True, wait for another pulse in the anolog port
             [0 <-> 1, and 2 <-> 3] to launch the simulation.
+        max_nbr_pass :
+            No fields will be propagated if the number of
+            fields which passed through a specific port exceed the
+            specified maximum number of pass for this port.
 
         """
         # Parent constructor -------------------------------------------

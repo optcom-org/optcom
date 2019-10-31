@@ -413,21 +413,21 @@ if __name__ == "__main__":
     from optcom.utils.utilities_user import temporal_power, spectral_power,\
         CSVFit
 
-    lt = layout.Layout(domain.Domain(samples_per_bit=512, bit_width=5.0,
+    lt = layout.Layout(domain.Domain(samples_per_bit=1024, bit_width=0.5,
                                      memory_storage=1.0))
-    nbr_ch_s = 3
-    or_p = 1e-4
+    nbr_ch_s = 1
+    or_p = 1e1
     pulse = gaussian.Gaussian(channels=nbr_ch_s,
                               peak_power=[1.6*or_p, 1.3*or_p, 1.2*or_p],
                               width=[0.1, 0.2, 0.1],
                               center_lambda=[1030.0, 1025.0, 1019.0])
-    nbr_ch_p = 2
+    nbr_ch_p = 1
     #pump = gaussian.Gaussian(channels=nbr_ch_p, peak_power=[45.0, 35.0],
     #                         center_lambda=[940.0, 977.0], width=[7.0, 6.0])
     pump = cw.CW(channels=nbr_ch_p, peak_power=[4*or_p, 3*or_p],
                  center_lambda=[976.0, 940.0])
 
-    steps = 500
+    steps = 100
     length = 0.0005     # km
 
     file_sigma_a = ('./data/fiber_amp/cross_section/absorption/yb.txt')
@@ -469,6 +469,7 @@ if __name__ == "__main__":
                            medium=medium, dopant=dopant, steps=steps,
                            solver_order='alternating', error=error,
                            propagate_pump=True, save_all=True)
+
     lt.link((pulse[0], fiber[0]), (pump[0], fiber[2]))
     lt.run(pulse, pump)
 
@@ -502,15 +503,16 @@ if __name__ == "__main__":
     power_ase_forward = np.sum(fiber.power_ase_forward, axis=0)
     power_ase_backward = np.sum(fiber.power_ase_backward, axis=0)
     power_pump = fiber.power_pump_forward + fiber.power_pump_backward
-    powers = np.vstack((power_signal, power_ase_forward, power_ase_backward,
-                        power_pump))
+    powers = np.vstack((power_signal, power_pump, power_ase_forward,
+                        power_ase_backward))
     population = (fiber.N_1/fiber.N_0).reshape((1, -1))
 
     y_data = [powers, population]
 
     plot_label = (['Signal' for i in range(nbr_ch_s)]
-                   + ['ASE forward', 'ASE backward']
-                   + ['Pump' for i in range(nbr_ch_p)])
+                   + ['Pump' for i in range(nbr_ch_p)]
+                   + ['ASE forward', 'ASE backward'])
+
     plot_labels: List[Optional[str]] = plot_label.append(None)
 
     plot_groups = [0, 1]

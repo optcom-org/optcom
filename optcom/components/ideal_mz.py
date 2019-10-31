@@ -16,7 +16,6 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import math
-import copy
 
 from typing import Callable, List, Optional, Sequence, Tuple, Union
 
@@ -67,7 +66,7 @@ class IdealMZ(AbstractPassComp):
 
     def __init__(self, name: str = default_name,
                  phase_shift: Union[List[float], List[Callable]] = [0.0, 0.0],
-                 loss: float = 0.0, ext_ratio: float = 0.0,
+                 loss: float = 0.0, extinction: Optional[float] = None,
                  v_pi: Optional[List[float]] = None,
                  v_bias: Optional[List[float]] = None,
                  v_mod: Optional[List[Callable]] = None,
@@ -85,8 +84,8 @@ class IdealMZ(AbstractPassComp):
             are provided)
         loss :
             The loss induced by the MZ. :math:`[dB]`
-        ext_ratio :
-            The extinction ratio.
+        extinction :
+            The extinction ratio. :math:`[dB]`
         v_pi :
             The half-wave voltage. :math:`[V]`
         v_bias :
@@ -109,7 +108,7 @@ class IdealMZ(AbstractPassComp):
         # Attr types check ---------------------------------------------
         util.check_attr_type(phase_shift, 'phase_shift', float, Callable, list)
         util.check_attr_type(loss, 'loss', float)
-        util.check_attr_type(ext_ratio, 'ext_ratio', float)
+        util.check_attr_type(extinction, 'extinction', None, float)
         util.check_attr_type(v_pi, 'v_pi', None, float, list)
         util.check_attr_type(v_bias, 'v_bias', None, float, list)
         util.check_attr_type(v_mod, 'v_mod', None, Callable, list)
@@ -124,11 +123,16 @@ class IdealMZ(AbstractPassComp):
                             lambda t: cst.PI * (bias_[1]+mod_[1](t)) / pi_[1]]
         else:
             phase_shift_ = util.make_list(phase_shift, 2, 0.0)
+        if (extinction is None):
+            gamma_er = 1.0
+        else:
+            extinction_ = 10**(0.1*extinction) # db -> non db
+            gamma_er = (math.sqrt(extinction_)-1) / (math.sqrt(extinction_)+1)
         # N.B. name='nocount' to avoid inc. default name counter
         self._divider = IdealDivider(name='nocount', arms=2, divide=True,
                                      ratios=[0.5, 0.5])
         self._combiner = IdealCombiner(name='nocount', arms=2, combine=True,
-                                       ratios=[0.5, 0.5])
+                                       ratios=[0.5, 0.5*gamma_er])
         self._phasemod_1 = IdealPhaseMod(name='nocount',
                                          phase_shift=phase_shift_[0])
         self._phasemod_2 = IdealPhaseMod(name='nocount',
@@ -200,9 +204,20 @@ if __name__ == "__main__":
     mz = IdealMZ(v_pi=v_pi, v_mod=v_mod, v_bias=v_bias)
     lt.link((pulse[0], mz[0]))
     lt.run(pulse)
+    lt.reset()
     # Plot parameters and get waves
     y_datas.append(temporal_power(mz[1][0].channels))
     plot_titles += ["Pulses coming out of the {}".format(default_name)]
+
+    phase_shift_s =[0., 0.]
+    er = 20.0  # db
+    mz = IdealMZ(phase_shift=phase_shift_s, extinction=er)
+    lt.link((pulse[0], mz[0]))
+    lt.run(pulse)
+    # Plot parameters and get waves
+    y_datas.append(temporal_power(mz[1][0].channels))
+    plot_titles += ["Pulses coming out of the {} on 'on' mode with extinction "
+                    "ratio {} dB".format(default_name, er)]
 
     y_datas  = [temporal_power(pulse[0][0].channels)] + y_datas
     x_datas = [pulse[0][0].time, mz[1][0].time]

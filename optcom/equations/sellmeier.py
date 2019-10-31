@@ -108,8 +108,12 @@ class Sellmeier(AbstractRefractiveIndex):
             res = math.sqrt(res)
         else:   # numpy.ndarray
             res = np.ones(Lambda.shape)
+            print(res.shape)
             for i in range(len(self._Bs)):
                 res += (self._Bs[i]*Lambda**2) / (Lambda**2 - self._Cs[i])
+
+            #if (res[res<=0] == []):
+            print('res', res)
             res = np.sqrt(res)
 
         return res

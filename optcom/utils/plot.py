@@ -59,7 +59,7 @@ linestyles = ['solid', 'dotted', 'dashed', 'dashdot', (0, (1, 10)), (0, (1, 1)),
 '''
 # For color, see https://matplotlib.org/examples/color/named_colors.html
 linecolors = ['violet', 'orange', 'red', 'greenyellow', 'silver', 'brown',
-              'pink', 'gray', 'black', 'marroon', 'blue', 'navy', 'gold',
+              'pink', 'gray', 'black', 'blue', 'navy', 'gold',
               'cyan', 'palegreen', 'deepskyblue', 'lime',]
 
 
@@ -140,8 +140,6 @@ def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
     colors_on_plot = plot_color is not None
     if (multi_channel):
         plot_label = util.make_list(plot_label, len(y_data))
-    print('in plot', x_data.shape, y_data.shape)
-    print(x_data)
     for i in range(len(y_data)):
         if (multi_channel):
             if (labels_on_plot):
@@ -151,7 +149,7 @@ def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
         else:
             plot_label_temp = plot_label
         if (not colors_on_plot):
-            plot_color = linecolors[add_2D_subplot.counter]
+            plot_color = linecolors[add_2D_subplot.counter%len(linecolors)]
             add_2D_subplot.counter += 1
         if (labels_on_plot or multi_channel):
             plt_to_add.plot(x_data , y_data[i], ls=plot_linestyle,
@@ -172,7 +170,6 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
                    z_label, x_range, y_range, z_range, plot_title, plot_color,
                    opacity, plot_type):
     x_data_temp = np.asarray(x_data)
-    print('in ploooooooooooooot', x_data_temp.shape)
     x_data_temp = np.asarray(x_data)
     if (x_data_temp.ndim > 1):  # Else single time array, nothing to pad
         if (x_data_temp.ndim == 2):
