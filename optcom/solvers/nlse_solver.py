@@ -364,27 +364,31 @@ class NLSESolver(AbstractSolver):
     def rk4ip(f: AbstractEquation, waves: Array[cst.NPFT], h: float, z: float
               ) -> Array[cst.NPFT]:
 
-        if (len(waves) == 1):
-            A = copy.deepcopy(waves[0])
-            h_h = 0.5 * h
-            waves_temp = copy.deepcopy(waves)
-            A_lin = f.exp_term_lin(waves, 0, h_h)
-            waves[0] = f.term_non_lin(waves, 0)
-            k_0 = h * f.exp_term_lin(waves, 0, h_h)
-            waves[0] = A + 0.5*k_0
-            k_1 = h * f.term_non_lin(waves, 0)
-            waves[0] = A + 0.5*k_1
-            k_2 = h * f.term_non_lin(waves, 0)
-            waves[0] = A_lin + k_2
-            waves[0] = f.exp_term_lin(waves, 0, h_h)
-            k_3 = h * f.term_non_lin(waves, 0)
-            waves[0] = A_lin + k_0/6.0 + (k_1+k_2)/3.0
-            waves[0] = k_3/6.0 + f.exp_term_lin(waves, 0, h_h)
-            return waves
-
-        else:
-            util.warning_terminal("rk4ip with more than one field "
-                "currently not supported")
+        A = copy.deepcopy(waves)
+        h_h = 0.5 * h
+        A_lin = np.zeros_like(waves)
+        k_0 = np.zeros_like(waves)
+        k_1 = np.zeros_like(waves)
+        k_2 = np.zeros_like(waves)
+        k_3 = np.zeros_like(waves)
+        for i in range(len(waves)):
+            A_lin[i] = f.exp_term_lin(waves, i, h_h)
+        for i in range(len(waves)):
+            waves[i] = f.term_non_lin(waves, i)
+            k_0[i] = h * f.exp_term_lin(waves, i, h_h)
+        for i in range(len(waves)):
+            waves[i] = A[i] + 0.5*k_0[i]
+            k_1[i] = h * f.term_non_lin(waves, i)
+        for i in range(len(waves)):
+            waves[i] = A[i] + 0.5*k_1[i]
+            k_2[i] = h * f.term_non_lin(waves, i)
+        for i in range(len(waves)):
+            waves[i] = A_lin[i] + k_2[i]
+            waves[i] = f.exp_term_lin(waves, i, h_h)
+            k_3[i] = h * f.term_non_lin(waves, i)
+        for i in range(len(waves)):
+            waves[i] = A_lin[i] + k_0[i]/6.0 + (k_1[i]+k_2[i])/3.0
+            waves[i] = k_3[i]/6.0 + f.exp_term_lin(waves, i, h_h)
 
         return waves
     # ==================================================================
@@ -445,12 +449,12 @@ if __name__ == "__main__":
     # ---------------- NLSE solvers test -------------------------------
     lt = layout.Layout()
 
-    pulse = gaussian.Gaussian(channels=1, peak_power=[1.0])
+    pulse = gaussian.Gaussian(channels=2, peak_power=[0.5, 1.0])
 
     steps = int(10e3)
     for j, method in enumerate(nlse_methods):
         if (j == (len(nlse_methods)-1)):
-            nl_approx = False   # To compute rk4ip_gnlse
+            nl_approx = True   # To compute rk4ip_gnlse
         else:
             nl_approx = True
         # Propagation
@@ -469,8 +473,7 @@ if __name__ == "__main__":
         plot_groups.append(0)
 
     plot_labels.extend(nlse_methods)
-    plot_titles.extend(["NLSE pde solvers test with n={}"
-                       .format(str(steps))])
+    plot_titles.extend(["NLSE pde solvers test with n={}".format(str(steps))])
     # -------------------- Plotting results ------------------------
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
