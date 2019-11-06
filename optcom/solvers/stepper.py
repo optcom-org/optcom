@@ -27,11 +27,11 @@ import optcom.utils.utilities as util
 from optcom.domain import Domain
 from optcom.equations.abstract_equation import AbstractEquation
 from optcom.field import Field
-from optcom.solvers.solver import Solver
+from optcom.solvers.abstract_solver import AbstractSolver
 from optcom.storage import Storage
 
 
-STEP_METHOD_TYPE = Callable[[Array[cst.NPFT], List[Solver], int, bool],
+STEP_METHOD_TYPE = Callable[[Array[cst.NPFT], List[AbstractSolver], int, bool],
                             Array[cst.NPFT]]
 
 
@@ -60,8 +60,7 @@ class Stepper(object):
 
     """
 
-    def __init__(self, eqs: List[AbstractEquation],
-                 method: List[str] = [cst.DEFAULT_SOLVER],
+    def __init__(self, solvers: List[AbstractSolver],
                  length: float = 1.0, steps: List[int] = [100],
                  step_method: List[str] = [FIXED],
                  solver_order: str = FOLLOWING,
@@ -71,10 +70,8 @@ class Stepper(object):
         r"""
         Parameters
         ----------
-        eqs : list of AbstractEquation
-            The equation to solve.
-        method :
-            The method used to solve the equation.
+        solvers :
+            The solvers used to solve the equations.
         length :
             The length over which the equation is considered.
             :math:`[km]`
@@ -98,13 +95,12 @@ class Stepper(object):
             of :class:`layout.Layout`.
 
         """
-        self._eqs: List[AbstractEquation] = util.make_list(eqs)
-        self._nbr_solvers: int = len(self._eqs)
-        self._methods: List[str] = util.make_list(method, self._nbr_solvers)
+        self._solvers: List[AbstractSolver] = util.make_list(solvers)
+        self._nbr_solvers: int = len(self._solvers)
+        self._eqs: List[AbstractEquation] =\
+            [self._solvers[i].f for i in range(len(self._solvers))]
         self._steps: List[int] = util.make_list(steps, self._nbr_solvers)
         self._length: float = length
-        self._solvers: List[Solver] = [Solver(self._eqs[i], self._methods[i])
-                                       for i in range(self._nbr_solvers)]
         stepper_method = util.make_list(stepper_method, self._nbr_solvers)
         self._stepper_method_str = stepper_method
         self._stepper_method = [getattr(self, "_{}_method"
@@ -251,17 +247,18 @@ class Stepper(object):
     # ==================================================================
     def _print_computation_state(self, elapsed_time: float) -> None:
         str_to_print = ("Solved method(s) {} ({} steps) "
-                        .format(self._methods[0], self._steps[0]))
-        for i in range(1, len(self._methods)):
-            str_to_print += "and {} ({} steps) ".format(self._methods[i],
-                                                        self._steps[i])
+                        .format(self._solvers[0].name, self._steps[0]))
+        for i in range(1, len(self._solvers)):
+            str_to_print += ("and {} ({} steps) "
+                             .format(self._solvers[i].name, self._steps[i]))
         str_to_print += "for {} km length in {} s".format(self._length,
                                                           str(elapsed_time))
         util.print_terminal(str_to_print, '')
     # ==================================================================
-    def _fixed_step(self, waves: Array[cst.NPFT], solvers: List[Solver],
-                    steps: int, forward: bool = True,
-                    start: Optional[int] = None) -> Array[cst.NPFT]:
+    def _fixed_step(self, waves: Array[cst.NPFT],
+                    solvers: List[AbstractSolver], steps: int,
+                    forward: bool = True, start: Optional[int] = None
+                    ) -> Array[cst.NPFT]:
         # Saving management --------------------------------------------
         enough_space: bool
         if (self.save_all):
@@ -314,13 +311,15 @@ class Stepper(object):
 
         return waves
     # ==================================================================
-    def _adaptative_step(self, waves: Array[cst.NPFT], solvers: List[Solver],
-                         steps: int, forward: bool = True,
-                         start: Optional[int] = None) -> Array[cst.NPFT]:
+    def _adaptative_step(self, waves: Array[cst.NPFT],
+                         solvers: List[AbstractSolver], steps: int,
+                         forward: bool = True, start: Optional[int] = None
+                         ) -> Array[cst.NPFT]:
 
         return np.zeros(waves.shape, dtype=cst.NPFT)
     # ==================================================================
-    def _forward_method(self, waves: Array[cst.NPFT], solvers: List[Solver],
+    def _forward_method(self, waves: Array[cst.NPFT],
+                        solvers: List[AbstractSolver],
                         eqs: List[AbstractEquation], steps: int,
                         step_method: STEP_METHOD_TYPE) -> Array[cst.NPFT]:
         waves = step_method(waves, solvers, steps, True)
@@ -339,7 +338,8 @@ class Stepper(object):
         """
         self._start_shooting_forward = False
     # ==================================================================
-    def _shooting_method(self, waves: Array[cst.NPFT], solvers: List[Solver],
+    def _shooting_method(self, waves: Array[cst.NPFT],
+                         solvers: List[AbstractSolver],
                          eqs: List[AbstractEquation], steps: int,
                          step_method: STEP_METHOD_TYPE) -> Array[cst.NPFT]:
 

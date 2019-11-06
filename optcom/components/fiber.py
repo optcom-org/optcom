@@ -25,6 +25,7 @@ from optcom.equations.anlse import ANLSE
 from optcom.equations.gnlse import GNLSE
 from optcom.equations.nlse import NLSE
 from optcom.field import Field
+from optcom.solvers.nlse_solver import NLSESolver
 from optcom.solvers.stepper import Stepper
 
 
@@ -204,8 +205,9 @@ class Fiber(AbstractPassComp):
         # Special case for gnlse and rk4ip method
         if (SS and not nl_approx and (method == "rk4ip") and cst.RK4IP_GNLSE):
             method = "rk4ip_gnlse"
+        solver = NLSESolver(nlse, method)
         step_method = "fixed"   # to change later when implementing adaptative
-        self._stepper = Stepper([nlse], [method], length, [steps],
+        self._stepper = Stepper([solver], length, [steps],
                                 [step_method], save_all=save_all)
         # Policy -------------------------------------------------------
         self.add_port_policy(([0], [1], True))

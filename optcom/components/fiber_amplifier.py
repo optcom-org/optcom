@@ -29,8 +29,10 @@ from optcom.equations.ampanlse import AmpANLSE
 from optcom.equations.ampgnlse import AmpGNLSE
 from optcom.equations.ampnlse import AmpNLSE
 from optcom.equations.re2_fiber import RE2Fiber
-from optcom.solvers.stepper import Stepper
 from optcom.field import Field
+from optcom.solvers.nlse_solver import NLSESolver
+from optcom.solvers.ode_solver import ODESolver
+from optcom.solvers.stepper import Stepper
 
 
 default_name = 'Fiber Amplifier'
@@ -329,14 +331,14 @@ class FiberAmplifier(AbstractPassComp):
                 and cst.RK4IP_GNLSE):
             method = "rk4ip_gnlse"
         step_method = "fixed"   # for now, only works with "fixed"
-        eqs = [re, nlse]
         stepper_method: List[str]
         if (solver_order == 'following'):
             stepper_method = ['shooting', 'forward']
         else:
             stepper_method = ['shooting', 'shooting']
         # if method is empty '', will directly call the equation object
-        self._stepper = Stepper(eqs, ['', method], length, [steps],
+        solvers = [ODESolver(re, None), NLSESolver(nlse, method)]
+        self._stepper = Stepper(solvers, length, [steps],
                                 [step_method], solver_order, stepper_method,
                                 error=error,save_all=save_all)
         self.N_0: Array[float]

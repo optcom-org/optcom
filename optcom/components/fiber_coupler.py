@@ -29,6 +29,8 @@ from optcom.equations.canlse import CANLSE
 from optcom.equations.cgnlse import CGNLSE
 from optcom.equations.cnlse import CNLSE
 from optcom.field import Field
+from optcom.solvers.nlse_solver import NLSESolver
+from optcom.solvers.ode_solver import ODESolver
 from optcom.solvers.stepper import Stepper
 
 
@@ -251,8 +253,8 @@ class FiberCoupler(AbstractPassComp):
 
         method_2 = 'euler'    # only euler for now
         step_method = 'fixed'   # only fixed for now
-        self._stepper = Stepper([cnlse, cnlse], [method, method_2],
-                                length, [steps, steps], [step_method],
+        solvers = [NLSESolver(cnlse, method), ODESolver(cnlse, method_2)]
+        self._stepper = Stepper(solvers, length, [steps, steps], [step_method],
                                 "alternating", save_all=save_all)
         # Policy -------------------------------------------------------
         self.add_port_policy(([0, 1], [2, 3], True))
