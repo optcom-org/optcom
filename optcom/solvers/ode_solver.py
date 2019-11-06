@@ -29,6 +29,8 @@ from optcom.solvers.abstract_solver import AbstractSolver
 
 class ODESolver(AbstractSolver):
 
+    _default_method = cst.DFT_ODEMETHOD
+
     def __init__(self, f: AbstractEquation,
                  method: Optional[str] = cst.DFT_ODEMETHOD):
         """
@@ -146,43 +148,64 @@ class ODESolver(AbstractSolver):
 
 if __name__ == "__main__":
 
-    import numpy as np
+    import math
 
     import optcom.utils.plot as plot
+    import optcom.layout as layout
+    import optcom.components.gaussian as gaussian
+    import optcom.domain as domain
+    from optcom.components.fiber_coupler import FiberCoupler
+    from optcom.effects.coupling import Coupling
+    from optcom.utils.utilities_user import temporal_power, spectral_power
 
-    from optcom.equations.abstract_equation import AbstractEquation
+    plot_groups = []
+    plot_labels = []
+    plot_titles = []
+    x_datas = []
+    y_datas = []
 
     ode_methods = ["euler", "rk1", "rk2", "rk3", "rk4"]
 
-    # ---------------- ODE solvers test --------------------------------
-    class DF(AbstractEquation):
+    # ---------------- NLSE solvers test -------------------------------
+    lt = layout.Layout()
 
-        def __init__(self):
+    Lambda = 1030.0
+    pulse = gaussian.Gaussian(channels=1, peak_power=[1.0, 1.0],
+                              center_lambda=[Lambda])
 
-            return None
-        # ==============================================================
-        def term_all(self, vectors, i, h):
+    steps = int(1e2)
+    beta = [[1e5,10.0,-0.0],[1e5,10.0,-0.0]]
+    V = [2.0]
+    core_radius = [5.0]
+    c2c_spacing = [[15.0]]
+    n_0 = [1.02]
+    omega = domain.Domain.lambda_to_omega(Lambda)
+    kappa_ = Coupling.calc_kappa(omega, V[0], core_radius[0],
+                                 c2c_spacing[0][0], n_0[0])
+    kappa = None
+    delta_a = 0.5*(beta[0][0] - beta[1][0])
+    length_c = cst.PI/(2*math.sqrt(delta_a**2 + kappa_**2))
+    length = length_c / 2
 
-            return vectors[i] * np.square(np.sin(vectors[i]))
+    for j, method in enumerate(ode_methods):
+        coupler = FiberCoupler(length=length, kappa=kappa, V=V, n_0=n_0,
+                               core_radius=core_radius,
+                               c2c_spacing=c2c_spacing, ATT=False, DISP=False,
+                               nl_approx=False, SPM=False, SS=False, RS=False,
+                               XPM=True, ASYM=True, COUP=True, approx_type=1,
+                               nlse_method = 'ssfm_super_sym', steps=steps,
+                               ode_method = 'rk4', save=True, wait=False)
+        lt.link((pulse[0], coupler[0]))
+        lt.run(pulse)
+        lt.reset()
+        # Plot parameters and get waves
+        x_datas.append(coupler[2][0].time)
+        y_datas.append(temporal_power(coupler[2][0].channels))
+        plot_groups.append(0)
 
-
-    x_datas = []
-    y_datas = []
-    nbr = 200
-    df = DF()
-    for i in range(len(ode_methods)):
-        solver = ODESolver(df, ode_methods[i])
-
-        steps, h = np.linspace(0.0, 5.0, nbr, False, True)
-        vectors = np.zeros((1,nbr))
-        vectors[0] = df.term_all(steps.reshape((1,-1)), 0, 0.0)
-        for step in steps:
-            vectors = solver(vectors, h, step)
-        x_datas.append(steps)
-        y_datas.append(vectors)
-
-    plot_labels = ode_methods
-    plot_titles = ["ODE solvers comparison with {} steps".format(nbr)]
-    plot.plot2d(x_datas, y_datas, x_labels=["x"], y_labels=["y"],
-                split=False, plot_titles=plot_titles,
-                plot_labels=plot_labels, opacity=0.0)
+    plot_labels.extend(ode_methods)
+    plot_titles.extend(["ODE solvers test with n={}".format(str(steps))])
+    # -------------------- Plotting results ------------------------
+    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+                plot_labels=plot_labels, opacity=0.3)

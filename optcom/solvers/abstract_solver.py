@@ -45,8 +45,14 @@ class AbstractSolver(object):
             self.name = method.lower()
             self._method = getattr(self, self.name)
         else:
-            self.name = ''
-            util.warning_terminal("This solver method does not exist")
+            print(self.__class__)
+            print(self.__class__._default_method)
+            util.warning_terminal("The solver method '{}' does not exist, "
+                                  "default solver '{}' is set."
+                                  .format(method,
+                                          self.__class__._default_method))
+            self.name = self.__class__._default_method
+            self._method = getattr(self, self.__class__._default_method)
         self.f: AbstractEquation = f
     # ==================================================================
     def __call__(self, vectors: Array, h: float, z: float) -> Array:

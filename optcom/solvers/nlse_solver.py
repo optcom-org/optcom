@@ -30,6 +30,8 @@ from optcom.solvers.abstract_solver import AbstractSolver
 
 class NLSESolver(AbstractSolver):
 
+    _default_method = cst.DFT_NLSEMETHOD
+
     def __init__(self, f: AbstractEquation,
                  method: Optional[str] = cst.DFT_NLSEMETHOD):
         """
@@ -427,8 +429,6 @@ class NLSESolver(AbstractSolver):
 
 if __name__ == "__main__":
 
-    import numpy as np
-
     import optcom.utils.plot as plot
     import optcom.layout as layout
     import optcom.components.gaussian as gaussian
@@ -473,7 +473,7 @@ if __name__ == "__main__":
         plot_groups.append(0)
 
     plot_labels.extend(nlse_methods)
-    plot_titles.extend(["NLSE pde solvers test with n={}".format(str(steps))])
+    plot_titles.extend(["NLSE solvers test with n={}".format(str(steps))])
     # -------------------- Plotting results ------------------------
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],

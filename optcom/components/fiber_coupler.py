@@ -348,7 +348,7 @@ if __name__ == "__main__":
                            nl_approx=False, SPM=True, SS=True, RS=True,
                            XPM=True, ASYM=True, COUP=True, approx_type=1,
                            nlse_method = 'ssfm_super_sym', steps=steps,
-                           ode_method = 'euler', save=True, wait=False)
+                           ode_method = 'rk4', save=True, wait=False)
 
     lt.link((pulse_1[0], coupler[0]))
     lt.link((pulse_2[0], coupler[1]))
