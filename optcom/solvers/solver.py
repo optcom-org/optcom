@@ -15,10 +15,6 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
-# Optcom's development comments:
-#
-# - Make conventional DE solver
-
 import copy
 from typing import Callable, List, Optional
 
@@ -123,10 +119,70 @@ class Solver(object):
                   \ldots \\ \end{cases}
 
         """
+        k_0 = np.zeros_like(vectors)
         for i in range(len(vectors)):
-            vectors[i] = vectors[i] + f.term_all(vectors, i, h)*h
+            k_0 = h * f.term_all(vectors, i, h)
 
-        return vectors
+        return vectors + k_0
+    # ==================================================================
+    @staticmethod
+    def rk1(f: AbstractEquation, vectors: Array[cst.NPFT], h: float,
+            z: float) -> Array[cst.NPFT]:
+
+        return euler(f,vectors,h,z)
+    # ==================================================================
+    @staticmethod
+    def rk2(f: AbstractEquation, vectors: Array[cst.NPFT], h: float,
+            z: float) -> Array[cst.NPFT]:
+        h_h = 0.5 * h
+        k_0 = np.zeros_like(vectors)
+        k_1 = np.zeros_like(vectors)
+        for i in range(len(vectors)):
+            k_0[i] = h * f.term_all(vectors, i, h)
+        vectors_1 = vectors + (0.5*k_0)
+        for i in range(len(vectors)):
+            k_1[i] = h * f.term_all(vectors_1, i, h_h)
+
+        return vectors + k_1
+    # ==================================================================
+    @staticmethod
+    def rk3(f: AbstractEquation, vectors: Array[cst.NPFT], h: float,
+            z: float) -> Array[cst.NPFT]:
+        h_h = 0.5 * h
+        k_0 = np.zeros_like(vectors)
+        k_1 = np.zeros_like(vectors)
+        k_2 = np.zeros_like(vectors)
+        for i in range(len(vectors)):
+            k_0[i] = h * f.term_all(vectors, i, h)
+        vectors_ = vectors + (0.5*k_0)
+        for i in range(len(vectors)):
+            k_1[i] = h * f.term_all(vectors_, i, h_h)
+        vectors_ = vectors - k_0 + 2*k_1
+        for i in range(len(vectors)):
+            k_2[i] = h * f.term_all(vectors_, i, h)
+
+        return vectors + (1/6)*k_0 + (2/3)*k_1 + (1/6)*k_2
+    # ==================================================================
+    @staticmethod
+    def rk4(f: AbstractEquation, vectors: Array[cst.NPFT], h: float,
+            z: float) -> Array[cst.NPFT]:
+        k_0 = np.zeros_like(vectors)
+        k_1 = np.zeros_like(vectors)
+        k_2 = np.zeros_like(vectors)
+        k_3 = np.zeros_like(vectors)
+        for i in range(len(vectors)):
+            k_0[i] = h * f.term_all(vectors, i, h)
+        vectors_ = vectors + (0.5*k_0)
+        for i in range(len(vectors)):
+            k_1[i] = h * f.term_all(vectors_, i, h_h)
+        vectors_ = vectors + (0.5*k_1)
+        for i in range(len(vectors)):
+            k_2[i] = h * f.term_all(vectors_, i, h_h)
+        vectors_ = vectors + k_2
+        for i in range(len(vectors)):
+            k_3[i] = h * f.term_all(vectors_, i, h)
+
+        return vectors + (1/6)*k_0 + (1/3)*k_1 + (1/3)*k_2 + (1/6)*k_3
     # ==================================================================
     # NLSE like eq. solvers ============================================
     # ==================================================================

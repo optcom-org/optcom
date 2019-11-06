@@ -209,7 +209,7 @@ if __name__ == "__main__":
     y_datas.append(temporal_power(mz[1][0].channels))
     plot_titles += ["Pulses coming out of the {}".format(default_name)]
 
-    phase_shift_s =[0., 0.]
+    phase_shift_s = [0., 0.]
     er = 20.0  # db
     mz = IdealMZ(phase_shift=phase_shift_s, extinction=er)
     lt.link((pulse[0], mz[0]))
