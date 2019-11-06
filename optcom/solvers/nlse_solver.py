@@ -454,7 +454,7 @@ if __name__ == "__main__":
     steps = int(10e3)
     for j, method in enumerate(nlse_methods):
         if (j == (len(nlse_methods)-1)):
-            nl_approx = True   # To compute rk4ip_gnlse
+            nl_approx = False   # To compute rk4ip_gnlse
         else:
             nl_approx = True
         # Propagation

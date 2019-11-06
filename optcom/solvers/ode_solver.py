@@ -80,17 +80,12 @@ class ODESolver(AbstractSolver):
                   z_{k+1} = z_{k} + hf(t_k, x_{k+1}, y_{k+1}, z_k) \\
                   \ldots \\ \end{cases}
 
-
+        """
         k_0 = np.zeros_like(vectors)
         for i in range(len(vectors)):
-            k_0 = h * f.term_all(vectors, i, h)
+            k_0[i] = h * f.term_all(vectors, i, h)
 
         return vectors + k_0
-        """
-        for i in range(len(vectors)):
-            vectors[i] = vectors[i] + h*f.term_all(vectors, i, h)
-
-        return vectors
     # ==================================================================
     @staticmethod
     def rk1(f: AbstractEquation, vectors: Array, h: float, z: float) -> Array:
@@ -104,9 +99,9 @@ class ODESolver(AbstractSolver):
         k_1 = np.zeros_like(vectors)
         for i in range(len(vectors)):
             k_0[i] = h * f.term_all(vectors, i, h)
-        vectors_1 = vectors + (0.5*k_0)
+        vectors_ = vectors + (0.5*k_0)
         for i in range(len(vectors)):
-            k_1[i] = h * f.term_all(vectors_1, i, h_h)
+            k_1[i] = h * f.term_all(vectors_, i, h_h)
 
         return vectors + k_1
     # ==================================================================

@@ -86,7 +86,8 @@ class FiberCoupler(AbstractPassComp):
                  c2c_spacing: List[List[float]] = [[cst.C2C_SPACING]],
                  core_radius: List[float] = [cst.CORE_RADIUS],
                  V: List[float] = [cst.V], n_0: List[float] = [cst.REF_INDEX],
-                 method: str = "rk4ip", steps: int = 100, save: bool = False,
+                 nlse_method: str = "rk4ip", ode_method: str = "euler",
+                 steps: int = 100, save: bool = False,
                  save_all: bool = False, wait: bool = False,
                  max_nbr_pass: Optional[List[int]] = None) -> None:
         r"""
@@ -174,8 +175,10 @@ class FiberCoupler(AbstractPassComp):
             The fiber parameter.
         n_0 :
             The refractive index outside of the waveguides.
-        method :
-            The solver method type
+        nlse_method :
+            The nlse solver method type.
+        ode_method :
+            The ode solver method type.
         steps :
             The number of steps for the solver
         save :
@@ -229,7 +232,8 @@ class FiberCoupler(AbstractPassComp):
         util.check_attr_type(core_radius, 'core_radius', float, list)
         util.check_attr_type(V, 'V', float, list)
         util.check_attr_type(n_0, 'n_0', float, list)
-        util.check_attr_type(method, 'method', str)
+        util.check_attr_type(nlse_method, 'nlse_method', str)
+        util.check_attr_type(ode_method, 'ode_method', str)
         util.check_attr_type(steps, 'steps', int)
         # Attr ---------------------------------------------------------
         if (nl_approx):
@@ -251,9 +255,9 @@ class FiberCoupler(AbstractPassComp):
                               f_R, NA, ATT, DISP, SPM, XPM, FWM, ASYM, COUP,
                               medium, c2c_spacing, core_radius, V, n_0)
 
-        method_2 = 'euler'    # only euler for now
         step_method = 'fixed'   # only fixed for now
-        solvers = [NLSESolver(cnlse, method), ODESolver(cnlse, method_2)]
+        solvers = [NLSESolver(cnlse, nlse_method),
+                   ODESolver(cnlse, ode_method)]
         self._stepper = Stepper(solvers, length, [steps, steps], [step_method],
                                 "alternating", save_all=save_all)
         # Policy -------------------------------------------------------
@@ -343,8 +347,8 @@ if __name__ == "__main__":
                            c2c_spacing=c2c_spacing, ATT=True, DISP=True,
                            nl_approx=False, SPM=True, SS=True, RS=True,
                            XPM=True, ASYM=True, COUP=True, approx_type=1,
-                           method='ssfm_super_sym', steps=steps, save=True,
-                           wait=False)
+                           nlse_method = 'ssfm_super_sym', steps=steps,
+                           ode_method = 'euler', save=True, wait=False)
 
     lt.link((pulse_1[0], coupler[0]))
     lt.link((pulse_2[0], coupler[1]))
