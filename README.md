@@ -91,6 +91,7 @@ For bug report or suggestion, please use the Optcom issue tracker:
 https://github.com/optcom-org/optcom/issues
 
 To ask questions about the usage of Optcom, use the Gitter repo:
+https://gitter.im/optcom-org/optcom
 
 For any matter that does not concern the aforementioned ones, send an
 email to info@optcom.org
