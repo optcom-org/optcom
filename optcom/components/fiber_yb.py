@@ -400,29 +400,20 @@ if __name__ == "__main__":
     file as an example.
     """
 
-    import copy
     from typing import Callable, List, Optional, Union
 
     import matplotlib.pyplot as plt
-
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.cw import CW
-    from optcom.components.fiber_yb import FiberYb
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase,\
-                                            energy, average_power, CSVFit
+    import optcom as oc
 
     noise_samples = 250
     noise_range = (950.0,1100.0)
-    domain = Domain(samples_per_bit=1024, bit_width=20.0, memory_storage=8.0,
-                    noise_range=noise_range, noise_samples=noise_samples)
+    domain = oc.Domain(samples_per_bit=1024, bit_width=20.0,
+                       memory_storage=8.0, noise_range=noise_range,
+                       noise_samples=noise_samples)
 
-    lt: Layout = Layout(domain)
+    lt: oc.Layout = oc.Layout(domain)
 
     # Can play with number of channels, depending on the number and your
     # computer specs, it may take a while.
@@ -434,14 +425,15 @@ if __name__ == "__main__":
     fwhm_s: List[float] =  [1.0 for i in range(nbr_ch_s)]
     peak_power_s: List[float] = [3.0, 2.0, 1.0, 0.5, 0.3, 0.1]
     rep_freq = [20e-6]   # THz
-    pulse: Gaussian = Gaussian(channels=nbr_ch_s, peak_power=peak_power_s,
-                               fwhm=fwhm_s, center_lambda=lambdas_s,
-                               rep_freq=rep_freq)
+    pulse: oc.Gaussian = oc.Gaussian(channels=nbr_ch_s,
+                                     peak_power=peak_power_s,
+                                     fwhm=fwhm_s, center_lambda=lambdas_s,
+                                     rep_freq=rep_freq)
 
     lambdas_p: List[float] = [976.0, 940.0]
     peak_power_p: List[float] = [0.05, 0.1]
-    pump: CW = CW(channels=nbr_ch_p, peak_power=peak_power_p,
-                  center_lambda=lambdas_p)
+    pump: oc.CW = oc.CW(channels=nbr_ch_p, peak_power=peak_power_p,
+                        center_lambda=lambdas_p)
 
     steps: int = 200
     length: float = 0.002   # km
@@ -451,10 +443,10 @@ if __name__ == "__main__":
     file_sigma_e: str = './data/fiber_amp/cross_section/emission/yb.txt'
     sigma_a: List[Union[float, Callable, None]]
     sigma_e: List[Union[float, Callable, None]]
-    sigma_a = [CSVFit(file_sigma_a, conv_factor=[1e9, 1e18],
-                      conv_func=[Domain.lambda_to_omega])]
-    sigma_e = [CSVFit(file_sigma_e, conv_factor=[1e9, 1e18],
-                      conv_func=[Domain.lambda_to_omega])]
+    sigma_a = [oc.CSVFit(file_sigma_a, conv_factor=[1e9, 1e18],
+                         conv_func=[oc.Domain.lambda_to_omega])]
+    sigma_e = [oc.CSVFit(file_sigma_e, conv_factor=[1e9, 1e18],
+                         conv_func=[oc.Domain.lambda_to_omega])]
     n_core: List[Union[float, Callable, None]] = [None]
     n_clad: List[Union[float, Callable, None]] = [None]
     NA: List[Union[float, Callable, None]] = [0.11]
@@ -471,28 +463,28 @@ if __name__ == "__main__":
     medium_core: str = 'sio2'
     error: float = 1e-5
     max_nbr_iter: int = 10
-    fiber: FiberYb
-    fiber = FiberYb(length=length, nlse_method="rk4ip",
-                    alpha=alpha, beta_order = 2, alpha_order = 0,
-                    gain_order=0, GAIN_SAT=True,
-                    nl_approx=False, ATT=[True, True], DISP=[True, False],
-                    SPM=[True, False], XPM=[True, False], SS=[True, False],
-                    RS=[True, False], XNL=[False, False],
-                    approx_type=1, split_noise_option='seed_split',
-                    sigma_e=sigma_e, sigma_a=sigma_a,
-                    n_core=n_core, n_clad=n_clad, NA=NA,
-                    core_radius=r_core, clad_radius=r_clad,
-                    temperature=temperature, tau=tau,
-                    N_T=N_T, R_0=R_0, R_L=R_L,
-                    medium_core=medium_core, steps=steps,
-                    error=error, BISEED=False, BIPUMP=False,
-                    PROP_PUMP=True, CORE_PUMPED=True, CLAD_PUMPED=False,
-                    UNI_OMEGA=[True, True], save=True, save_all=True,
-                    STEP_UPDATE=False, NOISE=True, INTRA_COMP_DELAY=False,
-                    INTRA_PORT_DELAY=False, INTER_PORT_DELAY=False,
-                    REFL_SEED=True, REFL_PUMP=True, noise_ode_method='rk4',
-                    max_nbr_iter=max_nbr_iter, PROP_REFL=False,
-                    PRE_PUMP_PROP=False, RESO_INDEX=True)
+    fiber: oc.FiberYb
+    fiber = oc.FiberYb(length=length, nlse_method="rk4ip",
+                        alpha=alpha, beta_order = 2, alpha_order = 0,
+                        gain_order=0, GAIN_SAT=True,
+                        nl_approx=False, ATT=[True, True], DISP=[True, False],
+                        SPM=[True, False], XPM=[True, False], SS=[True, False],
+                        RS=[True, False], XNL=[False, False],
+                        approx_type=1, split_noise_option='seed_split',
+                        sigma_e=sigma_e, sigma_a=sigma_a,
+                        n_core=n_core, n_clad=n_clad, NA=NA,
+                        core_radius=r_core, clad_radius=r_clad,
+                        temperature=temperature, tau=tau,
+                        N_T=N_T, R_0=R_0, R_L=R_L,
+                        medium_core=medium_core, steps=steps,
+                        error=error, BISEED=False, BIPUMP=False,
+                        PROP_PUMP=True, CORE_PUMPED=True, CLAD_PUMPED=False,
+                        UNI_OMEGA=[True, True], save=True, save_all=True,
+                        STEP_UPDATE=False, NOISE=True, INTRA_COMP_DELAY=False,
+                        INTRA_PORT_DELAY=False, INTER_PORT_DELAY=False,
+                        REFL_SEED=True, REFL_PUMP=True, noise_ode_method='rk4',
+                        max_nbr_iter=max_nbr_iter, PROP_REFL=False,
+                        PRE_PUMP_PROP=False, RESO_INDEX=True)
 
     lt.link((pulse[0], fiber[0]), (pump[0], fiber[2]))
     lt.run(pulse, pump)
@@ -502,23 +494,25 @@ if __name__ == "__main__":
                             pulse[0][0].time, pump[0][0].time,
                             np.vstack((fiber[1][0].nu, fiber[1][0].nu)),
                             np.vstack((fiber[1][0].time, fiber[1][0].time))]
-    y_datas: List[np.ndarray] = [spectral_power(pulse[0][0].channels),
-                                 spectral_power(pump[0][0].channels),
-                                 temporal_power(pulse[0][0].channels),
-                                 temporal_power(pump[0][0].channels),
-                                 spectral_power(np.vstack((fiber[1][0].channels,
-                                                     fiber[1][1].channels))),
-                                 temporal_power(np.vstack((fiber[1][0].channels,
-                                                     fiber[1][1].channels)))]
+    y_datas: List[np.ndarray] = [oc.spectral_power(pulse[0][0].channels),
+                                 oc.spectral_power(pump[0][0].channels),
+                                 oc.temporal_power(pulse[0][0].channels),
+                                 oc.temporal_power(pump[0][0].channels),
+                                 oc.spectral_power(np.vstack((
+                                    fiber[1][0].channels,
+                                    fiber[1][1].channels))),
+                                 oc.temporal_power(np.vstack((
+                                    fiber[1][0].channels,
+                                    fiber[1][1].channels)))]
     x_labels: List[str] = ['nu', 't', 'nu', 't']
     y_labels: List[str] = ['P_nu', 'P_t', 'P_nu', 'P_t']
     plot_titles: Optional[List[str]]
     plot_titles = ['Initial pulse', 'Initial pulse', 'Pulse after amplifier',
                     'Pulse after amplifier']
 
-    plot.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-                plot_groups=[0,0,1,1,2,3], opacity=[0.3],
-                plot_titles=plot_titles)
+    oc.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
+              plot_groups=[0,0,1,1,2,3], opacity=[0.3],
+              plot_titles=plot_titles)
 
     # Power vs space plotting -------------------------------------------
     # Storage stores first all input seeds and pumps and then their reflections
@@ -531,9 +525,9 @@ if __name__ == "__main__":
         y_datas = [np.zeros(steps_) for _ in range(nbr_channels_)]
         for i in range(steps_):
             for j in range(nbr_channels_):
-                y_datas[j][i] = average_power(storage.channels[j][i],
-                                              domain.dtime,
-                                              storage.rep_freq[j])
+                y_datas[j][i] = oc.average_power(storage.channels[j][i],
+                                                 domain.dtime,
+                                                 storage.rep_freq[j])
         # Prepare noises - have been split among all seeds
         ase_forward = np.zeros(steps_)
         ase_backward = np.zeros(steps_)
@@ -559,17 +553,17 @@ if __name__ == "__main__":
         plot_titles = ['Power evolution of signal, ase and pump along the '
                        'fiber amplifier.']
 
-        plot.plot2d(x_datas, y_datas, x_labels=[r'Fiber length, $\, z\,(km)$'],
-                    y_labels=['Average Power (W)'], plot_labels=plot_labels,
-                    plot_linestyles=plot_linestyles, split=False,
-                    plot_titles=plot_titles)
+        oc.plot2d(x_datas, y_datas, x_labels=[r'Fiber length, $\, z\,(km)$'],
+                  y_labels=['Average Power (W)'], plot_labels=plot_labels,
+                  plot_linestyles=plot_linestyles, split=False,
+                  plot_titles=plot_titles)
 
         # Animation power vs space plotting ----------------------------
         plot_labels = [str(lambdas_s[i]) + ' nm channel '
                        for i in range(len(lambdas_s))]
 
-        plot.animation2d(storage.time,
-                         temporal_power(storage.channels[:(nbr_ch_s)]),
-                         storage.space, x_label=['t'], y_label=['P_t'],
-                         plot_title='Channels propagation in fiber amplifier.',
-                         plot_labels=plot_labels)
+        oc.animation2d(storage.time,
+                       oc.temporal_power(storage.channels[:(nbr_ch_s)]),
+                       storage.space, x_label=['t'], y_label=['P_t'],
+                       plot_title='Channels propagation in fiber amplifier.',
+                       plot_labels=plot_labels)

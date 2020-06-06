@@ -160,7 +160,7 @@ class ResonantIndex(AbstractParameter):
             num = cst.C_E**2 * (n_0**2 + 2.0)**2 / 9.0
         else:
             num = np.square(cst.C_E) * np.square((np.square(n_0) + 2.0)) / 9.0
-        den = 8.0 * n_0 * cst.M_E * cst.EPS_0 * cst.LIGHT_SPEED
+        den = 8.0 * n_0 * cst.M_E * cst.EPS_0 * cst.C
 
         return num / den
     # ==================================================================
@@ -205,7 +205,7 @@ class ResonantIndex(AbstractParameter):
                    {\lambda_s \lambda_{ij}^2}\Big)}
 
         """
-        factor = 1.0 / (cst.LIGHT_SPEED*cst.PI)
+        factor = 1.0 / (cst.C*cst.PI)
         if (isinstance(Lambda, float)):
             diff = ((1.0 / Lambda**2) - (1.0 / lambda_s**2))
             den = (diff**2 + (lambda_bw/(Lambda**2)/lambda_s)**2)
@@ -315,28 +315,25 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    from optcom.utils.plot import plot2d
-    from optcom.domain import Domain
-    from optcom.parameters.refractive_index.resonant_index import ResonantIndex
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     # With float
     n_0: float = 1.43  #
     N: float = 0.03  # nm^-3
-    omega: float = Domain.lambda_to_omega(1050.0)
-    resonant: ResonantIndex = ResonantIndex("yb", n_0, N)
+    omega: float = oc.lambda_to_omega(1050.0)
+    resonant: oc.ResonantIndex = oc.ResonantIndex("yb", n_0, N)
     print(resonant(omega))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(500., 1500., 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     delta_n: np.ndarray = resonant(omegas)
     delta_n_data: List[np.ndarray] = [delta_n]
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = ['Index change']
     plot_titles: List[str] = ["Resonant index change with constant n_0 = {} "
                               "(pumped)".format(n_0)]
-    sellmeier: Sellmeier = Sellmeier("siO2")
-    resonant = ResonantIndex("yb", sellmeier, N)
+    sellmeier: oc.Sellmeier = oc.Sellmeier("siO2")
+    resonant = oc.ResonantIndex("yb", sellmeier, N)
     delta_n = resonant(omegas)
     delta_n_data.append(delta_n)
     x_labels.append('Lambda')
@@ -344,6 +341,6 @@ if __name__ == "__main__":
     plot_titles.append("Resonant index change with n_0 from Silica Sellmeier "
                        "equations. (pumped)")
 
-    plot2d([lambdas, lambdas], delta_n_data, x_labels=x_labels,
-           y_labels=y_labels, plot_titles=plot_titles, split=True,
-           opacity=[0.0])
+    oc.plot2d([lambdas, lambdas], delta_n_data, x_labels=x_labels,
+              y_labels=y_labels, plot_titles=plot_titles, split=True,
+              opacity=[0.0])

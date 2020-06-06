@@ -208,17 +208,14 @@ if __name__ == "__main__":
     file as an example.
     """
 
-    from typing import Callable, List, Optional
+    from typing import List
 
-    from optcom.components.cw import CW
-    from optcom.utils.plot import plot2d
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import numpy as np
 
-    dm: Domain = Domain(samples_per_bit=512, bit_width=100.0)
-    lt: Layout = Layout(dm)
+    import optcom as oc
+
+    dm: oc.Domain = oc.Domain(samples_per_bit=512, bit_width=100.0)
+    lt: oc.Layout = oc.Layout(dm)
 
     channels: int = 1
     center_lambda: List[float] = [1552.0, 1549.0, 1596.0]
@@ -226,9 +223,9 @@ if __name__ == "__main__":
     offset_nu: List[float] = [0.0, 1.56, -1.6]
     init_phi: List[float] = [1.0, 1.0, 0.0]
 
-    cw: CW = CW(channels=channels, center_lambda=center_lambda,
-                peak_power=peak_power, offset_nu=offset_nu, init_phi=init_phi,
-                save=True)
+    cw: oc.CW = oc.CW(channels=channels, center_lambda=center_lambda,
+                      peak_power=peak_power, offset_nu=offset_nu,
+                      init_phi=init_phi, save=True)
 
     lt.run(cw)
 
@@ -238,11 +235,11 @@ if __name__ == "__main__":
                               "CW pulse spectral phase"]
     x_datas: List[np.ndarray] = [cw[0][0].time, cw[0][0].nu, cw[0][0].time,
                                  cw[0][0].nu]
-    y_datas: List[np.ndarray] = [temporal_power(cw[0][0].channels),
-                                 spectral_power(cw[0][0].channels),
-                                 temporal_phase(cw[0][0].channels),
-                                 spectral_phase(cw[0][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(cw[0][0].channels),
+                                 oc.spectral_power(cw[0][0].channels),
+                                 oc.temporal_phase(cw[0][0].channels),
+                                 oc.spectral_phase(cw[0][0].channels)]
 
-    plot2d(x_datas, y_datas, x_labels=["t","nu","t","nu"],
-           y_labels=["P_t", "P_nu", "phi_t", "phi_nu"],
-           plot_titles=plot_titles, split=True, opacity=[0.2])
+    oc.plot2d(x_datas, y_datas, x_labels=["t","nu","t","nu"],
+              y_labels=["P_t", "P_nu", "phi_t", "phi_nu"],
+              plot_titles=plot_titles, split=True, opacity=[0.2])

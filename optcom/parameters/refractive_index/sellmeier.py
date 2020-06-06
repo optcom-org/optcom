@@ -180,39 +180,36 @@ if __name__ == "__main__":
 
     import numpy as np
 
+    import optcom as oc
     import optcom.utils.constants as cst
-    from optcom.utils.plot import plot2d
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
     medium: str = "sio2"
-    sellmeier: Sellmeier = Sellmeier(medium)
+    sellmeier: oc.Sellmeier = oc.Sellmeier(medium)
     # With float
-    omega: float = Domain.lambda_to_omega(1550.0)
+    omega: float = oc.lambda_to_omega(1550.0)
     print(sellmeier(omega))
-    sellmeier: Sellmeier = Sellmeier(medium, cst.FIBER_CORE_DOPANT,
-                                     cst.CORE_DOPANT_CONCENT)
+    sellmeier = oc.Sellmeier(medium, cst.FIBER_CORE_DOPANT,
+                             cst.CORE_DOPANT_CONCENT)
     n_core: float = sellmeier(omega)
-    sellmeier = Sellmeier(medium, cst.FIBER_CLAD_DOPANT,
-                          cst.CLAD_DOPANT_CONCENT)
+    sellmeier = oc.Sellmeier(medium, cst.FIBER_CLAD_DOPANT,
+                             cst.CLAD_DOPANT_CONCENT)
     n_clad: float = sellmeier(omega)
-    print(n_core, n_clad, NumericalAperture.calc_NA(n_core, n_clad))
+    print(n_core, n_clad, oc.NumericalAperture.calc_NA(n_core, n_clad))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(120., 2120., 2000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
-    sellmeier = Sellmeier(medium)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
+    sellmeier = oc.Sellmeier(medium)
     res: List[np.ndarray] = [sellmeier(omegas)]
-    plot_labels: List[str] = ["no dopants"]
+    plot_labels: List[Optional[str]] = ["no dopants"]
 
-    sellmeier = Sellmeier(medium, cst.FIBER_CORE_DOPANT,
-                          cst.CORE_DOPANT_CONCENT)
+    sellmeier = oc.Sellmeier(medium, cst.FIBER_CORE_DOPANT,
+                             cst.CORE_DOPANT_CONCENT)
     res.append(sellmeier(omegas))
     plot_labels.append("{} mole% of {}"
                        .format(cst.CORE_DOPANT_CONCENT,
                                cst.FIBER_CORE_DOPANT))
-    sellmeier = Sellmeier(medium, cst.FIBER_CLAD_DOPANT,
-                          cst.CLAD_DOPANT_CONCENT)
+    sellmeier = oc.Sellmeier(medium, cst.FIBER_CLAD_DOPANT,
+                             cst.CLAD_DOPANT_CONCENT)
     res.append(sellmeier(omegas))
     plot_labels.append("{} mole% of {}"
                        .format(cst.CLAD_DOPANT_CONCENT,
@@ -222,6 +219,6 @@ if __name__ == "__main__":
     plot_titles: List[str] = ["Refractive index of Silica from Sellmeier0"
                               "equations."]
 
-    plot2d([lambdas], res, x_labels=x_labels, y_labels=y_labels,
-           plot_labels=plot_labels, plot_titles=plot_titles,
-           opacity=[0.0], split=False, y_ranges=[(1.4, 3.)])
+    oc.plot2d([lambdas], res, x_labels=x_labels, y_labels=y_labels,
+              plot_labels=plot_labels, plot_titles=plot_titles,
+              opacity=[0.0], split=False, y_ranges=[(1.4, 3.)])

@@ -171,33 +171,30 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.coupling_coeff import CouplingCoeff
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     v_nbr: float = 2.0
     a: float = 5.0
     d: float = 15.0
-    ref_index: Sellmeier = Sellmeier(medium='sio2')
+    ref_index: oc.Sellmeier = oc.Sellmeier(medium='sio2')
     norm_d: float = d/a
-    cpl: CouplingCoeff = CouplingCoeff(v_nbr, a, d, ref_index)
+    cpl: oc.CouplingCoeff = oc.CouplingCoeff(v_nbr, a, d, ref_index)
     # With float
     Lambda: float = 1550.0
-    omega: float = Domain.lambda_to_omega(Lambda)
+    omega: float = oc.lambda_to_omega(Lambda)
     print(cpl(omega))
     # With np.ndarray
     Lambdas: np.ndarray = np.linspace(900, 1600, 3)
-    omegas: np.ndarray = Domain.lambda_to_omega(Lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(Lambdas)
     print(cpl(omegas))
     Lambdas = np.linspace(900, 1600, 1000)
-    omegas = Domain.lambda_to_omega(Lambdas)
+    omegas = oc.lambda_to_omega(Lambdas)
     kappas: np.ndarray = cpl(omegas)
 
     plot_titles: List[str] = ["Coupling coefficient as a function of the "
                               "wavelength for norm. spacing = {}"
                               .format(norm_d)]
 
-    plot.plot2d(np.array([Lambdas]), np.array([kappas]), x_labels=['Lambda'],
-                y_labels=[r'Kappa $km^{-1}$'], plot_titles=plot_titles,
-                split=True, opacity=[0.0], y_ranges=[(200000., 420000.)])
+    oc.plot2d(np.array([Lambdas]), np.array([kappas]), x_labels=['Lambda'],
+              y_labels=[r'Kappa $km^{-1}$'], plot_titles=plot_titles,
+              split=True, opacity=[0.0], y_ranges=[(200000., 420000.)])

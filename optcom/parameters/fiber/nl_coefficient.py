@@ -134,7 +134,7 @@ class NLCoefficient(AbstractParameter):
         # Unit conversion
         nl_index *=  1e-6  # m^2 W^{-1} -> km^2 W^{-1}
         eff_area *= 1e-18    # um^2 -> km^2
-        c = cst.LIGHT_SPEED * 1e-12    # ps/nm -> ps/km
+        c = cst.C * 1e-12    # ps/nm -> ps/km
 
         return (nl_index*omega) / (eff_area*c)
     # ==================================================================
@@ -184,33 +184,26 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.effective_area import EffectiveArea
-    from optcom.parameters.fiber.nl_coefficient import NLCoefficient
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.fiber.v_number import VNumber
-    from optcom.parameters.refractive_index.nl_index import NLIndex
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     medium: str = "SiO2"
     # With float
-    omega: float = Domain.lambda_to_omega(1552.0)
+    omega: float = oc.lambda_to_omega(1552.0)
     core_radius: float = 5.0
     n_clad: float = 1.44
-    sellmeier: Sellmeier = Sellmeier(medium)
-    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
-    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
-    eff_area_inst: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
-    nl_ind_inst: NLIndex = NLIndex(medium)
-    nl_coeff: NLCoefficient = NLCoefficient(nl_ind_inst, eff_area_inst)
+    sellmeier: oc.Sellmeier = oc.Sellmeier(medium)
+    NA_inst: oc.NumericalAperture = oc.NumericalAperture(sellmeier, n_clad)
+    v_nbr_inst: oc.VNumber = oc.VNumber(NA_inst, core_radius)
+    eff_area_inst: oc.EffectiveArea = oc.EffectiveArea(v_nbr_inst, core_radius)
+    nl_ind_inst: oc.NLIndex = oc.NLIndex(medium)
+    nl_coeff: oc.NLCoefficient = oc.NLCoefficient(nl_ind_inst, eff_area_inst)
     print(nl_coeff(omega))
     nl_ind: float = nl_ind_inst(omega)
     eff_area: float = eff_area_inst(omega)
-    print(NLCoefficient.calc_nl_coefficient(omega, nl_ind, eff_area))
+    print(oc.NLCoefficient.calc_nl_coefficient(omega, nl_ind, eff_area))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(900., 1550., 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     res: np.ndarray = nl_coeff(omegas)
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = ['Non-linear coefficient, '
@@ -219,5 +212,5 @@ if __name__ == "__main__":
                               "wavelength \n for Silica core with constant "
                               "cladding refractive index."]
 
-    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(1., 5.)])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(1., 5.)])

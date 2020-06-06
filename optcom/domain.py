@@ -309,7 +309,7 @@ class Domain(object):
 
         """
 
-        return cst.LIGHT_SPEED / nu
+        return cst.C / nu
     # ==================================================================
     @overload
     @staticmethod
@@ -372,7 +372,7 @@ class Domain(object):
         """
 
 
-        return 2.0 * cst.PI * cst.LIGHT_SPEED / omega
+        return 2.0 * cst.PI * cst.C / omega
     # ==================================================================
     # lambda is reserved word in python
     @overload
@@ -404,7 +404,7 @@ class Domain(object):
 
         """
 
-        return cst.LIGHT_SPEED / Lambda
+        return cst.C / Lambda
     # ==================================================================
     # lambda is reserved word in python
     @overload
@@ -436,7 +436,7 @@ class Domain(object):
 
         """
 
-        return 2.0 * cst.PI * cst.LIGHT_SPEED / Lambda
+        return 2.0 * cst.PI * cst.C / Lambda
     # ==================================================================
     @staticmethod
     def nu_bw_to_lambda_bw(nu_bw: float, center_nu: float) -> float:
@@ -462,7 +462,7 @@ class Domain(object):
 
         """
 
-        return cst.LIGHT_SPEED * nu_bw / center_nu**2
+        return cst.C * nu_bw / center_nu**2
     # ==================================================================
     @staticmethod
     def lambda_bw_to_nu_bw(lambda_bw: float, center_lambda: float) -> float:
@@ -488,7 +488,7 @@ class Domain(object):
 
         """
 
-        return cst.LIGHT_SPEED * lambda_bw / center_lambda**2
+        return cst.C * lambda_bw / center_lambda**2
     # ==================================================================
     @staticmethod
     def omega_bw_to_lambda_bw(omega_bw: float, center_omega: float) -> float:
@@ -515,7 +515,7 @@ class Domain(object):
 
         """
 
-        return 2 * cst.PI * cst.LIGHT_SPEED * omega_bw / center_omega**2
+        return 2 * cst.PI * cst.C * omega_bw / center_omega**2
     # ==================================================================
     @staticmethod
     def lambda_bw_to_omega_bw(lambda_bw: float, center_lambda: float) -> float:
@@ -542,7 +542,7 @@ class Domain(object):
 
         """
 
-        return 2 * cst.PI * cst.LIGHT_SPEED * lambda_bw / center_lambda**2
+        return 2 * cst.PI * cst.C * lambda_bw / center_lambda**2
     # ==================================================================
     # Others ===========================================================
     # ==================================================================

@@ -154,8 +154,7 @@ if __name__ == "__main__":
     from optcom.effects.coupling import Coupling
     from optcom.layout import Layout
     from optcom.parameters.fiber.coupling_coeff import CouplingCoeff
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    from optcom.field import Field
 
     plot_groups: List[int] = []
     plot_labels: List[Optional[str]] = []
@@ -205,7 +204,7 @@ if __name__ == "__main__":
         lt.reset()
         # Plot parameters and get waves
         x_datas.append(coupler[2][0].time)
-        y_datas.append(temporal_power(coupler[2][0].channels))
+        y_datas.append(Field.temporal_power(coupler[2][0].channels))
         plot_groups.append(0)
 
     plot_labels.extend(ode_methods)

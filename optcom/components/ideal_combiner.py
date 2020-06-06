@@ -177,28 +177,28 @@ class IdealCombiner(AbstractPassComp):
 
 
 if __name__ == "__main__":
+    """Give an example of IdealCombiner usage.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
 
     from typing import Callable, List, Optional
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.ideal_phase_mod import IdealPhaseMod
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-
-    pulse_1: Gaussian = Gaussian(peak_power=[1.0], center_lambda=[1550.0])
-    pulse_2: Gaussian = Gaussian(peak_power=[5.0], center_lambda=[1030.0])
-    pulse_3: Gaussian = Gaussian(peak_power=[10.0], center_lambda=[976.0])
+    pulse_1: oc.Gaussian = oc.Gaussian(peak_power=[1.0],
+                                       center_lambda=[1550.0])
+    pulse_2: oc.Gaussian = oc.Gaussian(peak_power=[5.0],
+                                       center_lambda=[1030.0])
+    pulse_3: oc.Gaussian = oc.Gaussian(peak_power=[10.0],
+                                       center_lambda=[976.0])
     # Dummy component to be able to test the not combining case
-    pm: IdealPhaseMod = IdealPhaseMod()
-    lt: Layout = Layout()
+    pm: oc.IdealPhaseMod = oc.IdealPhaseMod()
+    lt: oc.Layout = oc.Layout()
 
-    combiner: IdealCombiner = IdealCombiner(arms=3, combine=False)
+    combiner: oc.IdealCombiner = oc.IdealCombiner(arms=3, combine=False)
 
     lt.link((pulse_1[0], combiner[0]), (pulse_2[0], combiner[1]),
             (pulse_3[0], combiner[2]), (combiner[3], pm[0]))
@@ -206,32 +206,30 @@ if __name__ == "__main__":
     lt.run(pulse_1, pulse_2, pulse_3)
 
     plot_titles: List[str] = (["Original pulses", "Pulses coming out of the "
-                               "{} \n without combination"
-                               .format(default_name)])
+                               "ideal coupler \n without combination"])
     plot_groups: List[int] = [0,0,0,1]
     plot_labels: List[Optional[str]] = ['port 0', 'port 1', 'port 2', None]
 
-    out_channels: np.ndarray = temporal_power(pm[1][0].channels)
+    out_channels: np.ndarray = oc.temporal_power(pm[1][0].channels)
     for i in range(len(pm[1])):
         out_channels = np.vstack((out_channels,
-                                  temporal_power(pm[1][i].channels)))
-    print(len(out_channels), 'asonetuhasotneuh')
-    y_datas: List[np.ndarray] = [temporal_power(pulse_1[0][0].channels),
-                                 temporal_power(pulse_2[0][0].channels),
-                                 temporal_power(pulse_3[0][0].channels),
+                                  oc.temporal_power(pm[1][i].channels)))
+    y_datas: List[np.ndarray] = [oc.temporal_power(pulse_1[0][0].channels),
+                                 oc.temporal_power(pulse_2[0][0].channels),
+                                 oc.temporal_power(pulse_3[0][0].channels),
                                  out_channels]
     x_datas: List[np.ndarray] = [pulse_1[0][0].time, pulse_2[0][0].time,
                                  pulse_3[0][0].time,pm[1][0].time]
 
     lt.reset()
-    pm = IdealPhaseMod()
+    pm = oc.IdealPhaseMod()
 
-    pulse_1 = Gaussian(peak_power=[1.0], center_lambda=[1550.0])
-    pulse_2 = Gaussian(channels=2, peak_power=[5.0],
+    pulse_1 = oc.Gaussian(peak_power=[1.0], center_lambda=[1550.0])
+    pulse_2 = oc.Gaussian(channels=2, peak_power=[5.0],
                                 center_lambda=[1550.0, 1540.0])
-    pulse_3 = Gaussian(peak_power=[10.0], center_lambda=[976.0])
+    pulse_3 = oc.Gaussian(peak_power=[10.0], center_lambda=[976.0])
 
-    combiner = IdealCombiner(arms=3, combine=True)
+    combiner = oc.IdealCombiner(arms=3, combine=True)
 
     lt.link((pulse_1[0], combiner[0]), (pulse_2[0], combiner[1]),
             (pulse_3[0], combiner[2]), (combiner[3], pm[0]))
@@ -239,18 +237,18 @@ if __name__ == "__main__":
     lt.run(pulse_1, pulse_2, pulse_3)
 
     plot_titles.extend(["Original pulses",
-                        "Pulses coming out of the {} \n with combination"
-                        .format(default_name)])
+                        "Pulses coming out of the ideal coupler \n with "
+                        "combination"])
     plot_groups.extend([2,2,2,3])
     plot_labels.extend(['port 0', 'port 1', 'port 2', None])
 
-    y_datas.extend([temporal_power(pulse_1[0][0].channels),
-                    temporal_power(pulse_2[0][0].channels),
-                    temporal_power(pulse_3[0][0].channels),
-                    temporal_power(pm[1][0].channels)])
+    y_datas.extend([oc.temporal_power(pulse_1[0][0].channels),
+                    oc.temporal_power(pulse_2[0][0].channels),
+                    oc.temporal_power(pulse_3[0][0].channels),
+                    oc.temporal_power(pm[1][0].channels)])
     x_datas.extend([pulse_1[0][0].time, pulse_2[0][0].time, pulse_3[0][0].time,
                     pm[1][0].time])
 
-    plot.plot2d(x_datas, y_datas, plot_labels=plot_labels,
-                plot_groups=plot_groups, plot_titles=plot_titles,
-                x_labels=['t'], y_labels=['P_t'], opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, plot_labels=plot_labels,
+              plot_groups=plot_groups, plot_titles=plot_titles,
+              x_labels=['t'], y_labels=['P_t'], opacity=[0.3])

@@ -290,14 +290,9 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.soliton import Soliton
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    lt: Layout = Layout(Domain(samples_per_bit=4096))
+    lt: oc.Layout = oc.Layout(oc.Domain(samples_per_bit=4096))
 
     channels: int = 3
     center_lambda: List[float] = [1552.0, 1549.0, 976.0]
@@ -310,17 +305,16 @@ if __name__ == "__main__":
     beta_2: List[float] = [-19.0,-17.0]
     gamma: List[float] = [4.3, 4.6]
 
-    soli = Soliton(channels=channels, center_lambda=center_lambda,
-                   position=position, width=width, rep_freq=rep_freq,
-                   offset_nu=offset_nu, order=order, init_phi=init_phi,
-                   beta_2=beta_2, gamma=gamma, save=True)
+    soli = oc.Soliton(channels=channels, center_lambda=center_lambda,
+                      position=position, width=width, rep_freq=rep_freq,
+                      offset_nu=offset_nu, order=order, init_phi=init_phi,
+                      beta_2=beta_2, gamma=gamma, save=True)
 
     lt.run(soli)
 
     x_datas: List[np.ndarray] = [soli[0][0].time, soli[0][0].nu]
-    y_datas: List[np.ndarray] = [temporal_power(soli[0][0].channels),
-                                 spectral_power(soli[0][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(soli[0][0].channels),
+                                 oc.spectral_power(soli[0][0].channels)]
 
-    plot.plot2d(x_datas, y_datas, x_labels=["t","nu"],
-                y_labels=["P_t", "P_nu"],
-                plot_titles=["Soliton pulse"], split=True)
+    oc.plot2d(x_datas, y_datas, x_labels=["t","nu"], y_labels=["P_t", "P_nu"],
+              plot_titles=["Soliton pulse"], split=True)

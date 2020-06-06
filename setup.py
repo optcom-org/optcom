@@ -5,16 +5,17 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="optcom",
-    version="0.1.0",
+    version="0.2.0",
     author="Sacha Medaer",
-    author_email="sacha.medaer@fau.de",
+    author_email="sacha.medaer@optcom.org",
     python_requires=">=3.7.0",
-    description="Optical system simulation software",
+    description="Optical System Simulator",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/faumedaer/optcom",
+    url="https://github.com/optcom-org/optcom",
+    download_url = 'https://github.com/optcom-org/optcom/archive/v_01.tar.gz',
     license="GNU",
-    packages=setuptools.find_packages(exclude=("tests",)),
+    packages=setuptools.find_packages(exclude=("tests","branding",)),
     include_package_data=True,	# controls whether non-code files are copied when package is installed
     install_requires=["scipy", "numpy", "matplotlib", "pillow", "pyfftw",
                       "typing_extensions"],
@@ -25,6 +26,5 @@ setuptools.setup(
         "(GPLv3+)",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
-      	"Operating System :: POSIX :: Linux",
     ],
 )

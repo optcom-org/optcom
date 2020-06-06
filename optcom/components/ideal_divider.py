@@ -179,56 +179,48 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.components.ideal_divider import IdealDivider
-    from optcom.components.ideal_divider import default_name
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
     # with division
-    pulse: Gaussian = Gaussian(channels=1, peak_power=[10.0])
-    lt: Layout = Layout()
+    pulse: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[10.0])
+    lt: oc.Layout = oc.Layout()
     arms: int = 3
     ratios: List[float] = [round(random.uniform(0,1),2) for i in range(arms)]
-    divider: IdealDivider = IdealDivider(arms=arms, divide=True,
-                                         ratios=ratios, save=True)
+    divider: oc.IdealDivider = oc.IdealDivider(arms=arms, divide=True,
+                                               ratios=ratios, save=True)
     lt.link((pulse[0], divider[0]))
     lt.run(pulse)
-    y_datas: List[np.ndarray] = [temporal_power(pulse[0][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels)]
     x_datas: List[np.ndarray] = [pulse[0][0].time]
 
     plot_titles: List[str] = (["Original pulse", "Pulses coming out of the "
-                               "{} (3 ports) \n with ratios {}"
-                               .format(default_name, str(ratios))])
+                               "ideal divider (3 ports) \n with ratios {}"
+                               .format(str(ratios))])
     plot_groups: List[int] = [0] + [1 for i in range(arms)]
     plot_labels: List[Optional[str]] = [None]
     plot_labels.extend(["port {}".format(str(i)) for i in range(arms)])
 
     for i in range(1, arms+1):
-        y_datas.append(temporal_power(divider[i][0].channels))
+        y_datas.append(oc.temporal_power(divider[i][0].channels))
         x_datas.append(divider[i][0].time)
     # Without division
     arms = 3
-    pulse = Gaussian(channels=2, peak_power=[10.0, 7.0])
-    divider = IdealDivider(arms=arms, divide=False, save=True)
+    pulse = oc.Gaussian(channels=2, peak_power=[10.0, 7.0])
+    divider = oc.IdealDivider(arms=arms, divide=False, save=True)
     lt.reset()
     lt.link((pulse[0], divider[0]))
     lt.run(pulse)
-    plot_titles.extend(["Original pulse", "Pulses coming out of the {} "
-                        "(3 ports) \n with no division."
-                        .format(default_name)])
+    plot_titles.extend(["Original pulse", "Pulses coming out of the ideal "
+                        "divider (3 ports) \n with no division."])
     plot_groups.extend([2] + [3 for i in range(arms)])
     plot_labels.extend([None])
     plot_labels.extend(["port {}".format(str(i)) for i in range(arms)])
-    y_datas.extend([temporal_power(pulse[0][0].channels)])
+    y_datas.extend([oc.temporal_power(pulse[0][0].channels)])
     x_datas.extend([pulse[0][0].time])
     for i in range(1, arms+1):
-        y_datas.append(temporal_power(divider[i][0].channels))
+        y_datas.append(oc.temporal_power(divider[i][0].channels))
         x_datas.append(divider[i][0].time)
 
-    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
-                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                plot_labels=plot_labels, opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+              plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+              plot_labels=plot_labels, opacity=[0.3])

@@ -139,35 +139,28 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.constants as cst
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.effective_area import EffectiveArea
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.fiber.overlap_factor import OverlapFactor
-    from optcom.parameters.fiber.v_number import VNumber
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     # With float
-    A_doped: float = cst.PI*25.0
-    omega: float = Domain.lambda_to_omega(1552.0)
+    A_doped: float = oc.PI*25.0
+    omega: float = oc.lambda_to_omega(1552.0)
     core_radius: float = 5.0
-    sellmeier: Sellmeier = Sellmeier("sio2")
+    sellmeier: oc.Sellmeier = oc.Sellmeier("sio2")
     n_clad: float = 1.44
-    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
-    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
-    A_eff_inst: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
-    of_inst: OverlapFactor = OverlapFactor(A_eff_inst, A_doped)
+    NA_inst: oc.NumericalAperture = oc.NumericalAperture(sellmeier, n_clad)
+    v_nbr_inst: oc.VNumber = oc.VNumber(NA_inst, core_radius)
+    A_eff_inst: oc.EffectiveArea = oc.EffectiveArea(v_nbr_inst, core_radius)
+    of_inst: oc.OverlapFactor = oc.OverlapFactor(A_eff_inst, A_doped)
     print(of_inst(omega))
 
     A_eff: float = A_eff_inst(omega)
-    of_inst = OverlapFactor(A_eff, A_doped)
+    of_inst = oc.OverlapFactor(A_eff, A_doped)
     print(of_inst(omega))
-    print(OverlapFactor.calc_overlap_factor(A_eff, A_doped))
+    print(oc.OverlapFactor.calc_overlap_factor(A_eff, A_doped))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(900., 1550., 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
-    of_inst = OverlapFactor(A_eff_inst, A_doped)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
+    of_inst = oc.OverlapFactor(A_eff_inst, A_doped)
     res: np.ndarray = of_inst(omegas)
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = ['Overlap factor']
@@ -175,5 +168,5 @@ if __name__ == "__main__":
                               "\n for Silica core with constant cladding "
                               "refractive index."]
 
-    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(0.75, 1.)])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(0.75, 1.)])

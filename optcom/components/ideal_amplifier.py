@@ -157,51 +157,46 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    lt: Layout = Layout()
+    lt: oc.Layout = oc.Layout()
 
-    pulse: Gaussian = Gaussian(channels=1, peak_power=[10.0])
+    pulse: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[10.0])
     gain: float = 3.0
-    amp: IdealAmplifier = IdealAmplifier(gain=gain)
+    amp: oc.IdealAmplifier = oc.IdealAmplifier(gain=gain)
     lt.link((pulse[0], amp[0]))
     lt.run(pulse)
     plot_titles: List[str] = (["Original pulse", "Pulses coming out of the "
-                               "{} with gain {} dB."
-                               .format(default_name, gain)])
-    y_datas: List[np.ndarray] = [temporal_power(pulse[0][0].channels),
-                                 temporal_power(amp[1][0].channels)]
+                               "ideal amplifier with gain {} dB."
+                               .format(gain)])
+    y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
+                                 oc.temporal_power(amp[1][0].channels)]
     x_datas: List[np.ndarray] = [pulse[0][0].time, amp[1][0].time]
 
-    pulse = Gaussian(channels=1, peak_power=[10.0])
+    pulse = oc.Gaussian(channels=1, peak_power=[10.0])
     peak_power: float = 15.0
-    amp = IdealAmplifier(gain=5.6, peak_power=peak_power)
+    amp = oc.IdealAmplifier(gain=5.6, peak_power=peak_power)
     lt.reset()
     lt.link((pulse[0], amp[0]))
     lt.run(pulse)
-    plot_titles.extend(["Pulses coming out of the {} with target peak power "
-                        "{} W.".format(default_name, peak_power)])
-    y_datas.extend([temporal_power(amp[1][0].channels)])
+    plot_titles.extend(["Pulses coming out of the ideal amplifier with target "
+                        "peak power {} W.".format(peak_power)])
+    y_datas.extend([oc.temporal_power(amp[1][0].channels)])
     x_datas.extend([amp[1][0].time])
 
-    pulse = Gaussian(channels=1, peak_power=[10.0])
+    pulse = oc.Gaussian(channels=1, peak_power=[10.0])
     gain_fct: Callable = lambda t: 1e-1*t
-    amp = IdealAmplifier(gain=gain_fct)
+    amp = oc.IdealAmplifier(gain=gain_fct)
     lt.reset()
     lt.link((pulse[0], amp[0]))
     lt.run(pulse)
-    plot_titles.extend(["Pulses coming out of the {} with gain: f(t) = t."
-                        .format(default_name)])
-    y_datas.extend([temporal_power(amp[1][0].channels)])
+    plot_titles.extend(["Pulses coming out of the ideal amplifier with gain: "
+                        "f(t) = t."])
+    y_datas.extend([oc.temporal_power(amp[1][0].channels)])
     x_datas.extend([amp[1][0].time])
 
     plot_groups: List[int] = [0,1,2,3]
 
-    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
-                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+              plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+              opacity=[0.3])

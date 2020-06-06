@@ -135,19 +135,12 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.components.ideal_amplifier import IdealAmplifier
-    from optcom.components.ideal_isolator import IdealIsolator
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    lt: Layout = Layout()
+    lt: oc.Layout = oc.Layout()
 
-    pulse: Gaussian = Gaussian(channels=1, peak_power=[10.0])
-    isolator_1: IdealIsolator = IdealIsolator(blocked_port=1, save=True)
+    pulse: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[10.0])
+    isolator_1: oc.IdealIsolator = oc.IdealIsolator(blocked_port=1, save=True)
 
     lt.link((pulse[0], isolator_1[0]))
 
@@ -156,9 +149,9 @@ if __name__ == "__main__":
     plot_titles: List[str] = (['Initial Pulse',
                                'Output of first isolator (pass)'])
 
-    y_datas: List[np.ndarray] = [temporal_power(pulse[0][0].channels),
-                                 temporal_power(isolator_1[1][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
+                                 oc.temporal_power(isolator_1[1][0].channels)]
     x_datas: List[np.ndarray] = [pulse[0][0].time, isolator_1[1][0].time]
 
-    plot.plot2d(x_datas, y_datas, split=True, plot_titles=plot_titles,
-                x_labels=['t'], y_labels=['P_t'], opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, split=True, plot_titles=plot_titles,
+              x_labels=['t'], y_labels=['P_t'], opacity=[0.3])

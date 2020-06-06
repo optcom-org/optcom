@@ -50,7 +50,11 @@ class ChromaticDisp(AbstractParameter):
         self._ref_index = ref_index
     # ==================================================================
     @overload
-    def __call__(self, omega: float, order: int) -> float: ...
+    def __call__(self, omega: float) -> np.ndarray: ...
+    @overload
+    def __call__(self, omega: float, order: int) -> np.ndarray: ...
+    @overload
+    def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     @overload
     def __call__(self, omega: np.ndarray, order: int) -> np.ndarray: ...
     # ------------------------------------------------------------------
@@ -68,7 +72,7 @@ class ChromaticDisp(AbstractParameter):
         Returns
         -------
         :
-            The nth derivative of the propagation constant.
+            The nth derivatives of the propagation constant.
             :math:`[ps^{i}\cdot km^{-1}]`
 
         """
@@ -117,7 +121,7 @@ class ChromaticDisp(AbstractParameter):
         for :math:`i = 0, \ldots, \text{order}`
 
         """
-        LIGHT_SPEED = cst.LIGHT_SPEED * 1e-12   # nm/ps -> km/ps
+        C = cst.C * 1e-12   # nm/ps -> km/ps
         if (isinstance(omega, float)):
             res = [0.0 for i in range(order+1)]
         else:
@@ -129,7 +133,7 @@ class ChromaticDisp(AbstractParameter):
         prec_n_deriv = 0.
         for i in range(order+1):
             current_n_deriv = util.deriv(predict_ref_index, omega, i)
-            res[i] = (i*prec_n_deriv + omega*current_n_deriv)/LIGHT_SPEED
+            res[i] = (i*prec_n_deriv + omega*current_n_deriv)/C
             prec_n_deriv = current_n_deriv
 
         return res
@@ -169,9 +173,9 @@ class ChromaticDisp(AbstractParameter):
 
         """
         if (isinstance(Lambda, float)):
-            factor = (2.0 * cst.PI * cst.LIGHT_SPEED) / (Lambda**2)
+            factor = (2.0 * cst.PI * cst.C) / (Lambda**2)
         else:
-            factor = (2.0 * cst.PI * cst.LIGHT_SPEED) / np.square(Lambda)
+            factor = (2.0 * cst.PI * cst.C) / np.square(Lambda)
 
         return -1 * factor * beta_2
     # ==================================================================
@@ -216,9 +220,9 @@ class ChromaticDisp(AbstractParameter):
 
         """
         if (isinstance(Lambda, float)):
-            factor = (2.0 * cst.PI * cst.LIGHT_SPEED) / (Lambda**2)
+            factor = (2.0 * cst.PI * cst.C) / (Lambda**2)
         else:
-            factor = (2.0 * cst.PI * cst.LIGHT_SPEED) / np.square(Lambda)
+            factor = (2.0 * cst.PI * cst.C) / np.square(Lambda)
 
         return (2 * factor / Lambda * beta_2) + (factor * factor * beta_3)
     # ==================================================================
@@ -349,46 +353,43 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    from optcom.utils.plot import plot2d
-    from optcom.domain import Domain
-    from optcom.parameters.dispersion.chromatic_disp import ChromaticDisp
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
-    center_omega: float = Domain.lambda_to_omega(976.0)
+    center_omega: float = oc.lambda_to_omega(976.0)
     medium: str = "Sio2"
     # Betas values
-    sellmeier: Sellmeier = Sellmeier(medium)
-    disp: ChromaticDisp = ChromaticDisp(sellmeier)
+    sellmeier: oc.Sellmeier = oc.Sellmeier(medium)
+    disp: oc.ChromaticDisp = oc.ChromaticDisp(sellmeier)
     print('betas: ', disp(center_omega, 13))
     print('\n betas with callable: ',
-          ChromaticDisp.calc_beta(center_omega, 13, sellmeier))
+          oc.ChromaticDisp.calc_beta(center_omega, 13, sellmeier))
     n_core = sellmeier(center_omega)
     print('\n betas with constant: ',
-          ChromaticDisp.calc_beta(center_omega, 13, n_core))
+          oc.ChromaticDisp.calc_beta(center_omega, 13, n_core))
     # Dispersion coeff.
     lambdas: np.ndarray = np.linspace(900., 1600., 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
-    beta_2: np.ndarray = ChromaticDisp.calc_beta(omegas, 2, sellmeier)[2]
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
+    beta_2: np.ndarray = oc.ChromaticDisp.calc_beta(omegas, 2, sellmeier)[2]
     x_data: List[np.ndarray] = [lambdas]
     y_data: List[np.ndarray] = [beta_2]
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = ['beta2']
     plot_titles: List[str] = ["Group velocity dispersion coefficients in Silica"]
-    disp = ChromaticDisp.calc_dispersion(lambdas, beta_2)
+    disp = oc.ChromaticDisp.calc_dispersion(lambdas, beta_2)
     x_data.append(lambdas)
     y_data.append(disp)
     x_labels.append('Lambda')
     y_labels.append('dispersion')
     plot_titles.append('Dispersion of Silica')
     # Dispersion slope coefficient
-    beta_3: np.ndarray = ChromaticDisp.calc_beta(omegas, 3, sellmeier)[3]
-    slope: np.ndarray = ChromaticDisp.calc_dispersion_slope(lambdas, beta_2,
-                                                            beta_3)
+    beta_3: np.ndarray = oc.ChromaticDisp.calc_beta(omegas, 3, sellmeier)[3]
+    slope: np.ndarray = oc.ChromaticDisp.calc_dispersion_slope(lambdas, beta_2,
+                                                               beta_3)
     x_data.append(lambdas)
     y_data.append(slope)
     x_labels.append('Lambda')
     y_labels.append('dispersion_slope')
     plot_titles.append('Dispersion slope of Silica')
 
-    plot2d(x_data, y_data, x_labels=x_labels, y_labels=y_labels,
-           plot_titles=plot_titles, split=True, opacity=[0.0])
+    oc.plot2d(x_data, y_data, x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, split=True, opacity=[0.0])

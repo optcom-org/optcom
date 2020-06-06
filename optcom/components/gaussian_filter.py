@@ -152,35 +152,28 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.components.gaussian_filter import GaussianFilter
-    from optcom.components.gaussian_filter import default_name
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    lt: Layout = Layout(Domain(bit_width=600.))
+    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=600.))
 
     nu_bw: float = 0.01
-    pulse: Gaussian = Gaussian(channels=2, peak_power=[10.0, 19.0],
-                               width=[10., 6.])
-    filter: GaussianFilter = GaussianFilter(nu_bw=nu_bw, nu_offset=0., order=1)
+    pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
+                                     width=[10., 6.])
+    filter: oc.GaussianFilter = oc.GaussianFilter(nu_bw=nu_bw, nu_offset=0.,
+                                                  order=1)
     lt.link((pulse[0], filter[0]))
     lt.run(pulse)
-    plot_titles: List[str] = ["Original pulse", r"After {} with "
-                              "frequency bandwidth {} THz."
-                              .format(default_name, nu_bw)]
+    plot_titles: List[str] = ["Original pulse", r"After Gaussian filter with "
+                              "frequency bandwidth {} THz.".format(nu_bw)]
     plot_titles += plot_titles
-    y_datas: List[np.ndarray] = [temporal_power(pulse[0][0].channels),
-                                 temporal_power(filter[1][0].channels),
-                                 spectral_power(pulse[0][0].channels),
-                                 spectral_power(filter[1][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
+                                 oc.temporal_power(filter[1][0].channels),
+                                 oc.spectral_power(pulse[0][0].channels),
+                                 oc.spectral_power(filter[1][0].channels)]
     x_datas: List[np.ndarray] = [pulse[0][0].time, filter[1][0].time,
                                  pulse[0][0].nu, filter[1][0].nu]
     x_labels: List[str] = ['t', 't', 'nu', 'nu']
     y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu']
 
-    plot.plot2d(x_datas, y_datas, plot_titles=plot_titles, x_labels=x_labels,
-                y_labels=y_labels, split=True, opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, plot_titles=plot_titles, x_labels=x_labels,
+              y_labels=y_labels, split=True, opacity=[0.3])

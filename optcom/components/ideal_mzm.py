@@ -281,21 +281,16 @@ if __name__ == "__main__":
     """
 
     import random
+    import math
     from typing import Callable, List, Optional
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.components.ideal_mzm import IdealMZM
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    pulse: Gaussian = Gaussian(peak_power=[30.0])
+    pulse: oc.Gaussian = oc.Gaussian(peak_power=[30.0])
 
-    lt: Layout = Layout()
+    lt: oc.Layout = oc.Layout()
 
     loss: float = 0.0
     random_phase: float = random.random() * math.pi
@@ -305,48 +300,47 @@ if __name__ == "__main__":
                                        [random_phase, random_phase_bis]]
     y_datas: List[np.ndarray] = []
     plot_titles: List[str] = ["Original pulse"]
-    mz: IdealMZM
+    mz: oc.IdealMZM
     for i, phase_shift in enumerate(phase_shifts):
         # Propagation
-        mz = IdealMZM(phase_shift=phase_shift, loss=loss)
+        mz = oc.IdealMZM(phase_shift=phase_shift, loss=loss)
         lt.link((pulse[0], mz[0]))
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves
-        y_datas.append(temporal_power(mz[1][0].channels))
+        y_datas.append(oc.temporal_power(mz[1][0].channels))
         if (isinstance(phase_shift[0], float)):
             temp_phase = phase_shift
         else:
             temp_phase = [phase_shift[0](0), phase_shift[1](0)]
-        plot_titles += ["Pulses coming out of the {} with phase "
+        plot_titles += ["Pulses coming out of the Ideal MZM with phase "
                         "shift {} and {}"
-                        .format(default_name, str(round(temp_phase[0], 2)),
+                        .format(str(round(temp_phase[0], 2)),
                                 str(round(temp_phase[1], 2)))]
     v_pi: List[float] = [1.0]
     v_mod: List[Callable] = [lambda t: math.sin(math.pi*t),
                              lambda t: math.sin(math.pi/2.0*t)]
     v_bias: List[float] = [1.2, 2.1]
-    mz = IdealMZM(v_pi=v_pi, v_mod=v_mod, v_bias=v_bias)
+    mz = oc.IdealMZM(v_pi=v_pi, v_mod=v_mod, v_bias=v_bias)
     lt.link((pulse[0], mz[0]))
     lt.run(pulse)
     lt.reset()
     # Plot parameters and get waves
-    y_datas.append(temporal_power(mz[1][0].channels))
-    plot_titles += ["Pulses coming out of the {} (time dep)"
-                    .format(default_name)]
+    y_datas.append(oc.temporal_power(mz[1][0].channels))
+    plot_titles += ["Pulses coming out of the Ideal MZM (time dep)"]
 
     phase_shift_s: List[float] = [0., 0.]
     er: float = 20.0  # db
-    mz = IdealMZM(phase_shift=phase_shift_s, extinction=er)
+    mz = oc.IdealMZM(phase_shift=phase_shift_s, extinction=er)
     lt.link((pulse[0], mz[0]))
     lt.run(pulse)
     # Plot parameters and get waves
-    y_datas.append(temporal_power(mz[1][0].channels))
-    plot_titles += ["Pulses coming out of the {} on 'on' mode with extinction "
-                    "ratio {} dB".format(default_name, er)]
+    y_datas.append(oc.temporal_power(mz[1][0].channels))
+    plot_titles += ["Pulses coming out of the Ideal MZM on 'on' mode with "
+                    "extinction ratio {} dB".format(er)]
 
-    y_datas = [temporal_power(pulse[0][0].channels)] + y_datas
+    y_datas = [oc.temporal_power(pulse[0][0].channels)] + y_datas
     x_datas: List[np.ndarray] = [pulse[0][0].time, mz[1][0].time]
 
-    plot.plot2d(x_datas, y_datas, split=True, plot_titles=plot_titles,
-                x_labels=['t'], y_labels=['P_t'], opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, split=True, plot_titles=plot_titles,
+              x_labels=['t'], y_labels=['P_t'], opacity=[0.3])

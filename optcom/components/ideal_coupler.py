@@ -158,22 +158,21 @@ class IdealCoupler(AbstractPassComp):
         return output_ports, output_fields
 
 if __name__ == "__main__":
+    """Give an example of IdealCoupler usage.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
 
     import random
     from typing import Callable, List, Optional
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    pulse: Gaussian = Gaussian(peak_power=[10.0])
+    pulse: oc.Gaussian = oc.Gaussian(peak_power=[10.0])
 
-    lt: Layout = Layout()
+    lt: oc.Layout = oc.Layout()
 
     ratios_ports: List[List[float]] = [[0.6, 0.4], [0.5, 0.5],
                                        [0.4, 0.6], [0.0, 1.0]]
@@ -183,28 +182,28 @@ if __name__ == "__main__":
     plot_titles: List[str] = ["Original pulse"]
     y_datas: List[np.ndarray] = []
     x_datas: List[np.ndarray] = []
-    coupler: IdealCoupler
+    coupler: oc.IdealCoupler
     plot_save: int
     for i in range(4):
         # Propagation
-        coupler = IdealCoupler(ratios_ports=[ratios_ports[i]])
+        coupler = oc.IdealCoupler(ratios_ports=[ratios_ports[i]])
         lt.link((pulse[0], coupler[i]))
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves
         port_saved = ((i | 1) + 2) % 4
-        y_datas.append(temporal_power(coupler[port_saved-1][0].channels))
-        y_datas.append(temporal_power(coupler[port_saved][0].channels))
+        y_datas.append(oc.temporal_power(coupler[port_saved-1][0].channels))
+        y_datas.append(oc.temporal_power(coupler[port_saved][0].channels))
         x_datas.append(coupler[port_saved-1][0].time)
         x_datas.append(coupler[port_saved][0].time)
         plot_labels += ["port " + str(port_saved-1), "port " + str(port_saved)]
         plot_groups += [i+1, i+1]
-        plot_titles += ["Pulses coming out of the {} from input port {} with "
-                        "ratios {}".format(default_name, i, ratios_ports[i])]
+        plot_titles += ["Pulses coming out of the ideal coupler from input "
+                        "port {} with ratios {}".format(i, ratios_ports[i])]
 
-    y_datas = [temporal_power(pulse[0][0].channels)] + y_datas
+    y_datas = [oc.temporal_power(pulse[0][0].channels)] + y_datas
     x_datas = [pulse[0][0].time] + x_datas
 
-    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
-                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                plot_labels=plot_labels, opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+              plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+              plot_labels=plot_labels, opacity=[0.3])

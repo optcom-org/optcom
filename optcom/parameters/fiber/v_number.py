@@ -115,7 +115,7 @@ class VNumber(AbstractParameter):
         # Unit conversion
         core_radius *= 1e3  # um -> nm
 
-        return NA * core_radius * omega / cst.LIGHT_SPEED
+        return NA * core_radius * omega / cst.C
 
 
 if __name__ == "__main__":
@@ -129,29 +129,25 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.fiber.v_number import VNumber
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     # With float
-    omega: float = Domain.lambda_to_omega(1552.0)
+    omega: float = oc.lambda_to_omega(1552.0)
     core_radius: float = 5.0
     n_clad: float = 1.44
-    sellmeier: Sellmeier = Sellmeier("sio2")
-    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
-    v_nbr: VNumber = VNumber(NA_inst, core_radius)
+    sellmeier: oc.Sellmeier = oc.Sellmeier("sio2")
+    NA_inst: oc.NumericalAperture = oc.NumericalAperture(sellmeier, n_clad)
+    v_nbr: oc.VNumber = oc.VNumber(NA_inst, core_radius)
     print(v_nbr(omega))
     NA: float = NA_inst(omega)
-    v_nbr = VNumber(NA, core_radius)
+    v_nbr = oc.VNumber(NA, core_radius)
     print(v_nbr(omega))
-    print(VNumber.calc_v_number(omega, NA, core_radius))
+    print(oc.VNumber.calc_v_number(omega, NA, core_radius))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(900, 1550, 10)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
-    NA_inst = NumericalAperture(sellmeier, n_clad)
-    v_nbr = VNumber(NA_inst, core_radius)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
+    NA_inst = oc.NumericalAperture(sellmeier, n_clad)
+    v_nbr = oc.VNumber(NA_inst, core_radius)
     res: np.ndarray = v_nbr(omegas)
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = ['V Number']
@@ -159,5 +155,5 @@ if __name__ == "__main__":
                               "for Silica core with constant cladding "
                               "refractive index."]
 
-    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(2., 7.)])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(2., 7.)])

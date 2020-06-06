@@ -1,7 +1,7 @@
 import scipy.constants as scipy_cst
 
 # physic constants
-LIGHT_SPEED: float = 1.0e-3 * scipy_cst.c   # m / s -> nm / ps
+C: float = 1.0e-3 * scipy_cst.c   # m / s -> nm / ps
 PI: float = scipy_cst.pi
 KB: float = scipy_cst.Boltzmann * 1e-6 # J / K = m^2 kg s^-2 K^-1 -> nm^2 kg ps^-2 K^-1
 H: float = scipy_cst.Planck * 1e6    # m^2 kg s^-1 -> nm^2 kg ps^-1

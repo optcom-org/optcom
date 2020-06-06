@@ -272,14 +272,9 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.sech import Sech
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    lt: Layout = Layout(Domain(samples_per_bit=4096))
+    lt: oc.Layout = oc.Layout(oc.Domain(samples_per_bit=4096))
 
     channels: int = 3
     center_lambda: List[float] = [1552.0, 1549.0, 1596.0]
@@ -291,17 +286,16 @@ if __name__ == "__main__":
     chirp: List[float] = [0.5, 0.1]
     init_phi: List[float] = [1.0, 0.0]
 
-    sech = Sech(channels=channels, center_lambda=center_lambda,
-                position=position, fwhm=width, peak_power=peak_power,
-                rep_freq=rep_freq, offset_nu=offset_nu,
-                chirp=chirp, init_phi=init_phi, save=True)
+    sech = oc.Sech(channels=channels, center_lambda=center_lambda,
+                   position=position, fwhm=width, peak_power=peak_power,
+                   rep_freq=rep_freq, offset_nu=offset_nu,
+                   chirp=chirp, init_phi=init_phi, save=True)
 
     lt.run(sech)
 
     x_datas: List[np.ndarray] = [sech[0][0].time, sech[0][0].nu]
-    y_datas: List[np.ndarray] = [temporal_power(sech[0][0].channels),
-                                 spectral_power(sech[0][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(sech[0][0].channels),
+                                 oc.spectral_power(sech[0][0].channels)]
 
-    plot.plot2d(x_datas, y_datas, x_labels=["t","nu"],
-                y_labels=["P_t", "P_nu"], plot_titles=["Sech pulse"],
-                split=True)
+    oc.plot2d(x_datas, y_datas, x_labels=["t","nu"],
+              y_labels=["P_t", "P_nu"], plot_titles=["Sech pulse"], split=True)

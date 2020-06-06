@@ -169,16 +169,15 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    from optcom.domain import Domain
-    from optcom.parameters.refractive_index.nl_index import NLIndex
-    from optcom.utils.plot import plot2d
+    import optcom as oc
+
     # With float
-    omega: float = Domain.lambda_to_omega(1552.0)
-    nl_index: NLIndex = NLIndex(medium="SiO2")
+    omega: float = oc.lambda_to_omega(1552.0)
+    nl_index: oc.NLIndex = oc.NLIndex(medium="SiO2")
     print(nl_index(omega))
     # With numpy ndarray
     lambdas: np.ndarray = np.linspace(500, 1600, 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     res: np.ndarray = nl_index(omegas)
 
     x_labels: List[str] = ['Lambda']
@@ -186,6 +185,6 @@ if __name__ == "__main__":
     plot_titles: List[str] = ["Non linear index as a function of the "
                               "wavelength for Silica core."]
 
-    plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-            plot_titles=plot_titles, opacity=[0.0],
-            y_ranges=[(2.5*1e-20, 3.2*1e-20)])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+               plot_titles=plot_titles, opacity=[0.0],
+               y_ranges=[(2.5*1e-20, 3.2*1e-20)])

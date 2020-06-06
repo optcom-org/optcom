@@ -131,32 +131,28 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
+    import optcom as oc
     import optcom.utils.constants as cst
-    from optcom.domain import Domain
-    from optcom.parameters.dispersion.chromatic_disp import ChromaticDisp
-    from optcom.parameters.fiber.asymmetry_coeff import AsymmetryCoeff
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
     # With float
-    omega: float = Domain.lambda_to_omega(1550.0)
-    sellmeier: Sellmeier = Sellmeier("sio2", cst.FIBER_CORE_DOPANT,
-                                     cst.CORE_DOPANT_CONCENT)
+    omega: float = oc.lambda_to_omega(1550.0)
+    sellmeier: oc.Sellmeier = oc.Sellmeier("sio2", cst.FIBER_CORE_DOPANT,
+                                           cst.CORE_DOPANT_CONCENT)
     n_core: float = sellmeier(omega)
-    sellmeier = Sellmeier("sio2", cst.FIBER_CLAD_DOPANT,
-                          cst.CLAD_DOPANT_CONCENT)
+    sellmeier = oc.Sellmeier("sio2", cst.FIBER_CLAD_DOPANT,
+                             cst.CLAD_DOPANT_CONCENT)
     n_clad: float = sellmeier(omega)
-    disp_1: ChromaticDisp = ChromaticDisp(ref_index=n_core)
-    disp_2: ChromaticDisp = ChromaticDisp(ref_index=n_clad)
-    asym: AsymmetryCoeff = AsymmetryCoeff(disp_1, disp_2)
+    disp_1: oc.ChromaticDisp = oc.ChromaticDisp(ref_index=n_core)
+    disp_2: oc.ChromaticDisp = oc.ChromaticDisp(ref_index=n_clad)
+    asym: oc.AsymmetryCoeff = oc.AsymmetryCoeff(disp_1, disp_2)
     beta_1: float = disp_1(omega)[0]
     beta_2: float = disp_2(omega)[0]
     print('betas: ', beta_1, ' and ', beta_2)
     print(asym(omega))
-    print(AsymmetryCoeff.calc_delta(beta_1, beta_2))
+    print(oc.AsymmetryCoeff.calc_delta(beta_1, beta_2))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(900., 1550., 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     res: np.ndarray = asym(omegas)
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = [r'Asymmetry coefficient ($km^{-1}$)']
@@ -168,6 +164,6 @@ if __name__ == "__main__":
                                       cst.FIBER_CLAD_DOPANT,
                                       cst.CLAD_DOPANT_CONCENT)]
 
-    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=[0.0],
-                y_ranges=[(20e6, 45e6)])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, opacity=[0.0],
+              y_ranges=[(20e6, 45e6)])

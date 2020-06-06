@@ -24,6 +24,7 @@ import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.domain import Domain
 from optcom.parameters.abstract_parameter import AbstractParameter
+from optcom.utils.fft import FFT
 
 
 class RamanResponse(AbstractParameter):
@@ -254,10 +255,10 @@ class RamanResponse(AbstractParameter):
         """
 
         n_2 *= 1e36  # m^2 W^{-1} = s^3 kg^-1 -> ps^3 kg^-1
-        chi_3 = 4 * cst.EPS_0 * cst.LIGHT_SPEED * n_0**2 * n_2 / 3
+        chi_3 = 4 * cst.EPS_0 * cst.C * n_0**2 * n_2 / 3
 
-        return (center_omega / cst.LIGHT_SPEED / n_0 * f_R * chi_3 *
-                np.imag(FFT.fft(h_R)))
+        return (center_omega / cst.C / n_0 * f_R * chi_3
+                * np.imag(FFT.fft(h_R)))
 
 
 if __name__ == "__main__":
@@ -270,11 +271,8 @@ if __name__ == "__main__":
 
     import numpy as np
 
+    import optcom as oc
     import optcom.utils.constants as cst
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.raman_response import RamanResponse
-    from optcom.utils.fft import FFT
 
     samples: int = 1000
     time: np.ndarray
@@ -287,32 +285,32 @@ if __name__ == "__main__":
 
     f_R: float = cst.F_R
     n_0: float = 1.40
-    center_omega: float = Domain.lambda_to_omega(1550.0)
+    center_omega: float = oc.lambda_to_omega(1550.0)
 
     f_a: float = cst.F_A
     f_b: float = cst.F_B
     f_c: float = cst.F_C
     x_data.append(time)
-    h_R: RamanResponse = RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b,
-                                                f_c=f_c)
+    h_R: oc.RamanResponse = oc.RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b,
+                                                      f_c=f_c)
     y_data.append(h_R)
     plot_labels.append('Isotropic and anisotropic part')
     f_a = 1.0
     f_b = 0.0
     f_c = 1.0
     x_data.append(time)
-    h_R = RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b, f_c=f_c)
+    h_R = oc.RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b, f_c=f_c)
     y_data.append(h_R)
     plot_labels.append('W/o anisotropic part')
     f_a = 0.0
     f_b = 1.0
     f_c = 0.0
     x_data.append(time)
-    h_R = RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b, f_c=f_c)
+    h_R = oc.RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b, f_c=f_c)
     y_data.append(h_R)
     plot_labels.append('W/o isotropic part')
     plot_titles: List[str] = ['Raman response function', 'Raman gain']
 
-    plot.plot2d(x_data, y_data, x_labels=['t'], y_labels=['h_R'],
-                plot_groups=[0,0,0], plot_titles=plot_titles, opacity=[0.0],
-                plot_labels=plot_labels)
+    oc.plot2d(x_data, y_data, x_labels=['t'], y_labels=['h_R'],
+              plot_groups=[0,0,0], plot_titles=plot_titles, opacity=[0.0],
+              plot_labels=plot_labels)

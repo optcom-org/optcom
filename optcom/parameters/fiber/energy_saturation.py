@@ -146,58 +146,47 @@ if __name__ == "__main__":
     file as an example.
     """
 
-    import math
     from typing import List
 
     import numpy as np
 
-    import optcom.utils.constants as cst
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.absorption_section import AbsorptionSection
-    from optcom.parameters.fiber.effective_area import EffectiveArea
-    from optcom.parameters.fiber.emission_section import EmissionSection
-    from optcom.parameters.fiber.energy_saturation import EnergySaturation
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.fiber.overlap_factor import OverlapFactor
-    from optcom.parameters.fiber.v_number import VNumber
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     medium: str = "sio2"
     dopant: str = "yb"
-    A_doped: float = cst.PI*25.0
+    A_doped: float = oc.PI*25.0
     # With float
-    omega: float = Domain.lambda_to_omega(1000)
+    omega: float = oc.lambda_to_omega(1000)
     core_radius: float = 5.0
-    n_core: Sellmeier = Sellmeier(medium)
+    n_core: oc.Sellmeier = oc.Sellmeier(medium)
     n_clad: float = 1.44
-    NA_inst: NumericalAperture = NumericalAperture(n_core, n_clad)
-    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
-    A_eff_inst: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
-    of_inst: OverlapFactor = OverlapFactor(A_eff_inst, A_doped)
-    sigma_a_inst: AbsorptionSection = AbsorptionSection(dopant=dopant,
-                                                        medium=medium)
+    NA_inst: oc.NumericalAperture = oc.NumericalAperture(n_core, n_clad)
+    v_nbr_inst: oc.VNumber = oc.VNumber(NA_inst, core_radius)
+    A_eff_inst: oc.EffectiveArea = oc.EffectiveArea(v_nbr_inst, core_radius)
+    of_inst: oc.OverlapFactor = oc.OverlapFactor(A_eff_inst, A_doped)
+    sigma_a_inst: oc.AbsorptionSection = oc.AbsorptionSection(dopant=dopant,
+                                                              medium=medium)
     T: float = 293.1
-    sigma_e_inst: EmissionSection = EmissionSection(dopant=dopant,
-                                                    medium=medium, T=T,
-                                                    sigma_a=sigma_a_inst)
-    en_sat: EnergySaturation = EnergySaturation(A_eff_inst, sigma_a_inst,
-                                                sigma_e_inst, of_inst)
+    sigma_e_inst: oc.EmissionSection = oc.EmissionSection(dopant=dopant,
+                                                          medium=medium, T=T,
+                                                          sigma_a=sigma_a_inst)
+    en_sat: oc.EnergySaturation = oc.EnergySaturation(A_eff_inst, sigma_a_inst,
+                                                      sigma_e_inst, of_inst)
     print(en_sat(omega))
     A_eff: float = A_eff_inst(omega)
     sigma_a: float = sigma_a_inst(omega)
     sigma_e: float = sigma_e_inst(omega)
     of: float = of_inst(omega)
-    print(EnergySaturation.calc_energy_saturation(omega, A_eff, sigma_a,
-                                                  sigma_e, of))
+    print(oc.EnergySaturation.calc_energy_saturation(omega, A_eff, sigma_a,
+                                                    sigma_e, of))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(900, 1050, 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     ens_sat: np.ndarray = en_sat(omegas)
     plot_titles: List[str] = ["Energy saturation as a function of the "
                               "wavelenght for Ytterbium doped fiber."]
 
-    plot.plot2d([lambdas], [ens_sat], x_labels=['Lambda'],
-                y_labels=[r'Energy saturation, $\,E_{sat}\,(J)$'],
-                split=True, plot_colors=['red'], plot_titles=plot_titles,
-                plot_linestyles=['-.'], opacity=[0.0])
+    oc.plot2d([lambdas], [ens_sat], x_labels=['Lambda'],
+              y_labels=[r'Energy saturation, $\,E_{sat}\,(J)$'],
+              split=True, plot_colors=['red'], plot_titles=plot_titles,
+              plot_linestyles=['-.'], opacity=[0.0])

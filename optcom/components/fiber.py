@@ -353,45 +353,36 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.fiber import Fiber
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.parameters.fiber.effective_area import EffectiveArea
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.fiber.v_number import VNumber
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
     noise_samples = 200
-    domain: Domain = Domain(samples_per_bit=2048,bit_width=70.0,
-                            noise_samples=noise_samples)
-    lt: Layout = Layout(domain)
+    domain: oc.Domain = oc.Domain(samples_per_bit=2048,bit_width=70.0,
+                                  noise_samples=noise_samples)
+    lt: oc.Layout = oc.Layout(domain)
 
-    pulse: Gaussian = Gaussian(channels=4, peak_power=[10.0, 10e-1, 5.0, 7.0],
-                               width=[0.1, 5.0, 3.0, 4.0],
-                               center_lambda=[1050.0, 1048.0, 1049.0, 1051.0],
-                               noise=np.ones(noise_samples)*4)
-    fiber = Fiber(length=0.05, nlse_method="ssfm", alpha=[.46],
-                  nl_approx=False, ATT=True, DISP=True, gamma=10.,
-                  SPM=True, XPM=False, SS=True, RS=True, XNL=False,
-                  approx_type=1, steps=1000, medium_core='sio2',
-                  UNI_OMEGA=True, STEP_UPDATE=False, save_all=True,
-                  INTRA_COMP_DELAY=True, INTRA_PORT_DELAY=False,
-                  INTER_PORT_DELAY=False, noise_ode_method='rk1',
-                  NOISE=True)
+    pulse: oc.Gaussian
+    pulse = oc.Gaussian(channels=4, peak_power=[10.0, 10e-1, 5.0, 7.0],
+                        width=[0.1, 5.0, 3.0, 4.0],
+                        center_lambda=[1050.0, 1048.0, 1049.0, 1051.0],
+                        noise=np.ones(noise_samples)*4)
+    fiber = oc.Fiber(length=0.05, nlse_method="ssfm", alpha=[.46],
+                     nl_approx=False, ATT=True, DISP=True, gamma=10.,
+                     SPM=True, XPM=False, SS=True, RS=True, XNL=False,
+                     approx_type=1, steps=1000, medium_core='sio2',
+                     UNI_OMEGA=True, STEP_UPDATE=False, save_all=True,
+                     INTRA_COMP_DELAY=True, INTRA_PORT_DELAY=False,
+                     INTER_PORT_DELAY=False, noise_ode_method='rk1',
+                     NOISE=True)
     lt.link((pulse[0], fiber[0]))
     lt.run(pulse)
 
     x_datas: List[np.ndarray] = [pulse[0][0].nu, fiber[1][0].nu,
                                  pulse[0][0].time, fiber[1][0].time]
 
-    y_datas: List[np.ndarray] = [spectral_power(pulse[0][0].channels),
-                                 spectral_power(fiber[1][0].channels),
-                                 temporal_power(pulse[0][0].channels),
-                                 temporal_power(fiber[1][0].channels)]
+    y_datas: List[np.ndarray] = [oc.spectral_power(pulse[0][0].channels),
+                                 oc.spectral_power(fiber[1][0].channels),
+                                 oc.temporal_power(pulse[0][0].channels),
+                                 oc.temporal_power(fiber[1][0].channels)]
 
     x_labels: List[str] = ['nu', 'nu', 't', 't']
     y_labels: List[str] = ['P_nu', 'P_nu', 'P_t', 'P_t']
@@ -399,5 +390,5 @@ if __name__ == "__main__":
                               "Pulses at the end of the fiber"]
     plot_titles.extend(plot_titles)
 
-    plot.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, split=True, opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, split=True, opacity=[0.3])

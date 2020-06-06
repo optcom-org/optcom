@@ -151,43 +151,36 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.components.save_field_to_file import SaveFieldToFile
-    from optcom.domain import Domain
-    from optcom.field import Field
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
     file_name: str = 'example_saved_fields.pk1'
 
-    lt: Layout = Layout()
-    gssn_1: Gaussian = Gaussian(channels=1, width=[5.0],
-                                field_name='field 1 to be saved in file')
-    field_saver_1: SaveFieldToFile = SaveFieldToFile(file_name=file_name,
-                                                     add_fields=False)
-    gssn_2: Gaussian = Gaussian(channels=1, width=[10.0],
-                                field_name='field 2 to be saved in file')
-    field_saver_2: SaveFieldToFile = SaveFieldToFile(file_name=file_name,
-                                                     add_fields=True)
+    lt: oc.Layout = oc.Layout()
+    gssn_1: oc.Gaussian = oc.Gaussian(channels=1, width=[5.0],
+                                      field_name='field 1 to be saved in file')
+    field_saver_1: oc.SaveFieldToFile = oc.SaveFieldToFile(file_name=file_name,
+                                                           add_fields=False)
+    gssn_2: oc.Gaussian = oc.Gaussian(channels=1, width=[10.0],
+                                      field_name='field 2 to be saved in file')
+    field_saver_2: oc.SaveFieldToFile = oc.SaveFieldToFile(file_name=file_name,
+                                                           add_fields=True)
 
     lt.link((gssn_1[0], field_saver_1[0]), (gssn_2[0], field_saver_2[0]))
     lt.run(gssn_1, gssn_2)
 
-    fields: List[Field] = []
+    fields: List[oc.Field] = []
     with open(file_name, 'rb') as file_to_load:
         fields.append(pickle.load(file_to_load)[0])
         fields.append(pickle.load(file_to_load)[0])
 
     x_datas: List[np.ndarray] = [fields[0].time, fields[1].time,
                                  fields[0].nu, fields[1].nu]
-    y_datas: List[np.ndarray] = [temporal_power(fields[0].channels),
-                                 temporal_power(fields[1].channels),
-                                 spectral_power(fields[0].channels),
-                                 spectral_power(fields[1].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(fields[0].channels),
+                                 oc.temporal_power(fields[1].channels),
+                                 oc.spectral_power(fields[0].channels),
+                                 oc.spectral_power(fields[1].channels)]
 
-    plot.plot2d(x_datas, y_datas, x_labels=["t", "t", "nu","nu"],
-                y_labels=["P_t", "P_t", "P_nu", "P_nu"],
-                plot_titles=["Gaussian pulse which has been saved"],
-                plot_groups=[0,0,1,1])
+    oc.plot2d(x_datas, y_datas, x_labels=["t", "t", "nu","nu"],
+              y_labels=["P_t", "P_t", "P_nu", "P_nu"],
+              plot_titles=["Gaussian pulse which has been saved"],
+              plot_groups=[0,0,1,1])

@@ -241,29 +241,26 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     # With float
     n_clad: float = 1.44
-    omega: float = Domain.lambda_to_omega(1050.0)
-    sellmeier: Sellmeier = Sellmeier("sio2")
-    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
+    omega: float = oc.lambda_to_omega(1050.0)
+    sellmeier: oc.Sellmeier = oc.Sellmeier("sio2")
+    NA_inst: oc.NumericalAperture = oc.NumericalAperture(sellmeier, n_clad)
     print(NA_inst(omega))
 
     n_core: float = sellmeier(omega)
-    NA_inst = NumericalAperture(n_core, n_clad)
+    NA_inst = oc.NumericalAperture(n_core, n_clad)
     NA: float = NA_inst(omega)
-    print(NA, NumericalAperture.calc_NA(n_core, n_clad))
-    print(n_core, NumericalAperture.calc_n_core(NA, n_clad))
-    print(n_clad, NumericalAperture.calc_n_clad(NA, n_core))
+    print(NA, oc.NumericalAperture.calc_NA(n_core, n_clad))
+    print(n_core, oc.NumericalAperture.calc_n_core(NA, n_clad))
+    print(n_clad, oc.NumericalAperture.calc_n_clad(NA, n_core))
 
     # With numpy ndarray
     lambdas: np.ndarray = np.linspace(900, 1550, 100)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
-    NA_inst = NumericalAperture(sellmeier, n_clad)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
+    NA_inst = oc.NumericalAperture(sellmeier, n_clad)
     res: np.ndarray = NA_inst(omegas)
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = ['Numerical aperture']
@@ -271,5 +268,5 @@ if __name__ == "__main__":
                               "wavelength \n for Silica core with constant "
                               "cladding refractive index."]
 
-    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(0.1, 0.2)])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(0.1, 0.2)])

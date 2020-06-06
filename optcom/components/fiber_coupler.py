@@ -436,24 +436,15 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    import optcom.utils.constants as cst
-    from optcom.components.fiber_coupler import FiberCoupler
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.effects.coupling import Coupling
-    from optcom.layout import Layout
-    from optcom.parameters.fiber.coupling_coeff import CouplingCoeff
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    lt: Layout = Layout(Domain(bit_width=20.0, samples_per_bit=1024))
+    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=20.0, samples_per_bit=1024))
 
     Lambda: float = 1030.0
-    pulse_1: Gaussian = Gaussian(channels=1, peak_power=[38.5, 0.5], fwhm=[1.],
-                                 center_lambda=[Lambda])
-    pulse_2: Gaussian = Gaussian(channels=1, peak_power=[23.5, 0.3], fwhm=[1.],
-                                 center_lambda=[1050.0])
+    pulse_1: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[38.5, 0.5],
+                                       fwhm=[1.], center_lambda=[Lambda])
+    pulse_2: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[23.5, 0.3],
+                                       fwhm=[1.], center_lambda=[1050.0])
 
     steps: int = int(500)
     alpha: List[Union[List[float], Callable, None]] = [[0.046], [0.046]]
@@ -472,9 +463,10 @@ if __name__ == "__main__":
     kappa_: Union[float, Callable]
     kappa: List[List[Union[List[float], Callable, None]]]
     if (fitting_kappa):
-        omega = Domain.lambda_to_omega(Lambda)
-        kappa_ = CouplingCoeff.calc_kappa(omega, v_nbr_value, core_radius[0],
-                                          c2c_spacing[0][0], n_clad)
+        omega = oc.Domain.lambda_to_omega(Lambda)
+        kappa_ = oc.CouplingCoeff.calc_kappa(omega, v_nbr_value,
+                                             core_radius[0], c2c_spacing[0][0],
+                                             n_clad)
         kappa = [[None]]
     else:
         # k = 1cm^-1
@@ -487,31 +479,31 @@ if __name__ == "__main__":
     # if L = 2*Lc -> most of power stays in primary core
     # if L = Lc / 2 -> 50:50 coupler
     delta_a: float = 0.5*(beta_01 - beta_02)
-    length_c: float = cst.PI/(2*math.sqrt(delta_a**2 + kappa_**2))
+    length_c: float = oc.PI/(2*math.sqrt(delta_a**2 + kappa_**2))
     length: float = length_c / 2.0
 
-    coupler: FiberCoupler
-    coupler = FiberCoupler(length=length, alpha=alpha,
-                           kappa=kappa, v_nbr=v_nbr, n_clad=n_clad,
-                           c2c_spacing=c2c_spacing, gamma = gamma,
-                           ATT=True, DISP=True,
-                           nl_approx=False, SPM=True, SS=True, RS=True,
-                           XPM=True, XNL=True, ASYM=True, COUP=True,
-                           nlse_method = 'rk4ip', steps=steps,
-                           ode_method = 'rk4', save=True, wait=True,
-                           UNI_OMEGA=True, STEP_UPDATE=False,
-                           INTRA_COMP_DELAY=True, INTRA_PORT_DELAY=False,
-                           INTER_PORT_DELAY=False, noise_ode_method='rk4',
-                           NOISE=True)
+    coupler: oc.FiberCoupler
+    coupler = oc.FiberCoupler(length=length, alpha=alpha,
+                              kappa=kappa, v_nbr=v_nbr, n_clad=n_clad,
+                              c2c_spacing=c2c_spacing, gamma = gamma,
+                              ATT=True, DISP=True,
+                              nl_approx=False, SPM=True, SS=True, RS=True,
+                              XPM=True, XNL=True, ASYM=True, COUP=True,
+                              nlse_method = 'rk4ip', steps=steps,
+                              ode_method = 'rk4', save=True, wait=True,
+                              UNI_OMEGA=True, STEP_UPDATE=False,
+                              INTRA_COMP_DELAY=True, INTRA_PORT_DELAY=False,
+                              INTER_PORT_DELAY=False, noise_ode_method='rk4',
+                              NOISE=True)
     lt.link((pulse_1[0], coupler[0]))
     lt.link((pulse_2[0], coupler[1]))
 
     lt.run(pulse_1, pulse_2)
 
-    y_datas: List[np.ndarray] = [temporal_power(pulse_1[0][0].channels),
-                                 temporal_power(pulse_2[0][0].channels),
-                                 temporal_power(coupler[2][0].channels),
-                                 temporal_power(coupler[3][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(pulse_1[0][0].channels),
+                                 oc.temporal_power(pulse_2[0][0].channels),
+                                 oc.temporal_power(coupler[2][0].channels),
+                                 oc.temporal_power(coupler[3][0].channels)]
     x_datas: List[np.ndarray] = [pulse_1[0][0].time, pulse_2[0][0].time,
                                  coupler[2][0].time, coupler[3][0].time]
     plot_groups: List[int] = [0, 1, 2, 3]
@@ -523,6 +515,6 @@ if __name__ == "__main__":
 
     plot_labels: List[Optional[str]] = ["port 0", "port 1", "port 2", "port 3"]
 
-    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
-                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                plot_labels=plot_labels, opacity=[0.3])
+    oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+              plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+              plot_labels=plot_labels, opacity=[0.3])

@@ -107,18 +107,16 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.se_power import SEPower
-    from optcom.utils.plot import plot2d
+    import optcom as oc
 
     domega:float = 0.02
     # With float
-    omega: float = Domain.lambda_to_omega(1552.0)
-    se_power: SEPower = SEPower(domega)
+    omega: float = oc.lambda_to_omega(1552.0)
+    se_power: oc.SEPower = oc.SEPower(domega)
     print(se_power(omega))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(500., 1600., 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     res: np.ndarray = se_power(omegas)
 
     x_labels: List[str] = ['Lambda']
@@ -126,5 +124,5 @@ if __name__ == "__main__":
     plot_titles: List[str] = ["Spontaneous emission power as a function of "
                               "the wavelength."]
 
-    plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-            plot_titles=plot_titles, opacity=[0.0])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, opacity=[0.0])

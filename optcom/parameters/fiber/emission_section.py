@@ -158,14 +158,9 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.absorption_section import AbsorptionSection
+    import optcom as oc
     from optcom.parameters.fiber.absorption_section import DOPANT_RANGE
-    from optcom.parameters.fiber.emission_section import EmissionSection
     from optcom.parameters.fiber.emission_section import DOPANTS
-    from optcom.utils.utilities_user import CSVFit
-
 
     x_data: List[np.ndarray] = []
     y_data: List[np.ndarray] = []
@@ -176,8 +171,8 @@ if __name__ == "__main__":
     medium: str = 'sio2'
     nbr_samples: int = 1000
     omegas: np.ndarray
-    absorp: AbsorptionSection
-    emission: EmissionSection
+    absorp: oc.AbsorptionSection
+    emission: oc.EmissionSection
     sigmas: np.ndarray
     lambdas: np.ndarray
     dopant_name: str
@@ -186,15 +181,15 @@ if __name__ == "__main__":
         lambdas = np.linspace(DOPANT_RANGE[dopant][0],
                               DOPANT_RANGE[dopant][1],
                               nbr_samples)
-        omegas = Domain.omega_to_lambda(lambdas)
-        absorp = AbsorptionSection(dopant)
+        omegas = oc.omega_to_lambda(lambdas)
+        absorp = oc.AbsorptionSection(dopant)
         sigmas = absorp(omegas)
         x_data.append(lambdas)
         y_data.append(sigmas)
         plot_labels.append('absorption')
         plot_colors.append('blue')
-        emission = EmissionSection(dopant=dopant, medium=medium, T=T,
-                                   sigma_a=absorp)
+        emission = oc.EmissionSection(dopant=dopant, medium=medium, T=T,
+                                     sigma_a=absorp)
         sigmas = emission(omegas)
         x_data.append(lambdas)
         y_data.append(sigmas)
@@ -206,14 +201,14 @@ if __name__ == "__main__":
                            + "\n (absorption sections + McCumber relations)")
     # From file
     file_sigma_a: str = './data/fiber_amp/cross_section/absorption/yb.txt'
-    csv_sigma_a: Callable = CSVFit(file_sigma_a, conv_factor=[1e9, 1e18],
-                                   conv_func=[Domain.lambda_to_omega])
+    csv_sigma_a: Callable = oc.CSVFit(file_sigma_a, conv_factor=[1e9, 1e18],
+                                      conv_func=[oc.lambda_to_omega])
     file_sigma_e: str = './data/fiber_amp/cross_section/emission/yb.txt'
-    csv_sigma_e: Callable = CSVFit(file_sigma_e, conv_factor=[1e9, 1e18],
-                                   conv_func=[Domain.lambda_to_omega])
+    csv_sigma_e: Callable = oc.CSVFit(file_sigma_e, conv_factor=[1e9, 1e18],
+                                     conv_func=[oc.lambda_to_omega])
     lambdas = np.linspace(DOPANT_RANGE['yb'][0], DOPANT_RANGE['yb'][1],
                           nbr_samples)
-    omegas = Domain.omega_to_lambda(lambdas)
+    omegas = oc.omega_to_lambda(lambdas)
     sigmas = csv_sigma_a(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
@@ -226,8 +221,8 @@ if __name__ == "__main__":
     plot_colors.append('red')
     plot_titles.append('Cross sections Yb from files.')
     # From file and McCumber
-    emission = EmissionSection(dopant='yb', medium=medium, T=T,
-                               sigma_a=csv_sigma_a)
+    emission = oc.EmissionSection(dopant='yb', medium=medium, T=T,
+                                  sigma_a=csv_sigma_a)
     sigmas = csv_sigma_a(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
@@ -240,8 +235,8 @@ if __name__ == "__main__":
     plot_colors.append('red')
     plot_titles.append("Cross sections from absorption Yb file and McCumber")
 
-    plot.plot2d(x_data, y_data, x_labels=['Lambda'],
-                y_labels=[r'Emission cross section, $\,\sigma_e\,(nm^2)$'],
-                plot_colors=plot_colors, plot_labels=plot_labels,
-                plot_titles=plot_titles, plot_linestyles=['-.'],
-                opacity=[0.0], plot_groups=[0,0,1,1,2,2])
+    oc.plot2d(x_data, y_data, x_labels=['Lambda'],
+              y_labels=[r'Emission cross section, $\,\sigma_e\,(nm^2)$'],
+              plot_colors=plot_colors, plot_labels=plot_labels,
+              plot_titles=plot_titles, plot_linestyles=['-.'],
+              opacity=[0.0], plot_groups=[0,0,1,1,2,2])

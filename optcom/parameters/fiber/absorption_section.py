@@ -244,12 +244,9 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.absorption_section import AbsorptionSection
+    import optcom as oc
     from optcom.parameters.fiber.absorption_section import DOPANT_RANGE
     from optcom.parameters.fiber.absorption_section import DOPANTS
-    from optcom.utils.utilities_user import CSVFit
 
     x_data: List[np.ndarray] = []
     y_data: List[np.ndarray] = []
@@ -258,7 +255,7 @@ if __name__ == "__main__":
     medium: str = 'sio2'
     nbr_samples: int = 1000
     omegas: np.ndarray
-    absorp: AbsorptionSection
+    absorp: oc.AbsorptionSection
     sigmas: np.ndarray
     lambdas: np.ndarray
     dopant_name: str
@@ -267,8 +264,8 @@ if __name__ == "__main__":
         lambdas = np.linspace(DOPANT_RANGE[dopant][0],
                               DOPANT_RANGE[dopant][1],
                               nbr_samples)
-        omegas = Domain.omega_to_lambda(lambdas)
-        absorp = AbsorptionSection(dopant=dopant, medium=medium, T=T)
+        omegas = oc.omega_to_lambda(lambdas)
+        absorp = oc.AbsorptionSection(dopant=dopant, medium=medium, T=T)
         sigmas = absorp(omegas)
         x_data.append(lambdas)
         y_data.append(sigmas)
@@ -277,27 +274,27 @@ if __name__ == "__main__":
                            .format(dopant_name))
     # From file
     file_sigma_a: str = './data/fiber_amp/cross_section/absorption/yb.txt'
-    csv_sigma_a: Callable = CSVFit(file_sigma_a, conv_factor=[1e9, 1e18],
-                                   conv_func=[Domain.lambda_to_omega])
+    csv_sigma_a: Callable = oc.CSVFit(file_sigma_a, conv_factor=[1e9, 1e18],
+                                      conv_func=[oc.Domain.lambda_to_omega])
     lambdas = np.linspace(DOPANT_RANGE['yb'][0], DOPANT_RANGE['yb'][1],
                           nbr_samples)
-    omegas = Domain.omega_to_lambda(lambdas)
+    omegas = oc.omega_to_lambda(lambdas)
     sigmas = csv_sigma_a(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
     plot_titles.append("Cross sections Yb from file.")
     # From file and McCumber relations
     file_sigma_e: str = './data/fiber_amp/cross_section/emission/yb.txt'
-    csv_sigma_e: Callable = CSVFit(file_sigma_e, conv_factor=[1e9, 1e18],
-                                   conv_func=[Domain.lambda_to_omega])
-    absorp = AbsorptionSection(dopant='yb', medium=medium, T=T,
-                               sigma_e=csv_sigma_e)
+    csv_sigma_e: Callable = oc.CSVFit(file_sigma_e, conv_factor=[1e9, 1e18],
+                                     conv_func=[oc.Domain.lambda_to_omega])
+    absorp = oc.AbsorptionSection(dopant='yb', medium=medium, T=T,
+                                 sigma_e=csv_sigma_e)
     sigmas = absorp(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
     plot_titles.append('Cross sections from emission Yb file and McCumber.')
 
-    plot.plot2d(x_data, y_data, x_labels=['Lambda'],
-                y_labels=[r'Absorption cross section, $\,\sigma_a\,(nm^2)$'],
-                split=True, plot_colors=['red'], plot_titles=plot_titles,
-                plot_linestyles=['-.'], opacity=[0.0])
+    oc.plot2d(x_data, y_data, x_labels=['Lambda'],
+              y_labels=[r'Absorption cross section, $\,\sigma_a\,(nm^2)$'],
+              split=True, plot_colors=['red'], plot_titles=plot_titles,
+              plot_linestyles=['-.'], opacity=[0.0])

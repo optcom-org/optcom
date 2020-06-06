@@ -276,20 +276,13 @@ if __name__ == "__main__":
     """
 
     from typing import Callable, List, Optional
-    import matplotlib.pyplot as plt
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase,\
-                                            fwhm
+    import optcom as oc
 
-    dm: Domain = Domain(samples_per_bit=512, bit_width=500.0)
-    lt: Layout = Layout(dm)
+    dm: oc.Domain = oc.Domain(samples_per_bit=512, bit_width=500.0)
+    lt: oc.Layout = oc.Layout(dm)
 
     channels: int = 2
     center_lambda: List[float] = [1552.0, 1549.0, 1596.0]
@@ -302,17 +295,16 @@ if __name__ == "__main__":
     chirp: List[float] = [0.0, 0.5, 0.1]
     init_phi: List[float] = [0.0, 1.0, 0.0]
 
-    gssn = Gaussian(channels=channels, center_lambda=center_lambda,
-                    position=position, width=width, peak_power=peak_power,
-                    rep_freq=rep_freq, offset_nu=offset_nu, order=order,
-                    chirp=chirp, init_phi=init_phi, save=True)
+    gssn = oc.Gaussian(channels=channels, center_lambda=center_lambda,
+                       position=position, width=width, peak_power=peak_power,
+                       rep_freq=rep_freq, offset_nu=offset_nu, order=order,
+                       chirp=chirp, init_phi=init_phi, save=True)
 
     lt.run(gssn)
 
     x_datas: List[np.ndarray] = [gssn[0][0].time, gssn[0][0].nu]
-    y_datas: List[np.ndarray] = [temporal_power(gssn[0][0].channels),
-                                 spectral_power(gssn[0][0].channels)]
+    y_datas: List[np.ndarray] = [oc.temporal_power(gssn[0][0].channels),
+                                 oc.spectral_power(gssn[0][0].channels)]
 
-    plot.plot2d(x_datas, y_datas, x_labels=["t","nu"],
-                y_labels=["P_t", "P_nu"],
-                plot_titles=["Gaussian pulse"], split=True)
+    oc.plot2d(x_datas, y_datas, x_labels=["t","nu"], y_labels=["P_t", "P_nu"],
+              plot_titles=["Gaussian pulse"], split=True)

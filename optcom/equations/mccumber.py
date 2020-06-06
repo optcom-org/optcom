@@ -226,7 +226,7 @@ class McCumber(AbstractEquation):
         KB = cst.KB
         HBAR = cst.HBAR
         H = cst.H
-        C = cst.LIGHT_SPEED
+        C = cst.C
         Z_L = 0.0
         for i in range(1, len(stark_energies[0])):
             delta_energy = (stark_energies[0][i]-stark_energies[0][0]) * H * C
@@ -296,7 +296,7 @@ class McCumber(AbstractEquation):
         KB = cst.KB
         HBAR = cst.HBAR
         H = cst.H
-        C = cst.LIGHT_SPEED
+        C = cst.C
         Z_L = 0.0
         for i in range(1, len(stark_energies[0])):
             delta_energy = (stark_energies[0][i]-stark_energies[0][0]) * H * C

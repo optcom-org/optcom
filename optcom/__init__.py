@@ -33,34 +33,45 @@ mod_comps = ['CW', 'Fiber', 'FiberYb', 'FiberCoupler', 'Gaussian',
 # from root
 from optcom.domain import Domain
 from optcom.layout import Layout
+from optcom.field import Field
 
-mod_root = ['Domain', 'Layout']
+mod_root = ['Domain', 'Layout', 'Field']
 
 
 # from utils
-from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                        temporal_phase, spectral_phase,\
-                                        energy, average_power, CSVFit, fwhm
+import typing
+import optcom.field as fld
+temporal_power: typing.Callable = fld.Field.temporal_power
+spectral_power: typing.Callable = fld.Field.spectral_power
+temporal_phase: typing.Callable = fld.Field.temporal_phase
+spectral_phase: typing.Callable = fld.Field.temporal_phase
+temporal_peak_power: typing.Callable = fld.Field.temporal_peak_power
+spectral_peak_power: typing.Callable = fld.Field.spectral_peak_power
+energy: typing.Callable = fld.Field.energy
+average_power: typing.Callable = fld.Field.average_power
+fwhm: typing.Callable = fld.Field.fwhm
+import optcom.domain as dmn
+nu_to_omega: typing.Callable = dmn.Domain.nu_to_omega
+nu_to_lambda: typing.Callable = dmn.Domain.nu_to_lambda
+omega_to_nu: typing.Callable = dmn.Domain.omega_to_nu
+omega_to_lambda: typing.Callable = dmn.Domain.omega_to_lambda
+lambda_to_nu: typing.Callable = dmn.Domain.lambda_to_nu
+lambda_to_omega: typing.Callable = dmn.Domain.lambda_to_omega
+nu_bw_to_lambda_bw: typing.Callable = dmn.Domain.nu_bw_to_lambda_bw
+lambda_bw_to_nu_bw: typing.Callable = dmn.Domain.lambda_bw_to_nu_bw
+omega_bw_to_lambda_bw: typing.Callable = dmn.Domain.omega_bw_to_lambda_bw
+lambda_bw_to_omega_bw: typing.Callable = dmn.Domain.lambda_bw_to_omega_bw
+from optcom.utils.csv_fit import CSVFit
+from optcom.utils.storage import Storage
+from optcom.utils.utilities import db_to_linear, linear_to_db
 
 mod_utils = ['CSVFit', 'temporal_power', 'spectral_power', 'temporal_phase',
-             'spectral_phase', 'energy', 'average_power', 'fwhm']
-
-
-# from staticmethod
-from optcom.parameters.fiber.coupling_coeff import CouplingCoeff
-from optcom.parameters.dispersion.chromatic_disp import ChromaticDisp
-from optcom.parameters.fiber.v_number import VNumber
-from optcom.parameters.refractive_index.sellmeier import Sellmeier
-from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-calc_dispersion_length = ChromaticDisp.calc_dispersion_length
-calc_kappa = CouplingCoeff.calc_kappa
-calc_v_number = VNumber.calc_v_number
-calc_NA = NumericalAperture.calc_NA
-calc_n_core = NumericalAperture.calc_n_core
-calc_n_clad = NumericalAperture.calc_n_clad
-
-mod_static = ['calc_dispersion_length', 'calc_kappa', 'calc_v_number',
-              'Sellmeier', 'calc_NA', 'calc_n_core', 'calc_n_clad']
+             'spectral_phase', 'energy', 'average_power', 'fwhm',
+             'temporal_peak_power', 'spectral_peak_power', 'db_to_linear',
+             'linear_to_db', 'Storage', 'nu_to_omega', 'nu_to_lambda',
+             'omega_to_nu', 'omega_to_lambda', 'lambda_to_nu',
+             'lambda_to_omega', 'nu_bw_to_lambda_bw', 'lambda_bw_to_nu_bw',
+             'lambda_bw_to_omega_bw', 'omega_bw_to_lambda_bw']
 
 
 #from plot
@@ -70,10 +81,44 @@ mod_plot = ['plot2d', 'plot3d', 'animation2d']
 
 
 # from parameters
+from optcom.parameters.dispersion.chromatic_disp import ChromaticDisp
 from optcom.parameters.fiber.absorption_section import AbsorptionSection
+from optcom.parameters.fiber.asymmetry_coeff import AsymmetryCoeff
+from optcom.parameters.fiber.coupling_coeff import CouplingCoeff
+from optcom.parameters.fiber.doped_fiber_gain import DopedFiberGain
+from optcom.parameters.fiber.effective_area import EffectiveArea
 from optcom.parameters.fiber.emission_section import EmissionSection
+from optcom.parameters.fiber.energy_saturation import EnergySaturation
+from optcom.parameters.fiber.nl_coefficient import NLCoefficient
+from optcom.parameters.fiber.numerical_aperture import NumericalAperture
+from optcom.parameters.fiber.overlap_factor import OverlapFactor
+from optcom.parameters.fiber.raman_response import RamanResponse
+from optcom.parameters.fiber.se_power import SEPower
+from optcom.parameters.fiber.v_number import VNumber
+from optcom.parameters.refractive_index.nl_index import NLIndex
+from optcom.parameters.refractive_index.resonant_index import ResonantIndex
+from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
-mod_para = ['AbsorptionSection', 'EmissionSection']
+
+mod_para = ['AbsorptionSection', 'ChromaticDisp', 'AsymmetryCoeff',
+            'CouplingCoeff', 'DopedFiberGain', 'EffectiveArea',
+            'EmissionSection', 'EnergySaturation', 'NLCoefficient',
+            'NumericalAperture', 'OverlapFactor', 'RamanResponse',
+            'SEPower', 'VNumber', 'NLIndex', 'ResonantIndex', 'Sellmeier']
+
+
+
+# from constants
+from optcom.utils.constant_values.physic_cst import C
+from optcom.utils.constant_values.physic_cst import PI
+from optcom.utils.constant_values.physic_cst import KB
+from optcom.utils.constant_values.physic_cst import H
+from optcom.utils.constant_values.physic_cst import HBAR
+from optcom.utils.constant_values.physic_cst import M_E
+from optcom.utils.constant_values.physic_cst import C_E
+from optcom.utils.constant_values.physic_cst import EPS_0
+
+mod_cst = ['C', 'PI', 'KB', 'H', 'HBAR', 'M_E', 'C_E', 'EPS_0']
 
 
 # from config
@@ -97,5 +142,5 @@ mod_config = ['set_separator_terminal', 'get_separator_terminal',
               'get_field_op_matching_rep_freq']
 
 
-__all__ = (mod_comps + mod_root + mod_utils + mod_static + mod_plot
-           + mod_para + mod_config)
+__all__ = (mod_comps + mod_root + mod_utils + mod_plot
+           + mod_para + mod_config + mod_cst)

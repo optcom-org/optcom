@@ -150,19 +150,11 @@ if __name__ == "__main__":
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    import optcom.utils.constants as cst
-    from optcom.components.gaussian import Gaussian
-    from optcom.components.ideal_phase_mod import IdealPhaseMod
-    from optcom.components.ideal_phase_mod import default_name
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    import optcom as oc
 
-    lt: Layout = Layout()
+    lt: oc.Layout = oc.Layout()
     chirps: List[float] = [0.0, 1.0]
-    phase_shifts: List[Union[float, Callable]] = [cst.PI, lambda t: cst.PI/2]
+    phase_shifts: List[Union[float, Callable]] = [oc.PI, lambda t: oc.PI/2]
     y_datas_t: List[np.ndarray] = []
     y_datas_nu: List[np.ndarray] = []
 
@@ -170,22 +162,22 @@ if __name__ == "__main__":
     plot_titles: List[str] = []
     plot_labels: List[Optional[str]] = []
 
-    pulse: Gaussian
-    mod: IdealPhaseMod
+    pulse: oc.Gaussian
+    mod: oc.IdealPhaseMod
     count: int = 0
     for i, chirp in enumerate(chirps):
         for j, phase_shift in enumerate(phase_shifts):
             # Propagation
-            pulse = Gaussian(peak_power=[10.0], chirp=[chirp])
-            mod = IdealPhaseMod(phase_shift=phase_shift)
+            pulse = oc.Gaussian(peak_power=[10.0], chirp=[chirp])
+            mod = oc.IdealPhaseMod(phase_shift=phase_shift)
             lt.link((pulse[0], mod[0]))
             lt.run(pulse)
             lt.reset()
             # Plot parameters and get waves
-            y_datas_t.append(temporal_phase(pulse[0][0].channels))
-            y_datas_t.append(temporal_phase(mod[1][0].channels))
-            y_datas_nu.append(spectral_phase(pulse[0][0].channels))
-            y_datas_nu.append(spectral_phase(mod[1][0].channels))
+            y_datas_t.append(oc.temporal_phase(pulse[0][0].channels))
+            y_datas_t.append(oc.temporal_phase(mod[1][0].channels))
+            y_datas_nu.append(oc.spectral_phase(pulse[0][0].channels))
+            y_datas_nu.append(oc.spectral_phase(mod[1][0].channels))
             plot_groups += [count, count]
             count += 1
             plot_labels += ["Original pulse", "Exit pulse"]
@@ -193,18 +185,18 @@ if __name__ == "__main__":
                 temp_phase = phase_shift
             else:
                 temp_phase = phase_shift(0)
-            plot_titles += ["Pulses through the {} with chirp {} and phase "
-                            "shift {}".format(default_name, str(chirp),
-                                              str(round(temp_phase,2)))]
+            plot_titles += ["Pulses through the ideal phase modulator with "
+                            "chirp {} and phase shift {}"
+                            .format(str(chirp), str(round(temp_phase,2)))]
 
     x_datas_t: List[np.ndarray] = [pulse[0][0].time, mod[1][0].time]
 
-    plot.plot2d(x_datas_t, y_datas_t, plot_groups=plot_groups,
-                plot_titles=plot_titles, plot_labels=plot_labels,
-                x_labels=['t'], y_labels=['phi_t'], opacity=[0.3])
+    oc.plot2d(x_datas_t, y_datas_t, plot_groups=plot_groups,
+              plot_titles=plot_titles, plot_labels=plot_labels,
+              x_labels=['t'], y_labels=['phi_t'], opacity=[0.3])
 
     x_datas_nu: List[np.ndarray] = [pulse[0][0].nu, mod[1][0].nu]
 
-    plot.plot2d(x_datas_nu, y_datas_nu, plot_groups=plot_groups,
-                plot_titles=plot_titles, plot_labels=plot_labels,
-                x_labels=['nu'], y_labels=['phi_nu'], opacity=[0.3])
+    oc.plot2d(x_datas_nu, y_datas_nu, plot_groups=plot_groups,
+              plot_titles=plot_titles, plot_labels=plot_labels,
+              x_labels=['nu'], y_labels=['phi_nu'], opacity=[0.3])

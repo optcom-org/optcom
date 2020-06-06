@@ -166,7 +166,8 @@ class AbstractREFiber(AbstractFieldEquation):
         fct_calc_n_clad = NumericalAperture.calc_n_core
         n_core_pur_: Union[CallableLittExpr, CallableContainer, Sellmeier]
         n_core_: Union[CallableLittExpr, CallableContainer, Sellmeier]
-        n_clad_: Union[CallableLittExpr, CallableContainer, NumericalAperture]
+        n_clad_: Union[CallableLittExpr, CallableContainer, NumericalAperture,
+                       Sellmeier]
         NA_: Callable
         n_reso_: ResonantIndex
         for i in range(2):
@@ -343,7 +344,7 @@ class AbstractREFiber(AbstractFieldEquation):
         return self._n_clad
     # ==================================================================
     @property
-    def n_reso(self) -> List[Union[float, Callable]]:
+    def n_reso(self) -> List[ResonantIndex]:
 
         return self._n_reso
     # ==================================================================

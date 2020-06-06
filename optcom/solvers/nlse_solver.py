@@ -748,8 +748,7 @@ if __name__ == "__main__":
     from optcom.components.gaussian import Gaussian
     from optcom.domain import Domain
     from optcom.layout import Layout
-    from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            temporal_phase, spectral_phase
+    from optcom.field import Field
 
     plot_groups: List[int] = []
     plot_labels: List[Optional[str]] = []
@@ -783,7 +782,7 @@ if __name__ == "__main__":
         lt.reset()
         # Plot parameters and get waves
         x_datas.append(fiber[1][0].time)
-        y_datas.append(temporal_power(fiber[1][0].channels))
+        y_datas.append(Field.temporal_power(fiber[1][0].channels))
         plot_groups.append(0)
 
     plot_labels.extend(nlse_methods[:-1] + ["rk4ip_gnlse"])

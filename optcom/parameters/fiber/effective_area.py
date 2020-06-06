@@ -154,34 +154,28 @@ if __name__ == "__main__":
     file as an example.
     """
 
-    import math
     from typing import List
 
     import numpy as np
 
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.effective_area import EffectiveArea
-    from optcom.parameters.fiber.v_number import VNumber
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     # With float
-    omega: float = Domain.lambda_to_omega(1552.0)
+    omega: float = oc.lambda_to_omega(1552.0)
     core_radius: float = 5.0
     n_clad: float = 1.44
-    sellmeier: Sellmeier = Sellmeier("sio2")
-    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
-    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
-    eff_area: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
+    sellmeier: oc.Sellmeier = oc.Sellmeier("sio2")
+    NA_inst: oc.NumericalAperture = oc.NumericalAperture(sellmeier, n_clad)
+    v_nbr_inst: oc.VNumber = oc.VNumber(NA_inst, core_radius)
+    eff_area: oc.EffectiveArea = oc.EffectiveArea(v_nbr_inst, core_radius)
     print(eff_area(omega))
     v_nbr: float = v_nbr_inst(omega)
-    eff_area = EffectiveArea(v_nbr, core_radius)
+    eff_area = oc.EffectiveArea(v_nbr, core_radius)
     print(eff_area(omega))
     # With numpy ndarray
     lambdas: np.ndarray = np.linspace(900, 1550, 100)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
-    eff_area = EffectiveArea(v_nbr_inst, core_radius)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
+    eff_area = oc.EffectiveArea(v_nbr_inst, core_radius)
     res: np.ndarray = eff_area(omegas)
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = [r'Effective Area, $\,\mu m^2$']
@@ -189,5 +183,5 @@ if __name__ == "__main__":
                               "\n for Silica core with constant cladding "
                               "refractive index."]
 
-    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(35., 110.)])
+    oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(35., 110.)])

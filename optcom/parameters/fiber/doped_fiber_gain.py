@@ -149,57 +149,48 @@ if __name__ == "__main__":
     file as an example.
     """
 
-    import math
     from typing import List
 
     import numpy as np
 
-    import optcom.utils.constants as cst
-    import optcom.utils.plot as plot
-    from optcom.domain import Domain
-    from optcom.parameters.fiber.absorption_section import AbsorptionSection
-    from optcom.parameters.fiber.effective_area import EffectiveArea
-    from optcom.parameters.fiber.emission_section import EmissionSection
-    from optcom.parameters.fiber.doped_fiber_gain import DopedFiberGain
-    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
-    from optcom.parameters.fiber.overlap_factor import OverlapFactor
-    from optcom.parameters.fiber.v_number import VNumber
-    from optcom.parameters.refractive_index.sellmeier import Sellmeier
+    import optcom as oc
 
     medium: str = "sio2"
     dopant: str = "yb"
-    A_doped: float = cst.PI*25.0
+    A_doped: float = oc.PI*25.0
     # With float
-    omega: float = Domain.lambda_to_omega(1000)
+    omega: float = oc.lambda_to_omega(1000)
     core_radius: float = 5.0
-    sellmeier: Sellmeier = Sellmeier(medium)
+    sellmeier: oc.Sellmeier = oc.Sellmeier(medium)
     n_clad: float = 1.44
-    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
-    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
-    A_eff_inst: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
-    sigma_a_inst: AbsorptionSection = AbsorptionSection(dopant, medium)
-    of_inst: OverlapFactor = OverlapFactor(A_eff_inst, A_doped)
+    NA_inst: oc.NumericalAperture = oc.NumericalAperture(sellmeier, n_clad)
+    v_nbr_inst: oc.VNumber = oc.VNumber(NA_inst, core_radius)
+    A_eff_inst: oc.EffectiveArea = oc.EffectiveArea(v_nbr_inst, core_radius)
+    sigma_a_inst: oc.AbsorptionSection = oc.AbsorptionSection(dopant, medium)
+    of_inst: oc.OverlapFactor = oc.OverlapFactor(A_eff_inst, A_doped)
     N: float = 0.01
-    gain: DopedFiberGain = DopedFiberGain(sigma_a_inst, of_inst, N)
+    gain: oc.DopedFiberGain = oc.DopedFiberGain(sigma_a_inst, of_inst, N)
     print(gain(omega))
     sigma_a: float = sigma_a_inst(omega)
     of: float = of_inst(omega)
-    print(DopedFiberGain.calc_doped_fiber_gain(sigma_a, of, N))
+    print(oc.DopedFiberGain.calc_doped_fiber_gain(sigma_a, of, N))
     # With np.ndarray
     N_0 = 0.01
     N_1 = 0.011
-    absorp_inst: DopedFiberGain = DopedFiberGain(sigma_a_inst, of_inst, N_0)
+    absorp_inst: oc.DopedFiberGain = oc.DopedFiberGain(sigma_a_inst, of_inst,
+                                                       N_0)
     T: float = 293.15
-    sigma_e_inst = EmissionSection(dopant, medium, T, sigma_a_inst)
-    emission_inst: DopedFiberGain = DopedFiberGain(sigma_e_inst, of_inst, N_1)
+    sigma_e_inst = oc.EmissionSection(dopant, medium, T, sigma_a_inst)
+    emission_inst: oc.DopedFiberGain = oc.DopedFiberGain(sigma_e_inst, of_inst,
+                                                         N_1)
     lambdas: np.ndarray = np.linspace(900., 1050., 1000)
-    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     absorps: np.ndarray = absorp_inst(omegas)
     emissions: np.ndarray = emission_inst(omegas)
     gains: np.ndarray = emissions - absorps
     plot_titles: List[str] = [r"Fiber gain as a function of wavelength with "
                               r"ratio $\frac{N_1}{N_0} = \frac{11}{10}$."]
 
-    plot.plot2d([lambdas], [gains], x_labels=['Lambda'],
-                y_labels=[r'Gain, $\, g\,(km^{-1})$'], plot_colors=['red'],
-                plot_titles=plot_titles, opacity=[0.])
+    oc.plot2d([lambdas], [gains], x_labels=['Lambda'],
+              y_labels=[r'Gain, $\, g\,(km^{-1})$'], plot_colors=['red'],
+              plot_titles=plot_titles, opacity=[0.])
