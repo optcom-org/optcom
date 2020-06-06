@@ -23,6 +23,7 @@ from typing import List, Optional, Sequence, Tuple
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.components.abstract_pass_comp import AbstractPassComp
+from optcom.components.abstract_pass_comp import call_decorator
 from optcom.domain import Domain
 from optcom.field import Field
 
@@ -42,12 +43,35 @@ class IdealDivider(AbstractPassComp):
         ports in the component. For types, see
         :mod:`optcom/utils/constant_values/port_types`.
     save : bool
-        If True, the last wave to enter/exit a port will be saved.
+        If True, will save each field going through each port. The
+        recorded fields can be accessed with the attribute
+        :attr:`fields`.
+    call_counter : int
+        Count the number of times the function
+        :func:`__call__` of the Component has been called.
+    wait :
+        If True, will wait for specified waiting port policy added
+        with the function :func:`AbstractComponent.add_wait_policy`.
+    pre_call_code :
+        A string containing code which will be executed prior to
+        the call to the function :func:`__call__`. The two parameters
+        `input_ports` and `input_fields` are available.
+    post_call_code :
+        A string containing code which will be executed posterior to
+        the call to the function :func:`__call__`. The two parameters
+        `output_ports` and `output_fields` are available.
     arms : int
         The number of input arms.
-    ratios : list of float
-        A list with the dividing ratios of the corresponding
-        index-number port.
+    divide : bool
+        If False, propagate a copy of entering fields to each
+        output port. (ratios will be ignored) Otherwise, divide
+        power depending on provided ratios.
+    ratios :
+        A list of ratios where each index is related to one arm.
+        The length of the list should be equal to the number of
+        arms, if not it will be pad to it. The ratio represents the
+        fraction of the power that will be taken from the field
+        arriving at the corresponding arm.
 
     Notes
     -----
@@ -66,9 +90,9 @@ class IdealDivider(AbstractPassComp):
     _nbr_instances_with_default_name: int = 0
 
     def __init__(self, name: str = default_name, arms: int = 2,
-                 divide: bool = True, ratios: Optional[List[float]] = None,
-                 save: bool = False,
-                 max_nbr_pass: Optional[List[int]] = None) -> None:
+                 divide: bool = True, ratios: List[float] = [],
+                 save: bool = False, max_nbr_pass: Optional[List[int]] = None,
+                 pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
         ----------
@@ -78,48 +102,66 @@ class IdealDivider(AbstractPassComp):
             The number of input arms.
         divide :
             If False, propagate a copy of entering fields to each
-            output port. Otherwise, divide power depending on
-            provided ratios.
+            output port. (ratios will be ignored) Otherwise, divide
+            power depending on provided ratios.
         ratios :
-            A list with the dividing ratios of the corresponding
-            index-number port.
+            A list of ratios where each index is related to one arm.
+            The length of the list should be equal to the number of
+            arms, if not it will be pad to it. The ratio represents the
+            fraction of the power that will be taken from the field
+            arriving at the corresponding arm.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
             No fields will be propagated if the number of
             fields which passed through a specific port exceed the
             specified maximum number of pass for this port.
+        pre_call_code :
+            A string containing code which will be executed prior to
+            the call to the function :func:`__call__`. The two parameters
+            `input_ports` and `input_fields` are available.
+        post_call_code :
+            A string containing code which will be executed posterior to
+            the call to the function :func:`__call__`. The two parameters
+            `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.OPTI_IN] + [cst.OPTI_OUT for i in range(arms)]
         super().__init__(name, default_name, ports_type, save,
-                         max_nbr_pass=max_nbr_pass)
+                         max_nbr_pass=max_nbr_pass,
+                         pre_call_code=pre_call_code,
+                         post_call_code=post_call_code)
         # Check types attr ---------------------------------------------
         util.check_attr_type(arms, 'arms', int)
         util.check_attr_type(divide, 'combine', bool)
-        util.check_attr_type(ratios, 'ratios', None, list)
+        util.check_attr_type(ratios, 'ratios', list)
         # Attr ---------------------------------------------------------
-        self._arms: int = arms
-        self._ratios: List[float]
-        if (divide):
-            if (ratios is None):
-                ratio = 1.0 / arms
-                self._ratios = [ratio for i in range(arms)]
+        self.divide: bool = divide
+        self.arms: int = arms
+        self.ratios: List[float]
+        if (not ratios):
+            if (self.divide):
+                self.ratios = [1.0/arms for i in range(self.arms)]
             else:
-                self._ratios = ratios
+                self.ratios = [1. for i in range(self.arms)]
         else:
-            self._ratios = [1.0 for i in range(arms)]
+            self.ratios = ratios
     # ==================================================================
+    @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
         output_ports: List[int] = []
         output_fields: List[Field] = []
         for field in fields:
-            for i in range(self._arms):
+            for i in range(self.arms):
                 output_fields.append(copy.deepcopy(field))
-                output_fields[-1] *= math.sqrt(self._ratios[i])
+                if (self.divide):
+                    ratios = util.make_list(self.ratios, self.arms)
+                else:
+                    ratios = [1.0 for i in range(self.arms)]
+                output_fields[-1] *= math.sqrt(ratios[i])
                 output_ports.append(i+1)
 
         return output_ports, output_fields
@@ -127,40 +169,66 @@ class IdealDivider(AbstractPassComp):
 
 
 if __name__ == "__main__":
+    """Give an example of IdealDivider usage.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
 
     import random
+    from typing import Callable, List, Optional
+
+    import numpy as np
 
     import optcom.utils.plot as plot
-    import optcom.layout as layout
-    import optcom.components.gaussian as gaussian
-    import optcom.domain as domain
-    from optcom.utils.utilities_user import temporal_power
+    from optcom.components.gaussian import Gaussian
+    from optcom.components.ideal_divider import IdealDivider
+    from optcom.components.ideal_divider import default_name
+    from optcom.domain import Domain
+    from optcom.layout import Layout
+    from optcom.utils.utilities_user import temporal_power, spectral_power,\
+                                            temporal_phase, spectral_phase
 
-    pulse = gaussian.Gaussian(peak_power=[10.0])
-
-    lt = layout.Layout()
-
-    arms = 3
-    ratios = [round(random.uniform(0,1),2) for i in range(arms)]
-    divider = IdealDivider(arms=arms, ratios=ratios, save=True)
-
+    # with division
+    pulse: Gaussian = Gaussian(channels=1, peak_power=[10.0])
+    lt: Layout = Layout()
+    arms: int = 3
+    ratios: List[float] = [round(random.uniform(0,1),2) for i in range(arms)]
+    divider: IdealDivider = IdealDivider(arms=arms, divide=True,
+                                         ratios=ratios, save=True)
     lt.link((pulse[0], divider[0]))
-
     lt.run(pulse)
+    y_datas: List[np.ndarray] = [temporal_power(pulse[0][0].channels)]
+    x_datas: List[np.ndarray] = [pulse[0][0].time]
 
-    plot_titles = (["Original pulse", "Pulses coming out of the {} with "
-                    "ratios {}".format(default_name, str(ratios))])
+    plot_titles: List[str] = (["Original pulse", "Pulses coming out of the "
+                               "{} (3 ports) \n with ratios {}"
+                               .format(default_name, str(ratios))])
     plot_groups: List[int] = [0] + [1 for i in range(arms)]
     plot_labels: List[Optional[str]] = [None]
     plot_labels.extend(["port {}".format(str(i)) for i in range(arms)])
 
-    y_datas = [temporal_power(pulse[0][0].channels)]
-    x_datas = [pulse[0][0].time]
+    for i in range(1, arms+1):
+        y_datas.append(temporal_power(divider[i][0].channels))
+        x_datas.append(divider[i][0].time)
+    # Without division
+    arms = 3
+    pulse = Gaussian(channels=2, peak_power=[10.0, 7.0])
+    divider = IdealDivider(arms=arms, divide=False, save=True)
+    lt.reset()
+    lt.link((pulse[0], divider[0]))
+    lt.run(pulse)
+    plot_titles.extend(["Original pulse", "Pulses coming out of the {} "
+                        "(3 ports) \n with no division."
+                        .format(default_name)])
+    plot_groups.extend([2] + [3 for i in range(arms)])
+    plot_labels.extend([None])
+    plot_labels.extend(["port {}".format(str(i)) for i in range(arms)])
+    y_datas.extend([temporal_power(pulse[0][0].channels)])
+    x_datas.extend([pulse[0][0].time])
     for i in range(1, arms+1):
         y_datas.append(temporal_power(divider[i][0].channels))
         x_datas.append(divider[i][0].time)
 
-
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                plot_labels=plot_labels, opacity=0.3)
+                plot_labels=plot_labels, opacity=[0.3])

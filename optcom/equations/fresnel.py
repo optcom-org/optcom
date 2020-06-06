@@ -187,18 +187,18 @@ class Fresnel(AbstractEquation):
 
         return 1 - Fresnel.reflectance_p_pol(n_1, n_2, theta_i, theta_t)
 
+
 if __name__ == "__main__":
 
-    fr = Fresnel()
-    n_1 = 1
-    n_2 = 2
+    n_1 = 1.4
+    n_2 = 1.6
     theta_i = 0.9
     theta_t = 1.3
-    print(fr.reflectance_s_pol(n_1, n_2, theta_i))
-    print(fr.reflectance_s_pol(n_1, n_2, theta_i, theta_t))
-    print(fr.reflectance_p_pol(n_1, n_2, theta_i))
-    print(fr.reflectance_p_pol(n_1, n_2, theta_i, theta_t))
-    print(fr.irradiance_s_pol(n_1, n_2, theta_i))
-    print(fr.irradiance_s_pol(n_1, n_2, theta_i, theta_t))
-    print(fr.irradiance_p_pol(n_1, n_2, theta_i))
-    print(fr.irradiance_p_pol(n_1, n_2, theta_i, theta_t))
+    print(Fresnel.reflectance_s_pol(n_1, n_2, theta_i))
+    print(Fresnel.reflectance_s_pol(n_1, n_2, theta_i, theta_t))
+    print(Fresnel.reflectance_p_pol(n_1, n_2, theta_i))
+    print(Fresnel.reflectance_p_pol(n_1, n_2, theta_i, theta_t))
+    print(Fresnel.irradiance_s_pol(n_1, n_2, theta_i))
+    print(Fresnel.irradiance_s_pol(n_1, n_2, theta_i, theta_t))
+    print(Fresnel.irradiance_p_pol(n_1, n_2, theta_i))
+    print(Fresnel.irradiance_p_pol(n_1, n_2, theta_i, theta_t))

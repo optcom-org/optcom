@@ -29,6 +29,7 @@ from typing import Callable, List, Optional, Sequence, Tuple, Union
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.components.abstract_pass_comp import AbstractPassComp
+from optcom.components.abstract_pass_comp import call_decorator
 from optcom.domain import Domain
 from optcom.field import Field
 
@@ -36,7 +37,7 @@ default_name = 'Ideal Phase Modulator'
 
 
 class IdealPhaseMod(AbstractPassComp):
-    """An ideal phase Modulator
+    """An ideal phase Modulator.
 
     Attributes
     ----------
@@ -47,12 +48,25 @@ class IdealPhaseMod(AbstractPassComp):
         ports in the component. For types, see
         :mod:`optcom/utils/constant_values/port_types`.
     save : bool
-        If True, the last wave to enter/exit a port will be saved.
+        If True, will save each field going through each port. The
+        recorded fields can be accessed with the attribute
+        :attr:`fields`.
+    call_counter : int
+        Count the number of times the function
+        :func:`__call__` of the Component has been called.
+    wait :
+        If True, will wait for specified waiting port policy added
+        with the function :func:`AbstractComponent.add_wait_policy`.
+    pre_call_code :
+        A string containing code which will be executed prior to
+        the call to the function :func:`__call__`. The two parameters
+        `input_ports` and `input_fields` are available.
+    post_call_code :
+        A string containing code which will be executed posterior to
+        the call to the function :func:`__call__`. The two parameters
+        `output_ports` and `output_fields` are available.
     phase_shift : float
         The phase_shift induced by the modulator.
-    phase : float
-        The target phase to reach. (phase_shift will be ignored if
-        target is provided)
 
     Notes
     -----
@@ -67,8 +81,8 @@ class IdealPhaseMod(AbstractPassComp):
 
     def __init__(self, name: str = default_name,
                  phase_shift: Union[float, Callable] = cst.PI,
-                 phase: Optional[float] = None, save: bool = False,
-                 max_nbr_pass: Optional[List[int]] = None) -> None:
+                 save: bool = False, max_nbr_pass: Optional[List[int]] = None,
+                 pre_call_code: str = '', post_call_code: str = '') -> None:
         r"""
         Parameters
         ----------
@@ -77,82 +91,101 @@ class IdealPhaseMod(AbstractPassComp):
         phase_shift :
             The phase_shift induced by the modulator. Can be a callable
             with time variable. :math:`[ps]`
-        phase :
-            The target phase to reach. (phase_shift will be ignored if
-            target is provided)
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
             No fields will be propagated if the number of
             fields which passed through a specific port exceed the
             specified maximum number of pass for this port.
+        pre_call_code :
+            A string containing code which will be executed prior to
+            the call to the function :func:`__call__`. The two parameters
+            `input_ports` and `input_fields` are available.
+        post_call_code :
+            A string containing code which will be executed posterior to
+            the call to the function :func:`__call__`. The two parameters
+            `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.ANY_ALL, cst.ANY_ALL]
         super().__init__(name, default_name, ports_type, save,
-                         max_nbr_pass=max_nbr_pass)
+                         max_nbr_pass=max_nbr_pass,
+                         pre_call_code=pre_call_code,
+                         post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
         util.check_attr_type(phase_shift, 'phase_shift', float, Callable)
-        util.check_attr_type(phase, 'phase', None, float)
         # Attr ---------------------------------------------------------
-        self.phase_shift: Callable
-        if (isinstance(phase_shift, float)):
-            self.phase_shift = lambda t: phase_shift
-        else:
-            self.phase_shift = phase_shift
-        self.phase: Optional[float] = phase
+        self.phase_shift: Union[float, Callable] = phase_shift
         # Policy -------------------------------------------------------
         self.add_port_policy(([0],[1], True))
     # ==================================================================
+    @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
         output_fields: List[Field] = []
-        if (self.phase is not None):
-            pass
-            # To do
-        else:
-            # Need cmath for complex expo
-            phase_shift = np.zeros_like(domain.time, dtype=complex)
-            for i in range(len(domain.time)):
-                phase_shift[i] = cmath.exp(1j*self.phase_shift(domain.time[i]))
-            for i in range(len(fields)):
-                output_fields.append(fields[i] * phase_shift)
+        # Need cmath for complex expo
+        phase_shift: np.ndarray = np.zeros_like(domain.time, dtype=complex)
+        phase_shift_: float = 0.0
+        for i in range(len(domain.time)):
+            if (callable(self.phase_shift)):
+                phase_shift_ = self.phase_shift(domain.time[i])
+            else:
+                phase_shift_ = self.phase_shift
+            phase_shift[i] = cmath.exp(1j*phase_shift_)
+        for i in range(len(fields)):
+            output_fields.append(fields[i] * phase_shift)
 
         return self.output_ports(ports), output_fields
 
 
 if __name__ == "__main__":
+    """Give an example of IdealPhaseMod usage.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
+
+    from typing import Callable, List, Optional, Union
+
+    import numpy as np
 
     import optcom.utils.plot as plot
-    import optcom.layout as layout
-    import optcom.components.gaussian as gaussian
-    import optcom.domain as domain
-    from optcom.utils.utilities_user import phase
+    import optcom.utils.constants as cst
+    from optcom.components.gaussian import Gaussian
+    from optcom.components.ideal_phase_mod import IdealPhaseMod
+    from optcom.components.ideal_phase_mod import default_name
+    from optcom.domain import Domain
+    from optcom.layout import Layout
+    from optcom.utils.utilities_user import temporal_power, spectral_power,\
+                                            temporal_phase, spectral_phase
 
-    lt = layout.Layout()
-
-    chirps = [0.0, 1.0]
-    phase_shifts = [cst.PI, lambda t: cst.PI/2]
-    y_datas = []
+    lt: Layout = Layout()
+    chirps: List[float] = [0.0, 1.0]
+    phase_shifts: List[Union[float, Callable]] = [cst.PI, lambda t: cst.PI/2]
+    y_datas_t: List[np.ndarray] = []
+    y_datas_nu: List[np.ndarray] = []
 
     plot_groups: List[int] = []
     plot_titles: List[str] = []
-    plot_labels: List[str] = []
+    plot_labels: List[Optional[str]] = []
 
-    count = 0
+    pulse: Gaussian
+    mod: IdealPhaseMod
+    count: int = 0
     for i, chirp in enumerate(chirps):
         for j, phase_shift in enumerate(phase_shifts):
             # Propagation
-            pulse = gaussian.Gaussian(peak_power=[10.0], chirp=[chirp])
+            pulse = Gaussian(peak_power=[10.0], chirp=[chirp])
             mod = IdealPhaseMod(phase_shift=phase_shift)
             lt.link((pulse[0], mod[0]))
             lt.run(pulse)
             lt.reset()
             # Plot parameters and get waves
-            y_datas.append(phase(pulse[0][0].channels))
-            y_datas.append(phase(mod[1][0].channels))
+            y_datas_t.append(temporal_phase(pulse[0][0].channels))
+            y_datas_t.append(temporal_phase(mod[1][0].channels))
+            y_datas_nu.append(spectral_phase(pulse[0][0].channels))
+            y_datas_nu.append(spectral_phase(mod[1][0].channels))
             plot_groups += [count, count]
             count += 1
             plot_labels += ["Original pulse", "Exit pulse"]
@@ -164,8 +197,14 @@ if __name__ == "__main__":
                             "shift {}".format(default_name, str(chirp),
                                               str(round(temp_phase,2)))]
 
-    x_datas = [pulse[0][0].time, mod[1][0].time]
+    x_datas_t: List[np.ndarray] = [pulse[0][0].time, mod[1][0].time]
 
-    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups, plot_titles=plot_titles,
-                plot_labels=plot_labels, x_labels=['t'], y_labels=['phi'],
-                opacity=0.3)
+    plot.plot2d(x_datas_t, y_datas_t, plot_groups=plot_groups,
+                plot_titles=plot_titles, plot_labels=plot_labels,
+                x_labels=['t'], y_labels=['phi_t'], opacity=[0.3])
+
+    x_datas_nu: List[np.ndarray] = [pulse[0][0].nu, mod[1][0].nu]
+
+    plot.plot2d(x_datas_nu, y_datas_nu, plot_groups=plot_groups,
+                plot_titles=plot_titles, plot_labels=plot_labels,
+                x_labels=['nu'], y_labels=['phi_nu'], opacity=[0.3])

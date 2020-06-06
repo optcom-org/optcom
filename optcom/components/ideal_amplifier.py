@@ -16,13 +16,14 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import cmath
+from typing import Callable, List, Optional, Sequence, Tuple, Union, overload
 
-from typing import Callable, List, Optional, Sequence, Tuple, Union
 import numpy as np
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.components.abstract_pass_comp import AbstractPassComp
+from optcom.components.abstract_pass_comp import call_decorator
 from optcom.domain import Domain
 from optcom.field import Field
 
@@ -42,7 +43,23 @@ class IdealAmplifier(AbstractPassComp):
         ports in the component. For types, see
         :mod:`optcom/utils/constant_values/port_types`.
     save : bool
-        If True, the last wave to enter/exit a port will be saved.
+        If True, will save each field going through each port. The
+        recorded fields can be accessed with the attribute
+        :attr:`fields`.
+    call_counter : int
+        Count the number of times the function
+        :func:`__call__` of the Component has been called.
+    wait :
+        If True, will wait for specified waiting port policy added
+        with the function :func:`AbstractComponent.add_wait_policy`.
+    pre_call_code :
+        A string containing code which will be executed prior to
+        the call to the function :func:`__call__`. The two parameters
+        `input_ports` and `input_fields` are available.
+    post_call_code :
+        A string containing code which will be executed posterior to
+        the call to the function :func:`__call__`. The two parameters
+        `output_ports` and `output_fields` are available.
     gain : float
         The gain of the amplifier. :math:`[dB]`
     peak_power : float
@@ -63,7 +80,8 @@ class IdealAmplifier(AbstractPassComp):
     def __init__(self, name: str = default_name,
                  gain: Union[float, Callable] = 1.0,
                  peak_power: Optional[float] = None, save: bool = False,
-                 max_nbr_pass: Optional[List[int]] = None) -> None:
+                 max_nbr_pass: Optional[List[int]] = None,
+                 pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
         ----------
@@ -81,26 +99,33 @@ class IdealAmplifier(AbstractPassComp):
             No fields will be propagated if the number of
             fields which passed through a specific port exceed the
             specified maximum number of pass for this port.
+        pre_call_code :
+            A string containing code which will be executed prior to
+            the call to the function :func:`__call__`. The two parameters
+            `input_ports` and `input_fields` are available.
+        post_call_code :
+            A string containing code which will be executed posterior to
+            the call to the function :func:`__call__`. The two parameters
+            `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.ANY_ALL, cst.ANY_ALL]
         super().__init__(name, default_name, ports_type, save,
-                         max_nbr_pass=max_nbr_pass)
+                         max_nbr_pass=max_nbr_pass,
+                         pre_call_code=pre_call_code,
+                         post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
         util.check_attr_type(gain, 'gain', int, float, Callable)
         util.check_attr_type(peak_power, 'peak_power', None, int, float)
         # Attr ---------------------------------------------------------
         # Use cmath to allow complex expo
-        self.gain: Callable
-        if (isinstance(gain, float)):
-            self.gain = lambda t: gain
-        else:
-            self.gain = gain
+        self.gain: Union[float, Callable] = gain
         self.peak_power: Optional[float] = peak_power
         # Policy -------------------------------------------------------
         self.add_port_policy(([0],[1],True))
     # ==================================================================
+    @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
@@ -112,9 +137,14 @@ class IdealAmplifier(AbstractPassComp):
                     field[i] = field[i] * np.sqrt(self.peak_power/max_power)
                 output_fields.append(field)
         else:
-            gain = np.zeros_like(domain.time, dtype=complex)
+            gain: np.ndarray = np.zeros_like(domain.time, dtype=complex)
+            gain_: float = 0.0
             for i in range(len(domain.time)):
-                gain[i] = cmath.sqrt(10**(0.1*self.gain(domain.time[i])))
+                if (callable(self.gain)):
+                    gain_ = self.gain(domain.time[i])
+                else:
+                    gain_ = self.gain
+                gain[i]  = cmath.sqrt(10**(0.1*gain_)) # dB -> m^{-1}
             for i in range(len(fields)):
                 output_fields.append(fields[i] * gain)
 
@@ -123,29 +153,33 @@ class IdealAmplifier(AbstractPassComp):
 
 if __name__ == "__main__":
 
+    from typing import Callable, List, Optional
+
     import numpy as np
+
     import optcom.utils.plot as plot
-    import optcom.layout as layout
-    import optcom.components.gaussian as gaussian
-    import optcom.domain as domain
-    from optcom.utils.utilities_user import temporal_power
+    from optcom.components.gaussian import Gaussian
+    from optcom.domain import Domain
+    from optcom.layout import Layout
+    from optcom.utils.utilities_user import temporal_power, spectral_power,\
+                                            temporal_phase, spectral_phase
 
-    lt = layout.Layout()
+    lt: Layout = Layout()
 
-    pulse = gaussian.Gaussian(channels=1, peak_power=[10.0])
-    gain = 3.0
-    amp = IdealAmplifier(gain=gain)
+    pulse: Gaussian = Gaussian(channels=1, peak_power=[10.0])
+    gain: float = 3.0
+    amp: IdealAmplifier = IdealAmplifier(gain=gain)
     lt.link((pulse[0], amp[0]))
     lt.run(pulse)
-    plot_titles = (["Original pulse", "Pulses coming out of the {} with gain "
-                    "{} dB."
-                    .format(default_name, gain)])
-    y_datas = [temporal_power(pulse[0][0].channels),
-               temporal_power(amp[1][0].channels)]
-    x_datas = [pulse[0][0].time, amp[1][0].time]
+    plot_titles: List[str] = (["Original pulse", "Pulses coming out of the "
+                               "{} with gain {} dB."
+                               .format(default_name, gain)])
+    y_datas: List[np.ndarray] = [temporal_power(pulse[0][0].channels),
+                                 temporal_power(amp[1][0].channels)]
+    x_datas: List[np.ndarray] = [pulse[0][0].time, amp[1][0].time]
 
-    pulse = gaussian.Gaussian(channels=1, peak_power=[10.0])
-    peak_power = 15.0
+    pulse = Gaussian(channels=1, peak_power=[10.0])
+    peak_power: float = 15.0
     amp = IdealAmplifier(gain=5.6, peak_power=peak_power)
     lt.reset()
     lt.link((pulse[0], amp[0]))
@@ -155,8 +189,8 @@ if __name__ == "__main__":
     y_datas.extend([temporal_power(amp[1][0].channels)])
     x_datas.extend([amp[1][0].time])
 
-    pulse = gaussian.Gaussian(channels=1, peak_power=[10.0])
-    gain_fct = lambda t: 1e-1*t
+    pulse = Gaussian(channels=1, peak_power=[10.0])
+    gain_fct: Callable = lambda t: 1e-1*t
     amp = IdealAmplifier(gain=gain_fct)
     lt.reset()
     lt.link((pulse[0], amp[0]))
@@ -166,8 +200,8 @@ if __name__ == "__main__":
     y_datas.extend([temporal_power(amp[1][0].channels)])
     x_datas.extend([amp[1][0].time])
 
-    plot_groups = [0,1,2,3]
+    plot_groups: List[int] = [0,1,2,3]
 
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                opacity=0.3)
+                opacity=[0.3])

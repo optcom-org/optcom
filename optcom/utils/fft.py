@@ -19,12 +19,8 @@ from typing import Optional
 
 import numpy as np
 import pyfftw
-from nptyping import Array
 
 import optcom.utils.constants as cst
-
-# Typehints variables
-NpArray = Array[cst.NPFT]
 
 
 class FFT(object):
@@ -42,7 +38,7 @@ class FFT(object):
     # ==================================================================
     # numpy.fft methods binding ----------------------------------------
     @staticmethod
-    def fft(A: NpArray, count: bool = True) -> NpArray:
+    def fft(A: np.ndarray, count: bool = True) -> np.ndarray:
 
         if (count):
             FFT.inc_fft_counter()
@@ -50,7 +46,7 @@ class FFT(object):
         return pyfftw.interfaces.numpy_fft.ifft(A)
     # ==================================================================
     @staticmethod
-    def ifft(A: NpArray, count: bool = True) -> NpArray:
+    def ifft(A: np.ndarray, count: bool = True) -> np.ndarray:
 
         if (count):
             FFT.inc_fft_counter()
@@ -58,20 +54,34 @@ class FFT(object):
         return pyfftw.interfaces.numpy_fft.fft(A)
     # ==================================================================
     @staticmethod
-    def fftshift(A: NpArray) -> NpArray:
+    def fftshift(A: np.ndarray) -> np.ndarray:
+        if (A.ndim < 2):
 
-        return np.fft.ifftshift(A)
+            return np.fft.ifftshift(A)
+        else:
+            res = np.zeros_like(A)
+            for i in range(len(A)):
+                res[i] = np.fft.ifftshift(A[i])
+
+            return res
     # ==================================================================
     @staticmethod
-    def ifftshift(A: NpArray) -> NpArray:
+    def ifftshift(A: np.ndarray) -> np.ndarray:
+        if (A.ndim < 2):
 
-        return np.fft.fftshift(A)
+            return np.fft.fftshift(A)
+        else:
+            res = np.zeros_like(A)
+            for i in range(len(A)):
+                res[i] = np.fft.fftshift(A[i])
+
+            return res
     # ==================================================================
     # fourier transform error management -------------------------------
     @staticmethod
-    def fft_mult_ifft(A: NpArray, B: NpArray) -> NpArray:
+    def fft_mult_ifft(A: np.ndarray, B: np.ndarray) -> np.ndarray:
 
-        if (np.sum(B) == B.size):
+        if (np.sum(B) == B.size):   # B is identity vectors
 
             return A
         else:
@@ -79,9 +89,9 @@ class FFT(object):
             return FFT.fft(B * FFT.ifft(A))
     # ==================================================================
     @staticmethod
-    def ifft_mult_fft(A: NpArray, B: NpArray) -> NpArray:
+    def ifft_mult_fft(A: np.ndarray, B: np.ndarray) -> np.ndarray:
 
-        if (np.sum(B) == B.size):
+        if (np.sum(B) == B.size):   # B is identity vectors
 
             return A
         else:
@@ -90,8 +100,8 @@ class FFT(object):
     # ==================================================================
     # fourier transform properties -------------------------------------
     @staticmethod
-    def dt_fft(A: NpArray, omega: NpArray, order: int,
-               fft_A: Optional[NpArray] = None) -> NpArray:
+    def dt_fft(A: np.ndarray, omega: np.ndarray, order: int,
+               fft_A: Optional[np.ndarray] = None) -> np.ndarray:
 
         if (fft_A is None):
             fft_A = FFT.fft(A)
@@ -99,14 +109,15 @@ class FFT(object):
         return np.power(-1j*omega, order) * fft_A
     # ==================================================================
     @staticmethod
-    def dt_to_fft(A: NpArray, omega: NpArray, order: int,
-                  fft_A: Optional[NpArray] = None) -> NpArray:
+    def dt_to_fft(A: np.ndarray, omega: np.ndarray, order: int,
+                  fft_A: Optional[np.ndarray] = None) -> np.ndarray:
 
         return FFT.ifft(FFT.dt_fft(A, omega, order, fft_A))
     # ==================================================================
     @staticmethod
-    def conv_fft(A: NpArray, B: NpArray, fft_A: Optional[NpArray] = None,
-                 fft_B: Optional[NpArray] = None) -> NpArray:
+    def conv_fft(A: np.ndarray, B: np.ndarray,
+                 fft_A: Optional[np.ndarray] = None,
+                 fft_B: Optional[np.ndarray] = None) -> np.ndarray:
 
         if (fft_A is None):
             fft_A = FFT.fft(A)
@@ -116,7 +127,8 @@ class FFT(object):
         return (fft_A * fft_B)
     # ==================================================================
     @staticmethod
-    def conv_to_fft(A: NpArray, B: NpArray, fft_A: Optional[NpArray] = None,
-                    fft_B: Optional[NpArray] = None) -> NpArray:
+    def conv_to_fft(A: np.ndarray, B: np.ndarray,
+                    fft_A: Optional[np.ndarray] = None,
+                    fft_B: Optional[np.ndarray] = None) -> np.ndarray:
 
         return FFT.ifft(FFT.conv_fft(A, B, fft_A, fft_B))

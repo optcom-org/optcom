@@ -24,6 +24,7 @@ from typing import List, Optional, Sequence, Tuple
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.components.abstract_start_comp import AbstractStartComp
+from optcom.components.abstract_start_comp import call_decorator
 from optcom.domain import Domain
 from optcom.field import Field
 
@@ -43,17 +44,38 @@ class CW(AbstractStartComp):
         ports in the component. For types, see
         :mod:`optcom/utils/constant_values/port_types`.
     save : bool
-        If True, the last wave to enter/exit a port will be saved.
+        If True, will save each field going through each port. The
+        recorded fields can be accessed with the attribute
+        :attr:`fields`.
+    call_counter : int
+        Count the number of times the function
+        :func:`__call__` of the Component has been called.
+    wait :
+        If True, will wait for specified waiting port policy added
+        with the function :func:`AbstractComponent.add_wait_policy`.
+    pre_call_code :
+        A string containing code which will be executed prior to
+        the call to the function :func:`__call__`. The two parameters
+        `input_ports` and `input_fields` are available.
+    post_call_code :
+        A string containing code which will be executed posterior to
+        the call to the function :func:`__call__`. The two parameters
+        `output_ports` and `output_fields` are available.
     channels : int
         The number of channels in the field.
     center_lambda : list of float
         The center wavelength of the channels. :math:`[nm]`
     peak_power : list of float
         Peak power of the pulses. :math:`[W]`
+    energy :
+        Total power of the pulses. :math:`[J]` (peak_power will be
+        ignored if energy provided)
     offset_nu : list of float
         The offset frequency. :math:`[THz]`
     init_phi : list of float
         The nitial phase of the pulses.
+    field_name :
+        The name of the field.
 
     Notes
     -----
@@ -72,10 +94,10 @@ class CW(AbstractStartComp):
 
     def __init__(self, name: str = default_name, channels: int = 1,
                  center_lambda: List[float] = [cst.DEF_LAMBDA],
-                 peak_power: List[float] = [1e-3],
-                 total_power: Optional[List[float]] = None,
+                 peak_power: List[float] = [1e-3], energy: List[float] = [],
                  offset_nu: List[float] = [0.0], init_phi: List[float] = [0.0],
-                 save: bool = False) -> None:
+                 field_name: str = '', save: bool = False,
+                 pre_call_code: str = '', post_call_code: str = '') -> None:
         r"""
         Parameters
         ----------
@@ -87,43 +109,69 @@ class CW(AbstractStartComp):
             The center wavelength of the channels. :math:`[nm]`
         peak_power :
             Peak power of the pulses. :math:`[W]`
-        total_power :
-            Total power of the pulses. :math:`[W]` (peak_power will be
-            ignored if total_power provided)
+        energy :
+            Total power of the pulses. :math:`[J]` (peak_power will be
+            ignored if energy provided)
         offset_nu :
             The offset frequency. :math:`[THz]`
         init_phi :
             The initial phase of the pulses.
+        field_name :
+            The name of the field.
         save :
             If True, the last wave to enter/exit a port will be saved.
+        pre_call_code :
+            A string containing code which will be executed prior to
+            the call to the function :func:`__call__`. The two parameters
+            `input_ports` and `input_fields` are available.
+        post_call_code :
+            A string containing code which will be executed posterior to
+            the call to the function :func:`__call__`. The two parameters
+            `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.OPTI_OUT]
-        super().__init__(name, default_name, ports_type, save)
+        super().__init__(name, default_name, ports_type, save,
+                         pre_call_code=pre_call_code,
+                         post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
         util.check_attr_type(channels, 'channels', int)
         util.check_attr_type(center_lambda, 'center_lambda', float, list)
         util.check_attr_type(peak_power, 'peak_power', float, list)
-        util.check_attr_type(total_power, 'total_power', None, float, list)
+        util.check_attr_type(energy, 'energy', None, float, list)
         util.check_attr_type(offset_nu, 'offset_nu', float, list)
         util.check_attr_type(init_phi, 'init_phi', float, list)
+        util.check_attr_type(field_name, 'field_name', str)
         # Attr ---------------------------------------------------------
         self.channels: int = channels
         self.center_lambda: List[float] = util.make_list(center_lambda,
                                                          channels)
         self.peak_power: List[float] = util.make_list(peak_power, channels)
-        self.total_power: List[float] = []
-        if (total_power is not None):
-            self.total_power =  util.make_list(total_power, channels)
+        self._energy: List[float] = []
+        self.energy = energy
         self.offset_nu: List[float] = util.make_list(offset_nu, channels)
         self.init_phi: List[float] = util.make_list(init_phi, channels)
+        self.field_name: str = field_name
     # ==================================================================
+    @property
+    def energy(self) -> List[float]:
+
+        return self._energy
+    # ------------------------------------------------------------------
+    @energy.setter
+    def energy(self, energy: List[float]) -> None:
+        if (energy):   # Not empty list
+            self._energy =  util.make_list(energy, self.channels)
+        else:
+            self._energy = energy
+    # ==================================================================
+    @call_decorator
     def __call__(self, domain: Domain) -> Tuple[List[int], List[Field]]:
 
         output_ports: List[int] = []
         output_fields: List[Field] = []
-        field = Field(domain, cst.OPTI)
+        field = Field(domain, cst.OPTI, self.field_name)
         # Check offset -------------------------------------------------
         for i in range(len(self.offset_nu)):
             if (abs(self.offset_nu[i]) > domain.nu_window):
@@ -132,19 +180,21 @@ class CW(AbstractStartComp):
                     "{} is bigger than half the frequency window, offset will "
                     "be ignored.".format(str(i), self.name))
         # Field initialization -----------------------------------------
-        if (self.total_power):
+        if (self.energy):
             peak_power: List[float] = []
-            for i in range(len(self.total_power)):
-                peak_power.append(self.total_power[i]/domain.samples)
+            time_window = domain.time_window * 1e-12 # ps -> s
+            for i in range(len(self.energy)):
+                peak_power.append(self.energy[i] / time_window)
         else:
             peak_power = self.peak_power
-        print('peak power', peak_power)
+        rep_freq = np.nan
         for i in range(self.channels):   # Nbr of channels
             res = np.zeros(domain.time.shape, dtype=cst.NPFT)
             phi = (self.init_phi[i]
                    - Domain.nu_to_omega(self.offset_nu[i])*domain.time)
             res += math.sqrt(peak_power[i]) * np.exp(1j*phi)
-            field.append(res, Domain.lambda_to_omega(self.center_lambda[i]))
+            field.append(res, Domain.lambda_to_omega(self.center_lambda[i]),
+                         rep_freq)
 
         output_fields.append(field)
         output_ports.append(0)
@@ -153,62 +203,46 @@ class CW(AbstractStartComp):
 
 
 if __name__ == "__main__":
+    """Give an example of CW usage.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
 
-    import optcom.utils.plot as plot
-    import optcom.layout as layout
-    import optcom.domain as domain
+    from typing import Callable, List, Optional
+
+    from optcom.components.cw import CW
+    from optcom.utils.plot import plot2d
+    from optcom.domain import Domain
+    from optcom.layout import Layout
     from optcom.utils.utilities_user import temporal_power, spectral_power,\
-                                            phase
+                                            temporal_phase, spectral_phase
 
-    lt = layout.Layout(Domain(samples_per_bit=4096))
+    dm: Domain = Domain(samples_per_bit=512, bit_width=100.0)
+    lt: Layout = Layout(dm)
 
-    channels = 3
-    center_lambda = [1552.0, 1549.0, 1596.0]
-    peak_power = [1e-3, 2e-3, 6e-3]
-    offset_nu = [0.0, 1.56, -1.6]
-    init_phi = [1.0, 1.0, 0.0]
+    channels: int = 1
+    center_lambda: List[float] = [1552.0, 1549.0, 1596.0]
+    peak_power: List[float] = [1e-3, 2e-3, 6e-3]
+    offset_nu: List[float] = [0.0, 1.56, -1.6]
+    init_phi: List[float] = [1.0, 1.0, 0.0]
 
-    cw = CW(channels=channels, center_lambda=center_lambda,
-            peak_power=peak_power, offset_nu=offset_nu, init_phi=init_phi,
-            save=True)
-
-    lt.run(cw)
-
-    plot_titles = ["CW pulse temporal power", "CW pulse spectral power",
-                   "CW pulse phase"]
-    x_datas = [cw[0][0].time, cw[0][0].nu, cw[0][0].time]
-    y_datas = [temporal_power(cw[0][0].channels),
-               spectral_power(cw[0][0].channels),
-               phase(cw[0][0].channels)]
-
-    #plot.plot2d(x_datas, y_datas, x_labels=["t","nu","t"],
-    #            y_labels=["P_t", "P_nu", "phi"], plot_titles=plot_titles,
-    #            split=True, opacity=0.2)
-
-    samples = int(2**(10))
-    bit_width = 3.
-    lt = layout.Layout(Domain(samples_per_bit=samples, bit_width=bit_width))
-
-    channels = 1
-    center_lambda = [1552.0, 1549.0, 1596.0]
-    peak_power = [1e-3, 2e-3, 6e-3]
-    total_power = [1e-3]
-    offset_nu = [0.0, 1.56, -1.6]
-    init_phi = [1.0, 1.0, 0.0]
-
-    cw = CW(channels=channels, center_lambda=center_lambda,
-            peak_power=peak_power, offset_nu=offset_nu, init_phi=init_phi,
-            save=True)
+    cw: CW = CW(channels=channels, center_lambda=center_lambda,
+                peak_power=peak_power, offset_nu=offset_nu, init_phi=init_phi,
+                save=True)
 
     lt.run(cw)
 
-    plot_titles = ["CW pulse spectral power"]
-    x_datas = [cw[0][0].nu]
-    y_datas = [spectral_power(cw[0][0].channels)]
+    plot_titles: List[str] = ["CW pulse temporal power",
+                              "CW pulse spectral power",
+                              "CW pulse temporal phase",
+                              "CW pulse spectral phase"]
+    x_datas: List[np.ndarray] = [cw[0][0].time, cw[0][0].nu, cw[0][0].time,
+                                 cw[0][0].nu]
+    y_datas: List[np.ndarray] = [temporal_power(cw[0][0].channels),
+                                 spectral_power(cw[0][0].channels),
+                                 temporal_phase(cw[0][0].channels),
+                                 spectral_phase(cw[0][0].channels)]
 
-    for i in range((int(samples/2)-4), (int(samples/2)+4)):
-        print(y_datas[0][0][i])
-
-    plot.plot2d(x_datas, y_datas, x_labels=["nu"],
-                y_labels=["P_nu"], plot_titles=plot_titles,
-                split=True, opacity=0.2)
+    plot2d(x_datas, y_datas, x_labels=["t","nu","t","nu"],
+           y_labels=["P_t", "P_nu", "phi_t", "phi_nu"],
+           plot_titles=plot_titles, split=True, opacity=[0.2])

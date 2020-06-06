@@ -1,4 +1,4 @@
-# This# This file is part of Optcom.
+# This This file is part of Optcom.
 #
 # Optcom is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,21 +15,58 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
+import warnings
 from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
+import optcom.config as cfg
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.components.abstract_component import AbstractComponent
 from optcom.components.abstract_pass_comp import AbstractPassComp
 from optcom.components.abstract_start_comp import AbstractStartComp
 from optcom.components.port import Port
+from optcom.constraints.abstract_constraint import AbstractConstraint
+from optcom.constraints.constraint_coprop import ConstraintCoprop
+from optcom.constraints.constraint_max_pass_port import ConstraintMaxPassPort
+from optcom.constraints.constraint_port_in import ConstraintPortIn
+from optcom.constraints.constraint_port_valid import ConstraintPortValid
+from optcom.constraints.constraint_waiting import ConstraintWaiting
 from optcom.domain import Domain
 from optcom.field import Field
 
-Comp = AbstractComponent
-Comp_Item = Tuple[AbstractComponent, int]
+
+# Exceptions
+class LayoutError(Exception):
+    pass
+
+class LinkError(LayoutError):
+    pass
+
+class UnknownLinkError(LinkError):
+    pass
+
+class SelfLinkError(LinkError):
+    pass
+
+class DelError(LayoutError):
+    pass
+
+class StartSimError(LayoutError):
+    pass
+
+class PropagationError(LayoutError):
+    pass
+
+class LayoutWarning(UserWarning):
+    pass
+
+class WrongPortWarning(LayoutWarning):
+    pass
+
+class StartCompInputWarning(LayoutWarning):
+    pass
 
 
 class Layout(object):
@@ -42,7 +79,7 @@ class Layout(object):
 
     Attributes
     ----------
-    domain : Domain
+    domain : optcom.domain.Domain
         The domain which the layout is bound to.
     name : str
         The name of the Layout.
@@ -54,7 +91,7 @@ class Layout(object):
         """
         Parameters
         ----------
-        domain : Domain
+        domain : optcom.domain.Domain
             The domain which the layout is bound to.
         name :
             The name of the layout.
@@ -69,25 +106,45 @@ class Layout(object):
         self.domain: Domain = domain
         self.name: str = name
         # N.B.: List[int] is dummy list to inc/dec the unique int in it
-        self._stack_coprop: Dict[Comp_Item, Tuple[List[Field], List[int]]] = {}
-        self._stack_waiting: Dict[Comp, Tuple[List[int], List[Field]]] = {}
-        self._stack_wait_policy: Dict[Comp, List[int]] = {}
-        self._leaf_comps: List[AbstractComponent] = []
-        self._constraint_to_check = ["coprop", "waiting", "port_in",
-                                     "port_valid", "max_pass"]
+        coprop = ConstraintCoprop()
+        waiting = ConstraintWaiting()
+        port_in = ConstraintPortIn()
+        port_valid = ConstraintPortValid()
+        max_pass_port = ConstraintMaxPassPort()
+        self._constraints: List[AbstractConstraint] = [coprop, waiting,
+                                                       port_in, port_valid,
+                                                       max_pass_port]
+    # ==================================================================
+    # In-build methos ==================================================
     # ==================================================================
     def __str__(self):
-
+        str_to_return: str = ""
         if (self._comps):
-            util.print_terminal("Structure of layout '{}':".format(self.name))
+            str_to_return += "Structure of layout '{}':\n\n".format(self.name)
             for comp in self._comps:
                 for port in comp:
                     if (not port.is_free()):
-                        print(port)
+                        str_to_return += str(port) + '\n'
         else:
-            util.print_terminal("Layout '{}' is empty".format(self.name))
+            str_to_return += "Layout '{}' is empty".format(self.name)
 
-        return str()
+        return str_to_return
+    # ==================================================================
+    # Getters and setters ==============================================
+    # ==================================================================
+    @property
+    def leafs(self) -> List[AbstractComponent]:
+
+        return self.get_leafs_of_comps(self._comps)
+    # ==================================================================
+    # Print helpers ====================================================
+    # ==================================================================
+    def print_propagation(self, comp: AbstractComponent, comp_port_id: int,
+                          ngbr: AbstractComponent, ngbr_port_id: int) -> None:
+        util.print_terminal("Component '{}' has sent a signal from "
+                            "port {} to port {} of component '{}'."
+                            .format(comp.name, comp_port_id,
+                                    ngbr_port_id, ngbr.name))
     # ==================================================================
     # Graph layout management ==========================================
     # ==================================================================
@@ -126,8 +183,7 @@ class Layout(object):
         # Adding new edge ----------------------------------------------
         free_ports = port_1.is_free() and port_2.is_free()
         if (free_ports and port_1.comp != port_2.comp):
-            self.add_comp(port_1.comp)
-            self.add_comp(port_2.comp)
+            self.add_comp(port_1.comp, port_2.comp)
             port_1.link_to(port_2)
             if (unidir):    # Undirected edge
                 port_2.link_unidir_to(port_1)
@@ -135,15 +191,19 @@ class Layout(object):
                 port_2.link_to(port_1)
         # Edge can not be added ----------------------------------------
         else:
-            util.warning_terminal("Linking of component '{}' and component "
-                "'{}' has encountered a problem, action aborted:"
+            error_message: str = ("Linking of component '{}' and component "
+                "'{}' has encountered a problem.\n"
                 .format(port_1.comp.name, port_2.comp.name))
             if (port_1.comp == port_2.comp):
-                util.print_terminal("Component '{}' can not be linked to "
-                    "itself".format(port_1.comp.name), '')
+
+                raise SelfLinkError(error_message +
+                                    "Component '{}' can not be linked to "
+                                    "itself.".format(port_1.comp.name))
             else:
-                print(port_1)
-                print(port_2)
+
+                raise LinkError(error_message +
+                                "The current states of those ports are:\n"
+                                + str(port_1) + str(port_2))
     # ==================================================================
     def _del_edge(self, port_1: Port, port_2: Port) -> None:
         """Delete an edge in the Layout.
@@ -163,15 +223,16 @@ class Layout(object):
             port_2.reset()
         # Link does not exist ------------------------------------------
         else:
-            util.warning_terminal("Can not delete a nonexistent edge from "
+            error_msg: str = ("Can not delete a nonexistent edge from "
                 "port {} of component '{}' to port {} of component '{}', "
-                "action aborted:"
-                .format(port_1.port, port_1.comp.name, port_2.port,
-                        port_2.comp.name))
-            print(port_1)
-            print(port_2)
+                "action aborted.\n"
+                .format(port_1.comp_port_id, port_1.comp.name,
+                        port_2.comp_port_id, port_2.comp.name))
+            error_msg += "The current states of those ports are:\n"
+
+            raise DelError(error_msg + str(port_1) + str(port_2))
     # ==================================================================
-    def link(self, *links: List[Tuple[Port, Port]]) -> None:
+    def link(self, *links: Tuple[Port, Port]) -> None:
         """Add a series of bidirectionnal edges in the Layout.
 
         Parameters
@@ -184,7 +245,7 @@ class Layout(object):
         for edge in links:
             self._add_edge(edge[0], edge[1], False)
     # ==================================================================
-    def link_unidir(self, *links: List[Tuple[Port, Port]]) -> None:
+    def link_unidir(self, *links: Tuple[Port, Port]) -> None:
         """Add a series of unidirectionnal edges in the Layout
 
         Parameters
@@ -196,7 +257,7 @@ class Layout(object):
         for edge in links:
             self._add_edge(edge[0], edge[1], True)
     # ==================================================================
-    def del_link(self, *links: List[Tuple[Port, Port]]) -> None:
+    def del_link(self, *links: Tuple[Port, Port]) -> None:
         """Delete a series of edges in the Layout.
 
         Parameters
@@ -218,342 +279,223 @@ class Layout(object):
         self._comps = []
         self._nbr_comps = 0
         # Reset structure data
-        self._stack_coprop = {}
-        self._stack_waiting = {}
-        self._leaf_comps = []
+        for constraint in self._constraints:
+            constraint.reset()
     # ==================================================================
     # Constraints management ===========================================
     # ==================================================================
-    def _update_constraints(self, comp: AbstractComponent, ports: List[int],
+    def _update_constraints(self, comp: AbstractComponent, port_ids: List[int],
                             fields: List[Field]) -> None:
-        for constraint in self._constraint_to_check:
-            getattr(self, "_update_{}".format(constraint))(comp, ports, fields)
+        """Update the constraint information."""
+        for constraint in self._constraints:
+            constraint.update(comp, port_ids, fields)
     # ==================================================================
     def _comply_with_constraints(self, comp: AbstractComponent,
-                                 neighbor: AbstractComponent, port: int,
-                                 field: Field, input_port: int
+                                 comp_port_id: int, ngbr: AbstractComponent,
+                                 ngbr_port_id: int, field: Field
                                  ) -> Tuple[List[int], List[Field]]:
-        input_ports: List[int] = []
+        """Return the port ids and fields to propagate in the component
+        with respect to the constraints.
+        """
+        ngbr_port_ids: List[int] = []
         fields: List[Field] = []
         flag: bool = True
-        for constraint in self._constraint_to_check:
-            # !! must first compute flag_constraint to run it, if make
+        # Check for respect of constraint ------------------------------
+        for constraint in self._constraints:
+            # Must first compute flag_constraint to run it, if make
             # flag = flag and call(), if flag is False, dont run call()
-            flag_constraint = getattr(self, "_respect_{}".format(constraint))(
-                                      comp, neighbor, port, field, input_port)
+            flag_constraint = constraint.is_respected(comp, comp_port_id, ngbr,
+                                                      ngbr_port_id, field)
             flag = flag and flag_constraint
-
-        if (flag):    # All flags green -> can propagate
-            for constraint in self._constraint_to_check:
-                ports_, fields_ = getattr(self, "_get_{}".format(constraint))(
-                                          comp, neighbor, port, field,
-                                          input_port)
-                fields.extend(fields_)
-                input_ports.extend(ports_)
+        # All flags green -> can propagate -----------------------------
+        if (flag):
+            for constraint in self._constraints:
+                ports_, fields_ = constraint.get_compliance(comp, comp_port_id,
+                                                            ngbr, ngbr_port_id,
+                                                            field)
+                # Two diff constraints could have kept the same field
+                # to restitue at the same time for diff reasons -> avoid
+                # conflicts by checking if field already in output field
+                for i in range(len(fields_)):
+                    # Can not use 'not in' bcs of __eq__ Field overload
+                    in_list: bool = False
+                    j: int = 0
+                    while (not in_list and j < len(fields)):
+                        in_list = in_list or (fields[j] is fields_[i])
+                        j += 1
+                    if (not in_list):
+                        fields.append(fields_[i])
+                        ngbr_port_ids.append(ports_[i])
             fields.append(field)
-            input_ports.append(input_port)
+            ngbr_port_ids.append(ngbr_port_id)
 
-        return input_ports, fields
-    # ==================================================================
-    # Copropagating fields constraint ----------------------------------
-    def _update_coprop(self, comp: AbstractComponent, ports: List[int],
-                       fields: List[Field]) -> None:
-        """Update copropagating fields."""
-        for i, port in enumerate(ports):
-            if (ports.count(port) > 1): # >1 ouptut field from same port
-                if (self._stack_coprop.get((comp, port)) is not None):
-                    self._stack_coprop[(comp, port)][0].append(fields[i])
-                    self._stack_coprop[(comp, port)][1][0] += 1
-                else:
-                    self._stack_coprop[(comp, port)] = ([fields[i]], [1])
-    # ==================================================================
-    def _respect_coprop(self, comp: AbstractComponent,
-                        neighbor: AbstractComponent, port: int, field: Field,
-                        input_port: int) -> bool:
-        """Check if need to wait for other copropagating fields."""
-        flag = True
-        if (self._stack_coprop.get((comp, port)) is not None):
-            self._stack_coprop[(comp, port)][1][0] -= 1
-            if (self._stack_coprop[(comp, port)][1][0] > 0):
-                flag = False
-                util.print_terminal("Signal is waiting for copropagating "
-                    "fields.", '')
-
-        return flag
-    # ==================================================================
-    def _get_coprop(self, comp: AbstractComponent, neighbor: AbstractComponent,
-                    port: int, field: Field, input_port: int
-                    ) -> Tuple[List[int], List[Field]]:
-        ports: List[int] = []
-        fields: List[Field] = []
-        if (self._stack_coprop.get((comp, port)) is not None):
-            # The last field should be the current one, debug: (unitest)
-            if (field != self._stack_coprop[(comp, port)][0][-1]):
-                util.warning_terminal("The last field of coprop stack should "
-                    "be the current field.")
-            fields = self._stack_coprop[(comp, port)][0][:-1]
-            ports = [input_port for i in range(len(fields))]
-            self._stack_coprop.pop((comp, port))
-
-        return ports, fields
-    # ==================================================================
-    # Waiting constraint -----------------------------------------------
-    def _update_waiting(self, comp: AbstractComponent, ports: List[int],
-                        fields: List[Field]) -> None:
-        return None
-    # ==================================================================
-    def _respect_waiting(self, comp: AbstractComponent,
-                         neighbor: AbstractComponent, port: int, field: Field,
-                         input_port: int) -> bool:
-        flag = True
-        wait_policy: List[List[int]] = neighbor.get_wait_policy(input_port)
-        if (wait_policy):
-            if (self._stack_waiting.get(neighbor) is None):
-                self._stack_waiting[neighbor] = ([input_port], [field])
-            else:
-                self._stack_waiting[neighbor][0].append(input_port)
-                self._stack_waiting[neighbor][1].append(field)
-            # If more than one policy matches, take the first one
-            flag = False
-            i = 0
-            while (i < len(wait_policy) and not flag):
-                port_count = [self._stack_waiting[neighbor][0].count(wait_port)
-                              for wait_port in wait_policy[i]]
-                if (0 not in port_count):
-                    flag = True
-                    self._stack_wait_policy[neighbor] = wait_policy[i]
-                i += 1
-            if (not flag):
-                util.print_terminal("Signal is waiting for fields "
-                    "arriving at other ports.", '')
-
-        return flag
-    # ==================================================================
-    def _get_waiting(self, comp: AbstractComponent,
-                     neighbor: AbstractComponent, port: int, field: Field,
-                     input_port: int) -> Tuple[List[int], List[Field]]:
-        ports: List[int] = []
-        fields: List[Field] = []
-        if (self._stack_waiting.get(neighbor) is not None):
-            # The last field should be the current one, debug: (unitest)
-            if (field != self._stack_waiting[neighbor][1][-1]):
-                util.warning_terminal("The last field of coprop stack should "
-                    "be the current field.")
-            wait_policy = self._stack_wait_policy[neighbor]
-            #debug
-            if (wait_policy is None):
-                util.warning_terminal("wait_policy shouldn't be None if "
-                    "self._stack_waiting.get(neighbor) is not None")
-            ports_ = []
-            fields_ = []
-            for i, elem in enumerate(self._stack_waiting[neighbor][0][:-1]):
-                if (elem in wait_policy):
-                    ports.append(elem)
-                    fields.append(self._stack_waiting[neighbor][1][i])
-                else:
-                    ports_.append(elem)
-                    fields_.append(self._stack_waiting[neighbor][1][i])
-            self._stack_waiting[neighbor] = (ports_, fields_)
-            # Clear variables
-            if (not self._stack_waiting[neighbor][0]):
-                self._stack_waiting.pop(neighbor)
-            self._stack_wait_policy.pop(neighbor)
-
-        return ports, fields
-    # ==================================================================
-    # Port in constraint -----------------------------------------------
-    def _update_port_in(self, comp: AbstractComponent, ports: List[int],
-                        fields: List[Field]) -> None:
-        return None
-    # ==================================================================
-    def _respect_port_in(self, comp: AbstractComponent,
-                         neighbor: AbstractComponent, port: int, field: Field,
-                         input_port: int) -> bool:
-        """Check if the port allows an input."""
-        flag = neighbor[input_port].is_type_in()
-        if (not flag):
-            util.warning_terminal( "Port {} of component {} does not "
-                "accept input, field will be ignored."
-                .format(input_port, neighbor.name), '')
-
-        return flag
-    # ==================================================================
-    def _get_port_in(self, comp: AbstractComponent,
-                     neighbor: AbstractComponent, port: int, field: Field,
-                     input_port: int) -> Tuple[List[int], List[Field]]:
-
-        return [], []
-    # ==================================================================
-    # Port valid constraint --------------------------------------------
-    def _update_port_valid(self, comp: AbstractComponent, ports: List[int],
-                           fields: List[Field]) -> None:
-        return None
-    # ==================================================================
-    def _respect_port_valid(self, comp: AbstractComponent,
-                            neighbor: AbstractComponent, port: int,
-                            field: Field, input_port: int) -> bool:
-        """Check if type of field correspond to type of port."""
-        flag = neighbor[input_port].is_type_valid(field.type)
-        if (not flag):
-            util.warning_terminal("Wrong field type to enter port {} "
-                "of component {}, field will be ignored."
-                .format(input_port, neighbor.name), '')
-
-        return flag
-    # ==================================================================
-    def _get_port_valid(self, comp: AbstractComponent,
-                        neighbor: AbstractComponent, port: int, field: Field,
-                        input_port: int) -> Tuple[List[int], List[Field]]:
-
-        return [], []
-    # ==================================================================
-    # Max pass constraint ----------------------------------------------
-    def _update_max_pass(self, comp: AbstractComponent, ports: List[int],
-                         fields: List[Field]) -> None:
-        return None
-    # ==================================================================
-    def _respect_max_pass(self, comp: AbstractComponent,
-                          neighbor: AbstractComponent, port: int, field: Field,
-                          input_port: int) -> bool:
-        """Check if the number of time a field can pass by input_port of
-        component neighbor is not overpassed.
-        """
-        neighbor.inc_counter_pass(input_port)
-        flag = neighbor.is_counter_below_max_pass(input_port)
-        if (not flag):
-            util.warning_terminal("Max number of times a field can go through "
-                "port {} of component '{}' has been reached, field will be "
-                "ignored."
-                .format(input_port, neighbor.name), '')
-
-        return flag
-    # ==================================================================
-    def _get_max_pass(self, comp: AbstractComponent,
-                      neighbor: AbstractComponent, port: int, field: Field,
-                      input_port: int) -> Tuple[List[int], List[Field]]:
-
-        return [], []
-    # ==================================================================
-    # Field time window management =====================================
-    # ==================================================================
-    def _check_field_time_overlap(self, fields):
-        """Check if the time window of the fields overlap."""
-        return True
-    def _match_field_time(self, fields):
-        """Extend temporarily the time window of all fields to make them
-        completely overlapping.
-        """
-        return None
-    def _reset_field_time(self, fields, field_time_data):
-        """Reset the time window as they were before extending them."""
-        return None
+        return ngbr_port_ids, fields
     # ==================================================================
     # Prapagation management ===========================================
     # ==================================================================
-    def _init_propagation(self, comp: AbstractComponent, output_port: int,
-                          output_field: Field) -> None:
-        """Propagate one Field"""
-        # Recording field ----------------------------------------------
-        if (comp.save or (comp in self._leaf_comps)):
-            comp[output_port].save_field(output_field)
-        # Propagate output_field to neighbors of comp ------------------
-        neighbor: Optional[AbstractPassComp] = None
-        potential_neighbor = comp[output_port].ngbr_comp
-        if (isinstance(potential_neighbor, AbstractPassComp)): # no starter
-            neighbor = potential_neighbor
-        if (neighbor is not None):
-            input_port_neighbor = comp[output_port].ngbr_port
-            if (not neighbor[input_port_neighbor].is_unidir()):
-                if (neighbor.save):       # Recording field
-                    neighbor[input_port_neighbor].save_field(output_field)
-                # Valid propagation management -----------------------------
-                util.print_terminal("Component '{}' has sent a signal from "
-                                    "port {} to port {} of component '{}'."
-                                    .format(comp.name, output_port,
-                                            input_port_neighbor,
-                                            neighbor.name))
-                input_ports_neighbor, output_fields = \
-                    self._comply_with_constraints(comp, neighbor, output_port,
-                                                  output_field,
-                                                  input_port_neighbor)
-                if (output_fields):            # Constraints respected
-                    if (self._check_field_time_overlap(output_fields)):
-                        # Make sure time windows overlap if >1 field
-                        field_time_data = self._match_field_time(output_fields)
-                        # Send the fields into the component
-                        output_ports_neighbor, output_fields_neighbor =\
-                            neighbor(self.domain, input_ports_neighbor,
-                                     output_fields)
-                        # Reset original time window
-                        self._reset_field_time(output_fields, field_time_data)
-                        # Recursive function
-                        self._propagate(neighbor, output_ports_neighbor,
-                                        output_fields_neighbor)
-                    else:     # Time window of output_fields not overlapping
-                        util.warning_terminal("Fields can not be accepted at "
-                            "the entrance of component '{}' as their time "
-                            "windows are not overlapping."
-                            .format(neighbor.name), '')
+    def must_save_output_field_of_comp(self, comp: AbstractComponent) -> bool:
+        """Save the output fields of a component if requested by the
+        user or if the component is a leaf.
+        """
+
+        return comp.save or (cfg.SAVE_LEAF_FIELDS and self.is_comp_leaf(comp))
     # ==================================================================
-    def _propagate(self, comp: AbstractComponent, output_ports: List[int],
+    def must_save_input_field_of_comp(self, comp: AbstractComponent) -> bool:
+        """Save the input fields of a component if requested by the
+        user.
+        """
+
+        return comp.save
+    # ==================================================================
+    def get_valid_nbrg(self, comp: AbstractComponent, comp_port_id: int
+                       ) -> Optional[AbstractPassComp]:
+        """Return the neighbor of the component at port id comp_port_id
+        if the neighbor is of type AbstractPassComp.
+        """
+        potential_ngbr: Optional[AbstractComponent] = comp[comp_port_id].ngbr
+        if (isinstance(potential_ngbr, AbstractPassComp)):
+
+            return potential_ngbr
+        else:
+            if (isinstance(potential_ngbr, AbstractStartComp)):
+                warning_message: str = ("The starter component {} can not "
+                    "accept incoming fields.".format(potential_ngbr.name))
+                warnings.warn(warning_message, StartCompInputWarning)
+
+        return None
+    # ==================================================================
+    def _propagate_field(self, comp: AbstractComponent, comp_port_id: int,
+                         field: Field) -> None:
+        """Propagate one Field field from the port comp_port_id
+        of component comp to the neighbor component of comp. Check if
+        all the constraints are respected before propagation.
+
+        Parameters
+        ----------
+        comp : optcom.components.abstract_component.AbstractComponent
+            The component from which the field to propagate comes from.
+        comp_port_id :
+            The id port of the component from which the field to
+            propagate comes from.
+        field : optcom.field.Field
+            The field to propagate.
+
+        """
+        comp_port: Port = comp[comp_port_id]
+        # Recording output field ---------------------------------------
+        if (self.must_save_output_field_of_comp(comp)):
+            comp_port.save_field(field)
+        # Propagate field to neighbor of comp --------------------------
+        if (comp_port.is_valid_for_propagation()):
+            ngbr: Optional[AbstractPassComp] = None
+            ngbr = self.get_valid_nbrg(comp, comp_port_id)
+            if (ngbr is not None):
+                ngbr_port_id: int = comp_port.ngbr_port_id
+                ngbr_port: Port = ngbr[ngbr_port_id]
+                # Recording input field --------------------------------
+                if (self.must_save_input_field_of_comp(ngbr)):
+                    ngbr_port.save_field(field)
+                # Check for constraints compliance ---------------------
+                self.print_propagation(comp, comp_port_id, ngbr, ngbr_port_id)
+                ngbr_port_ids, fields = self._comply_with_constraints(comp,
+                                       comp_port_id, ngbr, ngbr_port_id, field)
+                # Valid propagation management -------------------------
+                if (fields):
+                    output_port_ids, output_fields = ngbr(self.domain,
+                                                          ngbr_port_ids,
+                                                          fields)
+                    # Recursive call through propagate()
+                    self._propagate(ngbr, output_port_ids, output_fields)
+    # ==================================================================
+    def _propagate(self, comp: AbstractComponent, output_port_ids: List[int],
                    output_fields: List[Field]) -> None:
-        self._update_constraints(comp, output_ports, output_fields)
-        # Debug
-        if (len(output_ports) != len(output_fields)):
-            util.warning_terminal("The length of the output_ports list and "
+        # Check for valid outputs --------------------------------------
+        if (len(output_port_ids) != len(output_fields)):
+
+            raise PropagationError("The length of the output_ports list and "
                 "output_fields list must be equal.")
-        # Propagate
-        for i in range(len(output_ports)):
-            if (output_ports[i] != -1):     # Explicit no propag. port policy
-                self._init_propagation(comp, output_ports[i], output_fields[i])
+        output_port_ids_: List[int] = []
+        output_fields_: List[Field] = []
+        for i in range(len(output_port_ids)):
+            if (not comp.is_port_id_valid(output_port_ids[i])):
+                if (output_port_ids[i] >=0):  # if < 0, convention for no prop.
+                    warning_message: str = ("The port number {} for component "
+                        "'{}' is not valid. Fields are not propagated."
+                        .format(output_port_ids[i], comp.name))
+                    warnings.warn(warning_message, WrongPortWarning)
+            else:
+                output_port_ids_.append(output_port_ids[i])
+                output_fields_.append(output_fields[i])
+        self._update_constraints(comp, output_port_ids_, output_fields_)
+        # Propagate ----------------------------------------------------
+        for i in range(len(output_port_ids_)):
+            self._propagate_field(comp, output_port_ids_[i], output_fields_[i])
     # ==================================================================
-    def run(self, *starters: Union[AbstractStartComp, List[AbstractStartComp]]
-            ) -> None:
+    def run(self, *starters: AbstractStartComp) -> None:
         """Launch the simulation.
 
         Parameters
         ----------
-        starter_comps : AbstractStartComp or list of AbstractStartComp
+        starter_comps : optcom.components.abstract_start_comp.AbstractStartComp
             The components from which the simulation starts.
 
         """
-        starter_comps = []
+        # Check if valid component to start ----------------------------
         for starter in starters:
-            if (isinstance(starter, List)):
-                for substarter in starter:
-                    starter_comps.append(substarter)
+            if (isinstance(starter, AbstractStartComp)):
+                self.add_comp(starter) # If not already in layout
             else:
-                starter_comps.append(starter)
-        for starter in starter_comps:
-            self.add_comp(starter)
-        self._get_structure()
-        for starter in starter_comps:
-            # TO DO: check if starter is valid start pulse
-            output_ports, output_fields = starter(self.domain)
-            self._propagate(starter, output_ports, output_fields)
+
+                raise StartSimError("The component '{}' is not a valid "
+                    "component to start the simulation with."
+                    .format(starter.name))
+        # Begin simulation ---------------------------------------------
+        for starter in starters:
+            output_port_ids, output_fields = starter(self.domain)
+            self._propagate(starter, output_port_ids, output_fields)
+    # ==================================================================
+    def run_all(self) -> None:
+        """Launch the simulation with all component of type
+        AbstractStartComp.
+        """
+        starters: List[AbstractStartComp] = self.get_start_components()
+        self.run(*starters)
     # ==================================================================
     # Graph structure properties =======================================
     # ==================================================================
-    def _get_structure(self) -> None:
-        """Draw structural constraints from the Layout."""
-        self._leaf_comps = self.get_leafs(self._comps)
+    def is_comp_leaf(self, comp: AbstractComponent) -> bool:
+
+        return comp in self.leafs
+    # ==================================================================
+    def get_start_components(self) -> List[AbstractStartComp]:
+        """Retrun a list of components that are valid starter component,
+        i.e. component that can be pass to the method run() to start the
+        simulation.
+        """
+        starters: List[AbstractStartComp] = []
+        for comp in self._comps:
+            if (isinstance(comp, AbstractStartComp)):
+                starters.append(comp)
+
+        return starters
     # ==================================================================
     @staticmethod
-    def get_leafs(comps: List[AbstractComponent]) -> List[AbstractComponent]:
-        """Return the leafs of the Layout in the list given as parameter
+    def get_leafs_of_comps(comps: List[AbstractComponent]
+                           ) -> List[AbstractComponent]:
+        """Return the leafs in the list of Component comps.
 
         Parameters
         ----------
         comps :
-            Components to be checked if they are leafs of the Layout.
+            Components to be checked if they are leafs.
 
         Returns
         -------
         :
-            Components which are leafs of the Layout.
+            Components which are leaf.
 
         """
-        leafs = []
+        leafs: List[AbstractComponent] = []
         for comp in comps:
             if (Layout.get_degree(comp) == 1):
                 leafs.append(comp)
@@ -567,7 +509,7 @@ class Layout(object):
         Parameters
         ----------
         comp : AbstractComponent
-            The component to be checked
+            The component from which the degree must be calculated.
 
         Returns
         -------
@@ -575,7 +517,7 @@ class Layout(object):
             Degree of the component given as parameter.
 
         """
-        degree = 0
+        degree: int = 0
         if (len(comp) == 1):
             degree = 1
         else:
@@ -584,39 +526,3 @@ class Layout(object):
                     degree += 1
 
         return degree
-
-
-if __name__ == "__main__":
-
-    from optcom.components.abstract_component import AbstractComponent
-
-    # Create a layout with six components
-    default_name = 'dflt'
-    ports_type = [cst.OPTI_ALL, cst.OPTI_ALL, cst.OPTI_ALL, cst.OPTI_ALL]
-    save = False
-    save_all = False
-    a = AbstractComponent('a', default_name, ports_type, save, save_all)
-    b = AbstractComponent('b', default_name, ports_type, save, save_all)
-    c = AbstractComponent('c', default_name, ports_type, save, save_all)
-    d = AbstractComponent('d', default_name, ports_type, save, save_all)
-    e = AbstractComponent('e', default_name, ports_type, save, save_all)
-    f = AbstractComponent('f', default_name, ports_type, save, save_all)
-
-    lt = Layout()
-
-    print("########################## Check creation and suppression of edges")
-    lt.link((a[0],b[0]))    # Valid
-    lt.link((a[2],a[2]), (a[2],b[0]), (f[1], b[0]), (a[0],f[1]))  # Not valid
-    lt.link((a[2],b[1]))    # Valid
-    lt.link_unidir((a[3],a[1]),(a[3],b[0]))  # Not Valid
-    lt.link_unidir((b[2],a[3]), (c[1],d[2]))  # Valid
-    print(lt)
-    lt.del_link((a[1],b[2]),(a[2],b[0]))  # Not valid
-    lt.del_link((a[2],b[1]))    # Valid
-    lt.del_link((a[3],b[2]))    # Valid (even if unidir in the other direction)
-    lt.del_link((b[2],a[3]))    # Not Valid
-    print(lt)
-    lt.reset()
-    print(lt)
-
-    print(Layout.__doc__)

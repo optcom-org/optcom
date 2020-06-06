@@ -1,5 +1,7 @@
 import typing
 
+NULL_PORT_ID = -1
+
 # port types
 OPTI_ALL: int = 1
 OPTI_IN: int = 2

@@ -15,20 +15,21 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
-from typing import List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
+from optcom.domain import Domain
 from optcom.effects.abstract_effect import AbstractEffect
 from optcom.effects.attenuation import Attenuation
-from optcom.equations.re_fiber import REFiber
+from optcom.field import Field
+from optcom.utils.taylor import Taylor
 
 
 class GainSaturation(AbstractEffect):
-    r"""Generic class for effect object.
+    r"""The active fiber saturation effect.
 
     Attributes
     ----------
@@ -36,84 +37,69 @@ class GainSaturation(AbstractEffect):
         The angular frequency array. :math:`[ps^{-1}]`
     time : numpy.ndarray of float
         The time array. :math:`[ps]`
-    center_omega : numpy.ndarray of float
-        The center angular frequency. :math:`[ps^{-1}]`
+    domega : float
+        The angular frequency step. :math:`[ps^{-1}]`
+    dtime : float
+        The time step. :math:`[ps]`
 
     """
 
-    def __init__(self, re: REFiber, alpha: Optional[List[float]] = None
-                 ) -> None:
+    def __init__(self, gain: Union[float, np.ndarray, Callable],
+                 en_sat: Union[float, np.ndarray, Callable],
+                 UNI_OMEGA: bool = True) -> None:
         r"""
         Parameters
         ----------
-        re : REFiber
-            The rate equations object.
-        alpha :
-            The attenuation coefficient. :math:`[km^{-1}]`
+        gain :
+            The gain coefficient. :math:`[km^{-1}]`  If a callable is
+            provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
+        en_sat :
+            The energy saturation. :math:`[J]`  If a callable is
+            provided, the variable must be angular frequency.
+            :math:`[ps^{-1}]`
+        UNI_OMEGA :
+            If True, consider only the center omega for computation.
+            Otherwise, considered omega discretization.
 
         """
         super().__init__()
-        self._re: REFiber = re
-        self._alpha: Array[float]
-        if (alpha is None):
-            self._alpha = np.zeros(0.0)
+        self._UNI_OMEGA = UNI_OMEGA
+        # The gain coefficient -----------------------------------------
+        self._gain_op: np.ndarray = np.array([])
+        self._gain: Union[np.ndarray, Callable]
+        if (callable(gain)):
+            self._gain = gain
         else:
-            alpha = util.make_list(alpha)
-            self._alpha = np.asarray(alpha)
-        self._factor: Array[float]
-    # ==================================================================
-    def update(self, center_omega: Optional[Array[float]] = None,
-               step: int = 0) -> None:
-        if (center_omega is None):
-            center_omega = self._center_omega
-        Gamma = np.zeros(len(center_omega))
-        sigma_a = np.zeros(len(center_omega))
-        sigma_e = np.zeros(len(center_omega))
-        self._factor = np.zeros(len(center_omega))
-        for i, omega in enumerate(center_omega):
-            # sigma in m^2 from self._re
-            sigma_a[i] = self._re.get_sigma_a(omega, step)
-            sigma_e[i] = self._re.get_sigma_e(omega, step)
-            Gamma[i] = self._re.get_Gamma(omega, step)
-            self._factor[i] = ((-1*Gamma[i]*(sigma_a[i]+sigma_e[i]))
-                               / (omega*cst.HBAR))
-            self._factor[i] *= 1e-24    # ps^2 kg^-1 -> s^2 kg^-1
-        if (len(center_omega) < len(self._alpha)):
-            self._alpha = self._alpha[:len(center_omega)]
+            self._gain = lambda omega: np.ones_like(omega) * gain
+        # The energy saturation ----------------------------------------
+        self._en_sat_op: np.ndarray = np.array([])
+        self._en_sat: Union[np.ndarray, Callable]
+        if (callable(en_sat)):
+            self._en_sat = en_sat
         else:
-            for i in range(len(self._alpha), len(center_omega)):
-                self._alpha = np.vstack((self._alpha, self._alpha[-1]))
+            self._en_sat = lambda omega: np.ones(omega) * en_sat
     # ==================================================================
-    @property
-    def center_omega(self) -> Optional[Array[float]]:
-
-        return self._center_omega
-    # ------------------------------------------------------------------
-    @center_omega.setter
-    def center_omega(self, center_omega: Array[float]) -> None:
-        # Overloading to update the betas(\omega)
-        self.update(center_omega)
-        self._center_omega = center_omega
+    def set(self, center_omega: np.ndarray = np.array([]),
+            abs_omega: np.ndarray = np.array([])) -> None:
+        if (self._UNI_OMEGA):
+            self._gain_op = np.zeros_like(center_omega)
+            self._gain_op = self._gain(center_omega)
+            self._en_sat_op = np.zeros_like(center_omega)
+            self._en_sat_op = self._en_sat(center_omega)
+        else:
+            self._gain_op = np.zeros_like(abs_omega)
+            self._en_sat_op = np.zeros_like(abs_omega)
+            for i in range(len(center_omega)):
+                self._gain_op[i] = self._gain(abs_omega[i])
+                self._en_sat_op[i] = self._en_sat(abs_omega[i])
     # ==================================================================
-    @property
-    def alpha(self) -> Optional[Array[float]]:
-
-        return self._alpha
-    # ------------------------------------------------------------------
-    @alpha.setter
-    def alpha(self, alpha: Array[float]) -> None:
-        self._alpha = alpha
-    # ==================================================================
-    def op(self, waves: Array[cst.NPFT], id: int,
-           corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
+    def op(self, waves: np.ndarray, id: int,
+           corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
         """The operator of the gain saturation effect."""
-
-        res = 0.0
-        power = np.zeros(waves[id].shape, dtype=cst.NPFT)
+        dtime: float = self._dtime * 1e-12     # ps -> s
+        energy: float = 0.0
         for i in range(len(waves)):
-            power += waves[i] * np.conj(waves[id]) #* self.dtime # |A|^2 * dt
+            energy += Field.energy(waves[i], dtime)
 
-        res = (-0.5*self._alpha[id]
-               * np.exp(self._factor[id]*np.real(np.sum(power))))
-
-        return res
+        return 0.5 * self._gain_op[id] * np.exp(-1*energy/self._en_sat_op[id])

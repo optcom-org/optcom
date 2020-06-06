@@ -5,4 +5,7 @@ DFT_ODEMETHOD: str = "euler"
 DFT_NLEMETHOD: str = ""
 DFT_NLSEMETHOD: str = "ssfm"
 
-RK4IP_GNLSE: bool = False
+
+
+DFT_ROOTMETHOD: str = "newton_raphson"
+DFT_GRADIENTMETHOD: str = "diff"

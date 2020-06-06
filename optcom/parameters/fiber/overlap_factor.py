@@ -16,41 +16,67 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import math
-from typing import List, Optional, overload
+from typing import Callable, List, Optional, overload, Union
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.parameters.abstract_parameter import AbstractParameter
+from optcom.utils.callable_container import CallableContainer
 
 
 class OverlapFactor(AbstractParameter):
 
-    def __init__(self, doped_area: float) -> None:
-        """
+    def __init__(self, eff_area: Union[float, Callable], doped_area: float
+                 ) -> None:
+        r"""
         Parameters
         ----------
+        eff_area :
+            The effective area. :math:`[\mu m^2]`  If a callable is
+            provided, the variable must be angular frequency.
+            :math:`[ps^{-1}]`
         doped_area :
             The doped area. :math:`[\mu m^2]`
 
         """
+        self._doped_area: float = doped_area
+        self._eff_area: Union[float, Callable] = eff_area
+    # ==================================================================
+    @property
+    def doped_area(self) -> float:
+
+        return self._doped_area
+    # ------------------------------------------------------------------
+    @doped_area.setter
+    def doped_area(self, doped_area: float) -> None:
+
         self._doped_area = doped_area
     # ==================================================================
+    @property
+    def eff_area(self) -> Union[float, Callable]:
+
+        return self._eff_area
+    # ------------------------------------------------------------------
+    @eff_area.setter
+    def eff_area(self, eff_area: Union[float, Callable]) -> None:
+
+        self._eff_area = eff_area
+    # ==================================================================
     @overload
-    def __call__(self, eff_area: float) -> float: ...
+    def __call__(self, omega: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
-    def __call__(self, eff_area: Array[float]) -> Array[float]: ...
+    def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
-    def __call__(self, eff_area):
+    def __call__(self, omega):
         r"""Calculate the overlap factor.
 
         Parameters
         ----------
-        eff_area :
-            The effective area. :math:`[\mu m^2]`
+        omega :
+            The angular frequency.  :math:`[rad\cdot ps^{-1}]`
 
         Returns
         -------
@@ -58,27 +84,30 @@ class OverlapFactor(AbstractParameter):
             Value of the overlap factor.
 
         """
-        return OverlapFactor.calc_overlap_factor(self._doped_area, eff_area)
+        fct = CallableContainer(OverlapFactor.calc_overlap_factor,
+                                [self._eff_area, self._doped_area])
+
+        return fct(omega)
     # ==================================================================
     @overload
     @staticmethod
-    def calc_overlap_factor(doped_area: float, eff_area: float) -> float: ...
+    def calc_overlap_factor(eff_area: float, doped_area: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_overlap_factor(doped_area: Array[float], eff_area: Array[float]
-                            ) -> Array[float]: ...
+    def calc_overlap_factor(eff_area: np.ndarray, doped_area: float,
+                            ) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
-    def calc_overlap_factor(doped_area, eff_area):
+    def calc_overlap_factor(eff_area, doped_area):
         r"""Calculate the overlap factor.
 
         Parameters
         ----------
-        doped_area :
-            The doped area. :math:`[\mu m^2]`
         eff_area :
             The effective area. :math:`[\mu m^2]`
+        doped_area :
+            The doped area. :math:`[\mu m^2]`
 
         Returns
         -------
@@ -101,19 +130,50 @@ class OverlapFactor(AbstractParameter):
 
 
 if __name__ == "__main__":
+    """Plot the overlap factor as a function of the wavelength.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
+
+    from typing import List
 
     import numpy as np
+
     import optcom.utils.constants as cst
+    import optcom.utils.plot as plot
+    from optcom.domain import Domain
+    from optcom.parameters.fiber.effective_area import EffectiveArea
+    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
+    from optcom.parameters.fiber.overlap_factor import OverlapFactor
+    from optcom.parameters.fiber.v_number import VNumber
+    from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
     # With float
-    A_doped = cst.PI*25.0
-    A_eff = 50.0
-    of = OverlapFactor(A_doped)
-    print(of(A_eff))
-    print(of.calc_overlap_factor(A_doped, A_eff))
-    # With numpy array
-    A_doped_ = cst.PI*25.0*np.ones(10)
-    A_eff_ = np.linspace(45, 55, 10)
-    of = OverlapFactor(A_doped_)
-    print(of(A_eff_))
-    print(of.calc_overlap_factor(A_doped_, A_eff_))
+    A_doped: float = cst.PI*25.0
+    omega: float = Domain.lambda_to_omega(1552.0)
+    core_radius: float = 5.0
+    sellmeier: Sellmeier = Sellmeier("sio2")
+    n_clad: float = 1.44
+    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
+    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
+    A_eff_inst: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
+    of_inst: OverlapFactor = OverlapFactor(A_eff_inst, A_doped)
+    print(of_inst(omega))
+
+    A_eff: float = A_eff_inst(omega)
+    of_inst = OverlapFactor(A_eff, A_doped)
+    print(of_inst(omega))
+    print(OverlapFactor.calc_overlap_factor(A_eff, A_doped))
+    # With np.ndarray
+    lambdas: np.ndarray = np.linspace(900., 1550., 1000)
+    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    of_inst = OverlapFactor(A_eff_inst, A_doped)
+    res: np.ndarray = of_inst(omegas)
+    x_labels: List[str] = ['Lambda']
+    y_labels: List[str] = ['Overlap factor']
+    plot_titles: List[str] = ["Overlap factor as a function of the wavelength "
+                              "\n for Silica core with constant cladding "
+                              "refractive index."]
+
+    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(0.75, 1.)])

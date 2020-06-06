@@ -1,6 +1,6 @@
 matplotlib
-nptyping
 numpy
 pillow
 pyfftw
 scipy
+typing_extensions

@@ -17,281 +17,277 @@
 
 import copy
 import math
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.domain import Domain
 from optcom.effects.abstract_effect import AbstractEffect
 from optcom.effects.attenuation import Attenuation
-from optcom.effects.dispersion import Dispersion
+from optcom.effects.gain import Gain
 from optcom.effects.gain_saturation import GainSaturation
-from optcom.equations.abstract_equation import AbstractEquation
-from optcom.equations.abstract_nlse import AbstractNLSE
-from optcom.equations.abstract_refractive_index import AbstractRefractiveIndex
-from optcom.equations.re_fiber import REFiber
+from optcom.effects.kerr import Kerr
+from optcom.equations.abstract_re_fiber import AbstractREFiber
+from optcom.equations.abstract_field_equation import AbstractFieldEquation
+from optcom.equations.abstract_field_equation import sync_waves_decorator
+from optcom.equations.ase_noise import ASENoise
 from optcom.field import Field
-from optcom.parameters.fiber.nl_coefficient import NLCoefficient
-from optcom.parameters.fiber.nl_index import NLIndex
+from optcom.parameters.fiber.absorption_section import AbsorptionSection
+from optcom.parameters.fiber.energy_saturation import EnergySaturation
+from optcom.parameters.fiber.doped_fiber_gain import DopedFiberGain
+from optcom.parameters.fiber.emission_section import EmissionSection
+from optcom.parameters.fiber.se_power import SEPower
+from optcom.parameters.refractive_index.resonant_index import ResonantIndex
+from optcom.solvers.ode_solver import ODESolver
+from optcom.utils.callable_litt_expr import CallableLittExpr
+from optcom.utils.fft import FFT
 
 
-class AbstractAmpNLSE(AbstractNLSE):
+#
+SEED_SPLIT: str = 'seed_split'
+PUMP_SPLIT: str = 'pump_split'
+ALL_SPLIT: str = 'all_split'
+NO_SPLIT: str = 'no_split'
+SPLIT_NOISE_OPTIONS: List[str] = [SEED_SPLIT, PUMP_SPLIT, ALL_SPLIT, NO_SPLIT]
 
-    def __init__(self, re: REFiber,
-                 alpha: Optional[Union[List[float], Callable]],
-                 alpha_order: int,
-                 beta: Optional[Union[List[float], Callable]],
-                 beta_order: int, gamma: Optional[Union[float, Callable]],
-                 gain_order: int, R_0: float, R_L: float,
-                 nl_index: Optional[Union[float, Callable]], ATT: bool,
-                 DISP: bool, GS: bool, medium: str, dopant: str) -> None:
+
+# Exceptions
+class AbstractAmpNLSEError(Exception):
+    pass
+
+class UnknownNoiseSplitOptionError(AbstractAmpNLSEError):
+    pass
+
+
+class AbstractAmpNLSE(AbstractFieldEquation):
+
+    def __init__(self, re_fiber: AbstractREFiber, gain_order: int,
+                 en_sat: List[Optional[Union[float, Callable]]],
+                 R_0: Union[float, Callable], R_L: Union[float, Callable],
+                 temperature: float, GAIN_SAT: bool, NOISE: bool,
+                 split_noise_option: str, UNI_OMEGA: List[bool],
+                 STEP_UPDATE: bool) -> None:
         r"""
         Parameters
         ----------
-        re :
-            A fiber rate equation object.
-        alpha :
-            The derivatives of the attenuation coefficients.
-            :math:`[km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
-            ps^3\cdot km^{-1}, \ldots]` If a callable is provided,
-            variable must be angular frequency. :math:`[ps^{-1}]`
-        alpha_order :
-            The order of alpha coefficients to take into account. (will
-            be ignored if alpha values are provided - no file)
-        beta :
-            The derivatives of the propagation constant.
-            :math:`[km^{-1}, ps\cdot km^{-1}, ps^2\cdot km^{-1},
-            ps^3\cdot km^{-1}, \ldots]` If a callable is provided,
-            variable must be angular frequency. :math:`[ps^{-1}]`
-        beta_order :
-            The order of beta coefficients to take into account. (will
-            be ignored if beta values are provided - no file)
-        gamma :
-            The non linear coefficient.
-            :math:`[rad\cdot W^{-1}\cdot km^{-1}]` If a callable is
-            provided, variable must be angular frequency.
-            :math:`[ps^{-1}]`
+        re_fiber : AbstractREFiber
+            The rate equations describing the fiber laser dynamics.
         gain_order :
             The order of the gain coefficients to take into account.
-            (from the Rate Equations resolution)
+        en_sat :
+            The saturation energy. :math:`[J]`  If a callable
+            is provided, variable must be angular frequency.
+            :math:`[ps^{-1}]` (1<=len(en_sat)<=2 for signal and pump)
         R_0 :
-            The reflectivity at the fiber start.
+            The reflectivity at the fiber start.  If a callable
+            is provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
         R_L :
-            The reflectivity at the fiber end.
-        nl_index :
-            The non linear index. Used to calculate the non linear
-            parameter. :math:`[m^2\cdot W^{-1}]`
-        ATT :
-            If True, trigger the attenuation.
-        DISP :
-            If True, trigger the dispersion.
-        GS :
+            The reflectivity at the fiber end.  If a callable
+            is provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
+        temperature :
+            The temperature of the medium. :math:`[K]`
+        GAIN_SAT :
             If True, trigger the gain saturation.
-        medium :
-            The main medium of the fiber amplifier.
-        dopant :
-            The doped medium of the fiber amplifier.
+        NOISE :
+            If True, trigger the noise calculation.
+        split_noise_option :
+            The way the spontaneous emission power is split among the
+            fields.
+        UNI_OMEGA :
+            If True, consider only the center omega for computation.
+            Otherwise, considered omega discretization.  The first
+            element is related to the seed and the second to the pump.
+        STEP_UPDATE :
+            If True, update component parameters at each spatial
+            space step by calling the _update_variables method.
 
         """
-        # keep all methods from NLSE but bypass constructor
-        AbstractEquation.__init__(self) # grand parent constructor
-        self._medium: str = medium
-        self._dopant: str = dopant
-        self._re: REFiber = re
-        self._R_L: float = R_L
-        self._R_0: float = R_0
-        self._coprop: bool
-        # Effects ------------------------------------------------------
-        self._att_ind: int = -1
-        self._disp_ind: int = -1
-        self._gs_ind: int = -1
-        self._gain_ind: int = -1
-        self._gain_order: int = gain_order
-        self._beta_order: int = beta_order
-        self._delays_effects: List[AbstractEffect] = []
-        if (ATT):
-            self._effects_lin.append(Attenuation(alpha, alpha_order,
-                                                 skip_taylor=[1]))
-            self._att_ind = len(self._effects_lin) - 1
-            self._delays_effects.append(self._effects_lin[-1])
-        if (DISP):
-            self._effects_lin.append(Dispersion(beta, beta_order,
-                                                start_taylor=2))
-            self._disp_ind = len(self._effects_lin) - 1
-            self._delays_effects.append(self._effects_lin[-1])
-        if (GS):
-            start_taylor_gain = 1
-            self._effects_lin.append(GainSaturation(re, [0.0]))
-            self._gs_ind = len(self._effects_lin) - 1
-        else:
-            start_taylor_gain = 0
-        alpha_temp = [0.0 for i in range(self._gain_order+1)]
-        self._effects_lin.append(Attenuation(alpha_temp,
+        # 4 equations, one for each port. (2 signals + 2 pumps)
+        super().__init__(nbr_eqs=4, prop_dir=[True, False, True, False],
+                         SHARE_WAVES=True, NOISE=NOISE,
+                         STEP_UPDATE=STEP_UPDATE,
+                         INTRA_COMP_DELAY=False, INTRA_PORT_DELAY=False,
+                         INTER_PORT_DELAY=False)
+        self._re = re_fiber
+        self._UNI_OMEGA = UNI_OMEGA
+        self._n_reso: List[ResonantIndex] = self._re.n_reso
+        self._R_L: Union[float, Callable] = R_L
+        self._R_0: Union[float, Callable] = R_0
+        self._eff_area = self._re.eff_area
+        self._overlap = self._re.overlap
+        self._sigma_a = self._re.sigma_a
+        self._sigma_e = self._re.sigma_e
+        # Alias --------------------------------------------------------
+        CLE = CallableLittExpr
+        # Gain ---------------------------------------------------------
+        start_taylor_gain = 1 if GAIN_SAT else 0
+        self._gain_coeff: List[DopedFiberGain] = []
+        self._absorp_coeff: List[DopedFiberGain] = []
+        k: int = 0  # counter
+        for i in range(4):
+            k = i//2
+            self._gain_coeff.append(DopedFiberGain(self._sigma_e[k],
+                                                   self._overlap[k], 0.))
+            self._absorp_coeff.append(DopedFiberGain(self._sigma_a[k],
+                                                     self._overlap[k], 0.))
+        self._gains: List[Gain] = []
+        self._absorps: List[Attenuation] = []
+        for i in range(4):
+            k = i//2
+            self._gains.append(Gain(self._gain_coeff[i], gain_order,
+                                    start_taylor=start_taylor_gain,
+                                    UNI_OMEGA=UNI_OMEGA[k]))
+            self._add_lin_effect(self._gains[-1], i, i)
+            self._absorps.append(Attenuation(self._absorp_coeff[i], gain_order,
                                              start_taylor=start_taylor_gain,
-                                             skip_taylor=[1]))
-        self._delays_effects.append(self._effects_lin[-1])
-        self._gain_ind = len(self._effects_lin) - 1
-        # Gamma --------------------------------------------------------
-        self._nl_index: Union[float, Callable] = NLIndex(medium=medium) if\
-            (nl_index is None) else nl_index
-        self._gamma: Array[float]
-        self._predict_gamma: Optional[Callable] = None
-        self._custom_gamma: bool = False
-        if (gamma is not None):
-            if (callable(gamma)):
-                self._custom_gamma = True
-                self._predict_gamma = gamma
-            else:
-                self._gamma = np.asarray(util.make_list(gamma))
-        else:
-            self._predict_gamma = NLCoefficient.calc_nl_coefficient
+                                             UNI_OMEGA=UNI_OMEGA[k]))
+            self._add_lin_effect(self._absorps[-1], i, i)
+        # Gain saturation ----------------------------------------------
+        en_sat = util.make_list(en_sat, 2)
+        self._sat_gains: Optional[List[GainSaturation]] = None
+        if (GAIN_SAT):
+            self._sat_gains = []
+            start_taylor_gain = 1
+            en_sat_: Union[float, Callable]
+            for i in range(4):
+                k = i//2
+                crt_en_sat = en_sat[k]
+                if (crt_en_sat is None):
+                    en_sat_ = EnergySaturation(self._eff_area[k],
+                                               self._sigma_a[k],
+                                               self._sigma_e[k],
+                                               self._overlap[k])
+                else:
+                    en_sat_ = CLE([np.ones_like, crt_en_sat], ['*'])
+                coeff = CLE([self._gain_coeff[i], self._absorp_coeff[i]],
+                            ['-'])
+                self._sat_gains.append(GainSaturation(coeff, en_sat_,
+                                                      UNI_OMEGA=UNI_OMEGA[k]))
+                self._add_lin_effect(self._sat_gains[-1], i, i)
+        # Noise --------------------------------------------------------
+        self._split_noise_option = util.check_attr_value(split_noise_option,
+                                                         SPLIT_NOISE_OPTIONS,
+                                                         SEED_SPLIT)
+        # Reflection coeff ---------------------------------------------
+        self._R_0_waves: np.ndarray = np.array([])
+        self._R_L_waves: np.ndarray = np.array([])
+        self._R_0_noises: np.ndarray = np.array([])
+        self._R_L_noises: np.ndarray = np.array([])
     # ==================================================================
-    class RefractiveIndex(AbstractRefractiveIndex):
-        """Container for refractive index computation."""
+    @property
+    def R_0_waves(self) -> np.ndarray:
 
-        def __init__(self, re, step):
-            self._re = re
-            self._step = step
-        # ==============================================================
-        def n(self, omega): # headers in parent class
-            res = self._re.get_n_core(omega, self._step)
-
-            return res
+        return self._R_0_waves
     # ==================================================================
-    def get_criterion(self, waves_f, waves_b):
-        criterion = np.sum(Field.temporal_power(waves_f))
-        criterion += np.sum(Field.temporal_power(waves_b))
+    @property
+    def R_L_waves(self) -> np.ndarray:
 
-        return criterion
+        return self._R_L_waves
+    # ==================================================================
+    @property
+    def R_0_noises(self) -> np.ndarray:
+
+        return self._R_0_noises
+    # ==================================================================
+    @property
+    def R_L_noises(self) -> np.ndarray:
+
+        return self._R_L_noises
     # ==================================================================
     def open(self, domain: Domain, *fields: List[Field]) -> None:
-        # Bypass open in parent to avoid gamma calculation (in set here)
-        AbstractEquation.open(self, domain, *fields)
-        self._delays = np.zeros((len(self._center_omega), 0))
-        # Initiate counter ---------------------------------------------
-        self._iter = -1 # -1 bcs increment in the first init. cond.
-        self._waves_s_ref = np.zeros((self._len_eq(0), domain.samples))
-        self._waves_p_ref = np.zeros((self._len_eq(1), domain.samples))
-        self._call_counter = 0
-    # ==================================================================
-    def set(self, waves: Array[cst.NPFT], h: float, z: float) -> None:
-        super().set(waves, h, z)
-        step = int(round(z/h))
-        self._call_counter += 1
-        if (not self._iter and not self._coprop):
-            step = 0
-        # Gain ---------------------------------------------------------
-        new_alpha = self._re.absorption(step, self._gain_order)
-        self._effects_lin[self._gain_ind].alpha = new_alpha
-        # Gain saturation ----------------------------------------------
-        if (self._gs_ind != -1):
-            self._effects_lin[self._gs_ind].alpha = new_alpha[:,0]
-        if (self._gs_ind != -1):
-            self._effects_lin[self._gs_ind].update(step=step)
-        # Non-linear parameter -----------------------------------------
-        if (self._predict_gamma is not None):
-            self._gamma = np.zeros_like(self._center_omega)
-            if (self._custom_gamma):
-                for id, omega in enumerate(self._center_omega):
-                    self._gamma[id] = self._predict_gamma(omega)
-            else:
-                for id, omega in enumerate(self._center_omega):
-                    eff_area = self._re.get_eff_area(omega, step)
-                    nl_index = self._nl_index(omega)\
-                        if callable(self._nl_index) else self._nl_index
-                    self._gamma[id] = self._predict_gamma(omega, nl_index,
-                                                          eff_area)
-        # Dispersion ---------------------------------------------------
-        if (self._disp_ind != -1):
-            class_n = AbstractAmpNLSE.RefractiveIndex(self._re, step)
-            self._effects_lin[self._disp_ind].update(class_n=class_n)
-    # ==================================================================
-    def initial_condition(self, waves: Array[cst.NPFT], end: bool
-                          ) -> Array[cst.NPFT]:
-        r"""
-        Parameters
-        ----------
-        waves :
-            The propagationg waves.
-        end :
-            If true, boundary counditions at z=L, else at z=0.
-
-        Returns
-        -------
-        :
-            The waves after initial conditions.
-
-        Notes
-        -----
-        If co-propagating signal and pump:
-
-        .. math:: \begin{split}
-                    A_s^+(z=0) &= \sqrt{R_0} A_s^-(z=0)
-                                  + P_{s,ref}^+(z=0)\\
-                    A_p^+(z=0) &= \sqrt{R_0} A_p^-(z=0)
-                                  + P_{p, ref}^+(z=0)\\
-                    A_s^-(z=L) &= \sqrt{R_L} A_s^+(z=L)\\
-                    A_p^-(z=L) &= \sqrt{R_L} A_s^+(z=L)
-                  \end{split}
-
-        If counter-propagating signal and pump:
-
-        .. math:: \begin{split}
-                    A_s^+(z=0) &= \sqrt{R_0} A_s^-(z=0)
-                                  + P_{s,ref}^+(z=0)\\
-                    A_p^+(z=0) &= \sqrt{R_0} A_p^-(z=0)\\
-                    A_s^-(z=L) &= \sqrt{R_L} A_s^+(z=L)\\
-                    A_p^-(z=L) &= \sqrt{R_L} A_s^+(z=L)
-                                  + P_{p, ref}^-(z=0)
-                  \end{split}
-
-        """
-        # Update counter (per iter) ------------------------------------
-        self._call_counter = 0
-        self._iter += 1
-        if (not self._iter and not self._call_counter):   # Very first call
-            self._coprop = not end
-        # N.B. : could also include reflection losses
-        # Truth table:
-        # if coprop :  iter |   z   |   to do
-        #              0    |   0   |   init pump
-        #              1    |   L   |   CI pump
-        #              2    |   0   |   CI pump & init signal
-        #              3    |   L   |   CI pump & CI signal
-        # if counterprop:   iter|   z   |   to do
-        #                   0   |   L   |   init pump
-        #                   1   |   0   |   CI pump & init signal
-        #                   2   |   L   |   CI pump & CI signal
-        # Make shallow copy, does not change waves_prop
-        waves_prop_s = self._in_eq_waves(waves, 0)
-        waves_prop_p = self._in_eq_waves(waves, 1)
-        if (self._iter):
-            # Initial conditions ---------------------------------------
-            if (end):   # End of the fiber z=L
-                if (self._iter > 1):
-                    waves_prop_s = math.sqrt(self._R_L) * waves_prop_s
-                else:
-                    waves_prop_s = np.zeros_like(waves_prop_s)
-                waves_prop_p = math.sqrt(self._R_L) * waves_prop_p
-                if (not self._coprop):
-                    waves_prop_p += self._waves_p_ref
-            else:               # begining of the fiber z=0
-                if (self._iter > 2):
-                    waves_prop_s = (self._waves_s_ref
-                                    + math.sqrt(self._R_0)*waves_prop_s)
-                elif (self._iter == 1 or self._iter == 2):   # First signal
-                    waves_prop_s = self._waves_s_ref
-                else:
-                    waves_prop_s = np.zeros_like(waves_prop_s)
-                waves_prop_p = math.sqrt(self._R_0) * waves_prop_p
-                if (self._coprop):
-                    waves_prop_p += self._waves_p_ref
+        super().open(domain, *fields)
+        # Noise --------------------------------------------------------
+        # Init splitting ratios depending on requirement
+        split_ratios: List[float] = []
+        split_ratio: float = 0.
+        if (self._split_noise_option == SEED_SPLIT):
+            split_ratio = (self._id_tracker.nbr_fields_in_eq(0)
+                           + self._id_tracker.nbr_fields_in_eq(1))
+            split_ratio = 1./split_ratio if split_ratio else 0.
+            split_ratios = [split_ratio, split_ratio, 0., 0.]
+        elif (self._split_noise_option == PUMP_SPLIT):
+            split_ratio = (self._id_tracker.nbr_fields_in_eq(2)
+                           + self._id_tracker.nbr_fields_in_eq(3))
+            split_ratio = 1./split_ratio if split_ratio else 0.
+            split_ratios = [0., 0., split_ratio, split_ratio]
+        elif (self._split_noise_option == ALL_SPLIT):
+            split_ratio = self._id_tracker.nbr_fields
+            split_ratio = 1./split_ratio if split_ratio else 0.
+            split_ratios = [split_ratio for i in range(self._nbr_eqs)]
+        elif (self._split_noise_option == NO_SPLIT):
+            split_ratios = [1. for i in range(self._nbr_eqs)]
         else:
-            self._waves_s_ref = copy.deepcopy(waves_prop_s)
-            self._waves_p_ref = copy.deepcopy(waves_prop_p)
-            waves_prop_s = np.zeros_like(waves_prop_s)
 
-        return np.vstack((waves_prop_s, waves_prop_p))
+            raise UnknownNoiseSplitOptionError("Unknown splitting noise "
+                "option '{}'.".format(self._split_noise_option))
+        # Split Spontaneous Emission power
+        ase_noise_: ASENoise
+        se_power = SEPower(self._noise_domega)
+        for i in range(self._nbr_eqs):
+            se_power_ = CallableLittExpr([se_power, split_ratios[i]], ['*'])
+            ase_noise_ = ASENoise(se_power_, self._gain_coeff[0],
+                                  self._absorp_coeff[0], self._noise_omega)
+            self._add_noise_effect(ase_noise_, i)
+        # Reflection coeffs --------------------------------------------
+        if (callable(self._R_0)):
+            if (self._UNI_OMEGA):
+                self._R_0_waves = self._R_0(self._center_omega).reshape((-1,1))
+            else:
+                self._R_0_coeff = np.zeros_like(self._abs_omega)
+                for i in range(len(self._center_omega)):
+                    self._R_0_coeff[i] = self._R_0(self._abs_omega[i])
+            self._R_0_noises = self._R_0(self._noise_omega)
+        else:
+            if (self._UNI_OMEGA):
+                self._R_0_waves = np.ones((len(self._center_omega), 1))
+            else:
+                self._R_0_waves = np.ones_like(self._abs_omega)
+            self._R_0_waves *= self._R_0
+            self._R_0_noises = self._R_0 * np.ones_like(self._noise_omega)
+        if (callable(self._R_L)):
+            if (self._UNI_OMEGA):
+                self._R_L_waves = self._R_L(self._center_omega).reshape((-1,1))
+            else:
+                self._R_L_coeff = np.zeros_like(self._abs_omega)
+                for i in range(len(self._center_omega)):
+                    self._R_L_coeff[i] = self._R_L(self._abs_omega[i])
+            self._R_L_noises = self._R_L(self._noise_omega)
+        else:
+            if (self._UNI_OMEGA):
+                self._R_L_waves = np.ones((len(self._center_omega), 1))
+            else:
+                self._R_L_waves = np.ones_like(self._abs_omega)
+            self._R_L_waves *= self._R_L
+            self._R_L_noises = self._R_L * np.ones_like(self._noise_omega)
+    # ==================================================================
+    def set(self, waves: np.ndarray, noises: np.ndarray, z: float, h: float
+            ) -> None:
+        for n_reso in self._n_reso:
+            n_reso.N = self._re.meta_pop[-1]
+        for i in range(self._nbr_eqs):
+            # Check if channels propagating in eq. i
+            if (self.id_tracker.nbr_waves_in_eq(i)):
+                self._gain_coeff[i].N = self._re.meta_pop[-1]
+                self._absorp_coeff[i].N = self._re.ground_pop[-1]
+                center_omega = self.id_tracker.waves_in_eq_id(
+                    self._center_omega, i)
+                abs_omega = self.id_tracker.waves_in_eq_id(self._abs_omega, i)
+                self._gains[i].set(center_omega, abs_omega)
+                self._absorps[i].set(center_omega, abs_omega)
+                if (self._sat_gains is not None):
+                    self._sat_gains[i].set(center_omega, abs_omega)
+        super().set(waves, noises, z, h)
+    # ==================================================================
+    def close(self, domain: Domain, *fields: List[Field]) -> None:
+        super().close(domain, *fields)
+        # Reset parameters for future computation
+        for n_reso in self._n_reso:
+            n_reso.N = 0.0
+        for gain in self._gain_coeff:
+            gain.N = 0.0
+        for absorp in self._absorp_coeff:
+            absorp.N = 0.0

@@ -15,10 +15,9 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
-from typing import List, Tuple
+from typing import List, overload, Tuple
 
 import numpy as np
-from nptyping import Array
 
 
 class ContArray():
@@ -30,10 +29,10 @@ class ContArray():
         self._arrays: List[Tuple[float, float, int]] = []
     # ==================================================================
     @overload
-    def __getitem__(self, key: int) -> Array[float]: ...
+    def __getitem__(self, key: int) -> np.ndarray: ...
     # ==================================================================
     @overload
-    def __getitem__(self, key: slice) -> Array[float]: ...
+    def __getitem__(self, key: slice) -> np.ndarray: ...
     # ==================================================================
     def __getitem__(self, key):
 
@@ -49,13 +48,13 @@ class ContArray():
 
             return self.create_array(self._arays[key])
     # ==================================================================
-    def __setitem__(self, key: int, array: Array[float]) -> None:
+    def __setitem__(self, key: int, array: np.ndarray) -> None:
 
         self._arrays[key] = (array[0], array[-1], len(array))
     # ==================================================================
-    def append(self, array: Array[float]) -> None:
+    def append(self, array: np.ndarray) -> None:
         self._arrays.append((array[0], array[-1], len(array)))
     # ==================================================================
-    def create_array(self, coord: Tuple[float, float, int])-> Array[float]:
+    def create_array(self, coord: Tuple[float, float, int])-> np.ndarray:
 
         return np.linspace(coord[0], coord[1], coord[2], True, False)

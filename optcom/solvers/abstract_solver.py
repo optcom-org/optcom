@@ -16,28 +16,37 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import copy
+from abc import ABCMeta
 from typing import Callable, List, Optional
 
-from nptyping import Array
+import numpy as np
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
-from optcom.equations.abstract_equation import AbstractEquation
+
+# Typing variables
+SOLVER_CALLABLE_TYPE = Callable[[np.ndarray, float, float], np.ndarray]
+METHOD_SOLVER_CALLABLE_TYPE = Callable[[SOLVER_CALLABLE_TYPE, np.ndarray,
+                                        float, float], np.ndarray]
 
 
-class AbstractSolver(object):
+class AbstractSolver(metaclass=ABCMeta):
 
-    def __init__(self, f: AbstractEquation, method: Optional[str] = None):
+    _default_method = ''    # Must be overwritten in child
+
+    def __init__(self, f: SOLVER_CALLABLE_TYPE, method: Optional[str]) -> None:
         """
         Parameters
         ----------
-        f : AbstractEquation
+        f :
             The function to compute.
         method :
-            The computation method.
+            The computation method. Call the __call__ function of the
+            equation if None.
+
         """
         self.name: str
-        self._method: Callable
+        self._method: METHOD_SOLVER_CALLABLE_TYPE
         if (method is None):    # analytical solution, no need numerical
             self.name = 'f_call'
             self._method = getattr(self, self.name)
@@ -45,17 +54,15 @@ class AbstractSolver(object):
             self.name = method.lower()
             self._method = getattr(self, self.name)
         else:
-            print(self.__class__)
-            print(self.__class__._default_method)
             util.warning_terminal("The solver method '{}' does not exist, "
                                   "default solver '{}' is set."
                                   .format(method,
                                           self.__class__._default_method))
             self.name = self.__class__._default_method
             self._method = getattr(self, self.__class__._default_method)
-        self.f: AbstractEquation = f
+        self.f: SOLVER_CALLABLE_TYPE = f
     # ==================================================================
-    def __call__(self, vectors: Array, h: float, z: float) -> Array:
+    def __call__(self, vectors: np.ndarray, z: float, h: float) -> np.ndarray:
         """
         Parameters
         ----------
@@ -68,15 +75,12 @@ class AbstractSolver(object):
             The variable value. (time, space, ...)
 
         """
-        self.f.set(vectors, h, z)
-        res = self._method(self.f, vectors, h, z)
-        self.f.update(vectors, h, z)
 
-        return res
+        return self._method(self.f, vectors, z, h)
     # ==================================================================
     @staticmethod
-    def f_call(f: AbstractEquation, vectors: Array, h: float, z: float
-               ) -> Array:
+    def f_call(f: SOLVER_CALLABLE_TYPE, vectors: np.ndarray, z: float, h: float
+               ) -> np.ndarray:
         """Call the __call__ method of the equation f."""
 
-        return f(vectors, h, z)
+        return f(vectors, z, h)

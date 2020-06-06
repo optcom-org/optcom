@@ -18,7 +18,6 @@
 from typing import Optional
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
@@ -26,7 +25,7 @@ from optcom.effects.abstract_effect import AbstractEffect
 
 
 class Kerr(AbstractEffect):
-    r"""Generic class for effect object.
+    r"""The Kerr effect.
 
     Attributes
     ----------
@@ -34,8 +33,18 @@ class Kerr(AbstractEffect):
         The angular frequency array. :math:`[ps^{-1}]`
     time : numpy.ndarray of float
         The time array. :math:`[ps]`
-    center_omega : numpy.ndarray of float
-        The center angular frequency. :math:`[ps^{-1}]`
+    domega : float
+        The angular frequency step. :math:`[ps^{-1}]`
+    dtime : float
+        The time step. :math:`[ps]`
+    SPM :
+        If True, trigger the self-phase modulation.
+    XPM :
+        If True, trigger the cross-phase modulation.
+    FWM :
+        If True, trigger the Four-Wave mixing.
+    sigma :
+        Positive term multiplying the XPM term.
 
     """
 
@@ -55,41 +64,46 @@ class Kerr(AbstractEffect):
 
         """
         super().__init__()
-        self._SPM: bool = SPM
-        self._XPM: bool = XPM
-        self._FWM: bool = FWM
-        if (self._FWM):
+        self.SPM: bool = SPM
+        self.XPM: bool = XPM
+        self.FWM: bool = FWM
+        if (self.FWM):
             util.warning_terminal("FWM effect currently not taken into"
                                    "account.")
-        self._sigma: float = sigma
+        self.sigma: float = sigma
     # ==================================================================
-    def op(self, waves: Array[cst.NPFT], id: int,
-               corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
+    def set(self, center_omega: np.ndarray = np.array([]),
+            abs_omega: np.ndarray = np.array([])) -> None:
+
+        return None
+    # ==================================================================
+    def op(self, waves: np.ndarray, id: int,
+               corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
         res = np.zeros(waves[id].shape, dtype=cst.NPFT)
-        if (self._SPM):
+        if (self.SPM):
             res += self.op_spm(waves, id, corr_wave)
-        if (self._XPM):
+        if (self.XPM):
             res += self.op_xpm(waves, id, corr_wave)
-        #if (FWM):
+        #if (FWM):  # only if len(waves) >= 3
 
         return res
     # ==================================================================
-    def op_spm(self, waves: Array[cst.NPFT], id: int,
-               corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
+    def op_spm(self, waves: np.ndarray, id: int,
+               corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
         """The operator of the self-phase modulation effect."""
 
         return 1j * waves[id] * np.conj(waves[id])
     # ==================================================================
-    def op_xpm(self, waves: Array[cst.NPFT], id: int,
-               corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
+    def op_xpm(self, waves: np.ndarray, id: int,
+               corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
         """The operator of the cross-phase modulation effect."""
         res = np.zeros(waves[id].shape, dtype=cst.NPFT)
         for i in range(len(waves)):
             if (i != id):
                 res += waves[i] * np.conj(waves[i])
 
-        return 1j * self._sigma * res
+        return 1j * self.sigma * res
     # ==================================================================
-    def op_fwm(self, waves: Array[cst.NPFT], id: int,
-               corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
+    def op_fwm(self, waves: np.ndarray, id: int,
+               corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
         pass

@@ -16,8 +16,8 @@ setuptools.setup(
     license="GNU",
     packages=setuptools.find_packages(exclude=("tests",)),
     include_package_data=True,	# controls whether non-code files are copied when package is installed
-    install_requires=["scipy", "numpy", "matplotlib", "nptyping", "pillow",
-                      "pyfftw"],
+    install_requires=["scipy", "numpy", "matplotlib", "pillow", "pyfftw",
+                      "typing_extensions"],
     classifiers=[
         "Natural Language :: English",
         "Intended Audience :: Science/Research",

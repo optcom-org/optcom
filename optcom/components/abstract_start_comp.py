@@ -15,6 +15,7 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
+from abc import abstractmethod
 from typing import List, Optional, Tuple
 
 import optcom.utils.constants as cst
@@ -24,13 +25,27 @@ from optcom.domain import Domain
 from optcom.field import Field
 
 
+def call_decorator(call):
+    def func_wrapper(self, domain):
+        self.call_counter += 1
+        exec(self.pre_call_code)
+        output_ports, output_fields = call(self, domain)
+        exec(self.post_call_code)
+
+        return output_ports, output_fields
+
+    return func_wrapper
+
+
 class AbstractStartComp(AbstractComponent):
 
     def __init__(self, name: str, default_name: str, ports_type: List[int],
                  save: bool, wait: bool = False,
-                 max_nbr_pass: Optional[List[int]] = None) -> None:
+                 max_nbr_pass: Optional[List[int]] = None,
+                 pre_call_code: str = '', post_call_code: str = '') -> None:
 
         super().__init__(name, default_name, ports_type, save, wait,
-                         max_nbr_pass)
+                         max_nbr_pass, pre_call_code, post_call_code)
     # ==================================================================
-    def __call__(self, domain: Domain) -> Tuple[List[int], List[Field]]: ...
+    @abstractmethod
+    def __call__(self, domain: Domain) -> Tuple[List[int], List[Field]]: pass

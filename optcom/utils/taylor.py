@@ -19,7 +19,6 @@ import math
 from typing import Any, List, Optional, Union
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 
@@ -31,9 +30,9 @@ class Taylor(object):
 
         return None
     @staticmethod
-    def series(derivative: Array[float], x_diff: Array[float],
+    def series(derivative: np.ndarray, x_diff: np.ndarray,
                start: int = 0, stop: int = -1, skip: List[int] = []
-               ) -> Array[float]:
+               ) -> np.ndarray:
         r"""Calculate the Taylor series according to the given
         parameters.
 

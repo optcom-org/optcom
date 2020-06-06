@@ -15,22 +15,33 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
+import copy
 from typing import Callable, List, Optional, Union
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.domain import Domain
+from optcom.effects.abstract_effect import AbstractEffect
 from optcom.effects.asymmetry import Asymmetry
 from optcom.effects.coupling import Coupling
 from optcom.effects.kerr import Kerr
-from optcom.equations.abstract_coupled_equation import AbstractCoupledEquation
+from optcom.effects.raman import Raman
+from optcom.effects.raman_approx import RamanApprox
+from optcom.equations.abstract_field_equation import AbstractFieldEquation
+from optcom.equations.abstract_field_equation import sync_waves_decorator
 from optcom.field import Field
+from optcom.parameters.fiber.asymmetry_coeff import AsymmetryCoeff
+from optcom.parameters.fiber.coupling_coeff import CouplingCoeff
+from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
 
-class AbstractCNLSE(AbstractCoupledEquation):
+TAYLOR_COEFF_TYPE = List[Union[List[float], Callable]]
+TAYLOR_COUP_COEFF = List[List[Union[List[float], Callable, None]]]
+
+
+class AbstractCNLSE(AbstractFieldEquation):
     """Coupled non linear Schrodinger equations.
 
     Represent the different effects in the NLSE as well as the
@@ -46,12 +57,18 @@ class AbstractCNLSE(AbstractCoupledEquation):
     """
 
     def __init__(self, nbr_fibers: int,
-                 beta: Optional[Union[List[List[float]], Callable]],
-                 kappa: Optional[List[List[List[float]]]],
-                 sigma_cross: List[List[float]],
+                 beta: TAYLOR_COEFF_TYPE, kappa: TAYLOR_COUP_COEFF,
+                 sigma_cross: List[List[float]], eta_cross: List[List[float]],
+                 core_radius: List[float], clad_radius: float,
                  c2c_spacing: List[List[float]],
-                 core_radius: List[float], V: List[float], n_0: List[float],
-                 ASYM: bool, COUP: bool, XPM: bool, medium: str) -> None:
+                 n_clad: Union[float, Callable],
+                 v_nbr: List[Union[float, Callable]], temperature: float,
+                 ASYM: bool, COUP: bool, XPM: bool, FWM: bool, XNL: bool,
+                 NOISE: bool, STEP_UPDATE: bool, INTRA_COMP_DELAY: bool,
+                 INTRA_PORT_DELAY: bool, INTER_PORT_DELAY: bool,
+                 kerr_effects: List[Optional[Kerr]],
+                 raman_effects: List[Optional[Union[Raman, RamanApprox]]]
+                 ) -> None:
         r"""
         Parameters
         ----------
@@ -64,81 +81,162 @@ class AbstractCNLSE(AbstractCoupledEquation):
         kappa :
             The coupling coefficients. :math:`[km^{-1}]`
         sigma_cross :
-            Positive term multiplying the XPM term of the NLSE inbetween
-            the fibers.
+            Positive term multiplying the XPM terms of the NLSE
+            inbetween the fibers.
+        eta_cross :
+            Positive term multiplying the cross-non-linear terms of the
+            NLSE inbetween the fibers.
+        core_radius :
+            The core radius. :math:`[\mu m]`
+        clad_radius :
+            The radius of the cladding. :math:`[\mu m]`
         c2c_spacing :
             The center to center distance between two cores.
             :math:`[\mu m]`
-        core_radius :
-            The core radius. :math:`[\mu m]`
-        V :
-            The fiber parameter.
-        n_0 :
-            The refractive index outside of the waveguides.
+        n_clad :
+            The refractive index of the clading.  If a callable is
+            provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
+        v_nbr :
+            The V number.  If a callable is provided, variable must be
+            angular frequency. :math:`[ps^{-1}]`
+        temperature :
+            The temperature of the fiber. :math:`[K]`
         ASYM :
             If True, trigger the asymmetry effects between cores.
         COUP :
             If True, trigger the coupling effects between cores.
         XPM :
             If True, trigger the cross-phase modulation.
-        medium :
-            The main medium of the fiber.
+        FWM :
+            If True, trigger the Four-Wave mixing.
+        XNL :
+            If True, trigger cross-non linear effects.
+        NOISE :
+            If True, trigger the noise calculation.
+        STEP_UPDATE :
+            If True, update component parameters at each spatial
+            space step by calling the _update_variables method.
+        INTRA_COMP_DELAY :
+            If True, take into account the relative time difference,
+            between all waves, that is acquired while propagating
+            in the component.
+        INTRA_PORT_DELAY :
+            If True, take into account the initial relative time
+            difference between channels of all fields but for each port.
+        INTER_PORT_DELAY :
+            If True, take into account the initial relative time
+            difference between channels of all fields of all ports.
+        kerr_effects :
+            A list with a Kerr effect object for each fiber.
+        raman_effects :
+            A list with a Raman effect object for each fiber.
 
         """
-
-        super().__init__(nbr_fibers)
-        if (beta is not None):
-            beta_: Union[List[List[float]], List[List[Callable]]] =\
-                util.make_matrix(beta, nbr_fibers, nbr_fibers)
-        sigma_cross = util.make_matrix(sigma_cross, nbr_fibers, nbr_fibers,
-                                       sym=True)
-        if (kappa is not None):
-            kappa = util.make_tensor(kappa, nbr_fibers, nbr_fibers, 0)
-        V = util.make_list(V, nbr_fibers)
-        n_0 = util.make_list(n_0, nbr_fibers)
-        c2c_spacing = util.make_matrix(c2c_spacing, nbr_fibers, nbr_fibers,
-                                       sym=True)
-        core_radius = util.make_list(core_radius, nbr_fibers)
+        super().__init__(nbr_eqs=nbr_fibers, SHARE_WAVES=False,
+                         prop_dir=[True for i in range(nbr_fibers)],
+                         NOISE=NOISE, STEP_UPDATE=STEP_UPDATE,
+                         INTRA_COMP_DELAY=INTRA_COMP_DELAY,
+                         INTRA_PORT_DELAY=INTRA_PORT_DELAY,
+                         INTER_PORT_DELAY=INTER_PORT_DELAY)
+        kerr_effects_ = util.make_list(kerr_effects, nbr_fibers)
+        raman_effects_ = util.make_list(raman_effects, nbr_fibers)
+        self._asym: List[List[AbstractEffect]] =\
+            [[] for i in range(nbr_fibers)]
+        self._coup: List[List[AbstractEffect]] =\
+            [[] for i in range(nbr_fibers)]
+        self._raman: List[List[AbstractEffect]] =\
+            [[] for i in range(nbr_fibers)]
+        kappa_: List[List[Union[List[float], Callable]]] =\
+            [[[] for i in range(nbr_fibers)] for i in range(nbr_fibers)]
+        beta_: Union[List[float], Callable]
+        beta_1_: Union[float, Callable]
+        beta_2_: Union[float, Callable]
+        crt_kerr: Optional[Kerr]
+        crt_raman: Optional[Union[Raman, RamanApprox]]
+        coup_coeff_: Union[List[float], Callable]
         for i in range(nbr_fibers):
             for j in range(nbr_fibers):
                 if (i != j):
+                    if (XPM or FWM):
+                        crt_kerr = copy.deepcopy(kerr_effects_[i])
+                        if (crt_kerr is not None):
+                            crt_kerr.SPM = False
+                            crt_kerr.XPM = XPM
+                            crt_kerr.FWM = FWM
+                            crt_kerr.sigma = sigma_cross[i][j]
+                            self._add_non_lin_effect(crt_kerr, i, j)
+                    if (XNL):
+                        crt_raman = copy.deepcopy(raman_effects_[i])
+                        if (crt_raman is not None):
+                            crt_raman.self_term = False
+                            crt_raman.cross_term = True
+                            crt_raman.eta = eta_cross[i][j]
+                            self._raman[i].append(crt_raman)
+                            self._add_non_lin_effect(crt_raman, i, j)
                     if (ASYM):
-                        if (beta is not None):
-                            self._effects_lin[i][j].append(
-                                Asymmetry(beta_01=beta_[i][0],
-                                          beta_02=beta_[j][0]))
-                        else:
-                            self._effects_lin[i][j].append(
-                                Asymmetry(medium=medium))
+                        beta_ = beta[i] if callable(beta[i]) else beta[i]
+                        beta_1_ = beta_ if callable(beta_) else beta_[0]
+                        beta_ = beta[j] if callable(beta[j]) else beta[j]
+                        beta_2_ = beta_ if callable(beta_) else beta_[0]
+                        delta_a = AsymmetryCoeff(beta_1=beta_1_,
+                                                 beta_2=beta_2_)
+                        self._asym[i].append(Asymmetry(delta_a))
+                        self._add_lin_effect(self._asym[i][-1], i, j)
                     if (COUP):
-                        if (kappa is not None):
-                            self._effects_all[i][j].append(
-                                Coupling(kappa[i][j]))
-                        else:
-                            same_V = sum(V)/len(V) == V[0]
-                            same_a = (sum(core_radius) / len(core_radius)
-                                      == core_radius[0])
-                            same_n_0 = sum(n_0)/len(n_0) == n_0[0]
-                            if (not (same_V and same_a and same_n_0)):
-                                util.warning_terminal("Automatic calculation "
-                                    "of coupling coefficient assumes same "
-                                    "V, core_radius and n_0 for now, "
-                                    "different ones provided, might lead to "
-                                    "unrealistic results.")
-                            self._effects_all[i][j].append(
-                                Coupling(V=V[i], a=core_radius[i],
-                                         d=c2c_spacing[i][j], n_0=n_0[i]))
-                    if (XPM):
-                        self._effects_non_lin[i][j].append(Kerr(SPM=False,
-                            XPM=True, FWM=False, sigma=sigma_cross[i][j]))
+                        crt_kappa = kappa[i][j]
+                        # not kappa_[i][j] bcs symmetric if self constructing
+                        if (not kappa_[i][j]):
+                            if (crt_kappa is None):
+                                coup_coeff_ = CouplingCoeff(v_nbr=v_nbr[i],
+                                    a=core_radius[i], d=c2c_spacing[i][j],
+                                    ref_index=n_clad)
+                                kappa_[j][i] = coup_coeff_
+                            else:
+                                coup_coeff_ = crt_kappa
+                            kappa_[i][j] = coup_coeff_
+                        self._coup[i].append(Coupling(kappa_[i][j]))
+                        self._add_ind_effect(self._coup[i][-1], i, j)
     # ==================================================================
-    def op_non_lin(self, waves: Array[cst.NPFT], id: int,
-                   corr_wave: Optional[Array[cst.NPFT]] = None
-                   ) -> Array[cst.NPFT]:
+    def __call__(self, waves: np.ndarray, z: float, h: float) -> np.ndarray:
+        res = np.zeros_like(waves, dtype=cst.NPFT)
+        for i in range(len(waves)):
+            res[i] = self.term_ind(waves, i, z)
+
+        return res
+    # ==================================================================
+    def open(self, domain: Domain, *fields: List[Field]) -> None:
+        super().open(domain, *fields)
+        for i in range(len(self._asym)):
+            for asym in self._asym[i]:
+                asym.set(self.id_tracker.waves_in_eq_id(self._center_omega, i))
+        for i in range(len(self._coup)):
+            for coup in self._coup[i]:
+                coup.set(self.id_tracker.waves_in_eq_id(self._center_omega,i))
+        for i in range(len(self._raman)):
+            for raman in self._raman[i]:
+                raman.set()
+    # ==================================================================
+    @sync_waves_decorator
+    def op_non_lin(self, waves: np.ndarray, id: int,
+                   corr_wave: Optional[np.ndarray] = None
+                   ) -> np.ndarray:
         """Non linear operator of the equation."""
-        eq_id = self._eq_id(id)
-        rel_wave_id = self._rel_wave_id(id)
+        eq_id = self.id_tracker.eq_id_of_wave_id(id)
+        rel_wave_id = self.id_tracker.rel_wave_id(id)
         gamma = self._eqs[eq_id][0].gamma[rel_wave_id]
 
-        return (gamma * self._call_main("op", "non_lin", waves, id, corr_wave)
-                + self._call_sub("op", "non_lin", waves, id, corr_wave))
+        return (gamma * self._expr_main("op", "non_lin", waves, id, corr_wave)
+                + self._expr_sub("op", "non_lin", waves, id, corr_wave))
+    # ==================================================================
+    @sync_waves_decorator
+    def term_non_lin(self, waves: np.ndarray, id: int,
+                     corr_wave: Optional[np.ndarray] = None
+                     ) -> np.ndarray:
+        """Non linear operator of the equation."""
+        eq_id = self.id_tracker.eq_id_of_wave_id(id)
+        rel_wave_id = self.id_tracker.rel_wave_id(id)
+        gamma = self._eqs[eq_id][0].gamma[rel_wave_id]
+
+        return (gamma*self._expr_main("term", "non_lin", waves, id, corr_wave)
+                +self._expr_sub("term", "non_lin", waves, id, corr_wave))

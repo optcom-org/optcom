@@ -14,12 +14,12 @@ NPFT = np.clongdouble
 #NPFT = np.complex
 #NP_REAL_FIELD_TYPE = np.longdouble
 
-#
-STR_SEPARATOR_TERMINAL: str = "----------------------------------------------"\
-                              "---------------------------------\n"# 79 charact
 
 
 AUTO_PAD_PLOT: bool = True # pad the different channels array of one field
                     # automatically to display all channel on one graph
 
 DEF_3D_PLOT = "plot_surface"
+
+
+DEFAULT_FIELD_NAME = 'Field'

@@ -16,52 +16,66 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import math
-from typing import Callable, List, Optional, overload, Union
+from typing import Callable, List, Optional, overload, Union, Tuple
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.parameters.abstract_parameter import AbstractParameter
-from optcom.parameters.fiber.v_para import V
+from optcom.utils.callable_container import CallableContainer
 
 
 # Ref: Govind Agrawal, Chapter 2: Pulse Propagation in Fibers,
 # Nonlinear Fiber Optics (Fifth Edition), Academic Press, 2013, Page 34.
 # coefficients = [(coeff, exponant)]
-w_coefficients =[(0.616, 0.0), (1.66, -1.5), (0.987, -6.0)]
+w_coefficients: List[Tuple[float, float]]
+w_coefficients = [(0.616, 0.0), (1.66, -1.5), (0.987, -6.0)]
 
 
 class EffectiveArea(AbstractParameter):
 
-    def __init__(self, core_radius: float = cst.CORE_RADIUS,
-                 NA: Union[float, Array[float], Callable] = cst.NA) -> None:
+    def __init__(self, v_nbr: Union[float, Callable], core_radius: float
+                 ) -> None:
         """Effective area, currently only for single mode.
 
         Parameters
         ----------
+        v_nbr :
+            The V number. If a callable is provided, the
+            variable must be angular frequency. :math:`[ps^{-1}]`
         core_radius :
             The radius of the core. :math:`[\mu m]`
 
         """
         self._core_radius: float = core_radius
-        self._NA: Union[float, Array[float], Callable] = NA
+        self._v_nbr: Union[float, Callable] = v_nbr
     # ==================================================================
     @property
-    def NA(self):
+    def core_radius(self) -> float:
 
-        return NA
+        return self._core_radius
     # ------------------------------------------------------------------
-    @NA.setter
-    def NA(self, NA):
-        self._NA = NA
+    @core_radius.setter
+    def core_radius(self, core_radius: float) -> None:
+
+        self._core_radius = core_radius
+    # ==================================================================
+    @property
+    def v_nbr(self) -> Union[float, Callable]:
+
+        return self._v_nbr
+    # ------------------------------------------------------------------
+    @v_nbr.setter
+    def v_nbr(self, v_nbr: Union[float, Callable]) -> None:
+
+        self._v_nbr = v_nbr
     # ==================================================================
     @overload
     def __call__(self, omega: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
-    def __call__(self, omega: Array[float]) -> Array[float]: ...
+    def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
         """Compute the effective area.
@@ -69,7 +83,7 @@ class EffectiveArea(AbstractParameter):
         Parameters
         ----------
         omega :
-            The angular frequency.  :math:`[rad\cdot ps^{-1}]`
+            The angular frequency. :math:`[rad\cdot ps^{-1}]`
 
         Returns
         -------
@@ -77,44 +91,30 @@ class EffectiveArea(AbstractParameter):
             Value of the effective area. :math:`[\mu m^2]`
 
         """
-        NA = self._NA(omega) if callable(self._NA) else self._NA
+        fct = CallableContainer(EffectiveArea.calc_effective_area,
+                                [self._v_nbr, self._core_radius])
 
-        return EffectiveArea.calc_effective_area(omega, self._core_radius, NA)
-
+        return fct(omega)
     # ==================================================================
     @overload
     @staticmethod
-    def calc_effective_area(omega: float, core_radius: float,
-                            NA: Optional[float], n_core: Optional[float],
-                            n_clad: Optional[float]
-                            ) -> float: ...
+    def calc_effective_area(v_nbr: float, core_radius: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_effective_area(omega: Array[float], core_radius: float,
-                            NA: Optional[Array[float]],
-                            n_core: Optional[Array[float]],
-                            n_clad: Optional[Array[float]]
-                            ) -> Array[float]: ...
+    def calc_effective_area(v_nbr: np.ndarray, core_radius: float
+                            ) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
-    def calc_effective_area(omega, core_radius=cst.CORE_RADIUS, NA=None,
-                            n_core=None, n_clad=None):
-        r"""Calculate the effective area (for now only single mode).
-        [4]_
+    def calc_effective_area(v_nbr, core_radius):
+        r"""Calculate the effective area. [4]_
 
         Parameters
         ----------
-        omega :
-            The angular frequency.  :math:`[rad\cdot ps^{-1}]`
+        v_nbr :
+            The v_nbr number.
         core_radius :
             The radius of the core. :math:`[\mu m]`
-        NA :
-            The numerical aperture.
-        n_core :
-            The refractive index of the core.
-        n_clad :
-            The refractive index of the cladding.
 
         Returns
         -------
@@ -123,7 +123,6 @@ class EffectiveArea(AbstractParameter):
 
         Notes
         -----
-        Considering:
 
         .. math:: A_{eff} = \pi w^2 = \pi \big(a(0.616
                   + 1.66V^{-\frac{2}{3}} + 0.987V^{-6})\big)^2
@@ -135,63 +134,60 @@ class EffectiveArea(AbstractParameter):
            Page 34.
 
         """
-        v_para = V.calc_V(omega, core_radius, NA, n_core, n_clad)
-
-        if (isinstance(omega, float)):
+        if (isinstance(v_nbr, float)):
             res = 0.0
             for coeff in w_coefficients:
-                res += coeff[0] * v_para**(coeff[1])
+                res += coeff[0] * v_nbr**(coeff[1])
             res = cst.PI * (core_radius*res)**2
-
         else:
-            res = np.zeros(omega.shape)
+            res = np.zeros(v_nbr.shape)
             for coeff in w_coefficients:
-                res += coeff[0] * np.power(v_para, coeff[1])
+                res += coeff[0] * np.power(v_nbr, coeff[1])
             res = cst.PI * np.square(core_radius*res)
 
         return res
 
 
 if __name__ == "__main__":
+    """Plot the effective area as a function of the wavelength.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
 
     import math
+    from typing import List
+
     import numpy as np
 
     import optcom.utils.plot as plot
     from optcom.domain import Domain
+    from optcom.parameters.fiber.effective_area import EffectiveArea
+    from optcom.parameters.fiber.v_number import VNumber
     from optcom.parameters.fiber.numerical_aperture import NumericalAperture
+    from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
     # With float
-    omega = Domain.lambda_to_omega(1552.0)
-    core_radius = 5.0
-    n_core = 1.43
-    n_clad = 1.425
-    NA = math.sqrt(n_core**2 - n_clad**2)
-
-    effective_area = EffectiveArea(core_radius=core_radius, NA=NA)
-    print(effective_area(omega))
-    print(EffectiveArea.calc_effective_area(omega, core_radius=core_radius,
-                                            n_core=n_core, n_clad=n_clad))
-
-    effective_area = EffectiveArea(core_radius=core_radius, NA=NA)
-    print(effective_area(omega))
-    print(EffectiveArea.calc_effective_area(omega, core_radius=core_radius,
-                                            NA=NA))
-
+    omega: float = Domain.lambda_to_omega(1552.0)
+    core_radius: float = 5.0
+    n_clad: float = 1.44
+    sellmeier: Sellmeier = Sellmeier("sio2")
+    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
+    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
+    eff_area: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
+    print(eff_area(omega))
+    v_nbr: float = v_nbr_inst(omega)
+    eff_area = EffectiveArea(v_nbr, core_radius)
+    print(eff_area(omega))
     # With numpy ndarray
-    lambdas = np.linspace(900, 1550, 100)
-    omegas = Domain.lambda_to_omega(lambdas)
-    n_core = np.linspace(1.42, 1.43, 100)
-    n_clad = np.linspace(1.415, 1.425, 100)
-    NA = NumericalAperture.calc_NA(n_core, n_clad)
+    lambdas: np.ndarray = np.linspace(900, 1550, 100)
+    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    eff_area = EffectiveArea(v_nbr_inst, core_radius)
+    res: np.ndarray = eff_area(omegas)
+    x_labels: List[str] = ['Lambda']
+    y_labels: List[str] = [r'Effective Area, $\,\mu m^2$']
+    plot_titles: List[str] = ["Effective Area as a function of the wavelength "
+                              "\n for Silica core with constant cladding "
+                              "refractive index."]
 
-    effective_area = EffectiveArea(core_radius=core_radius, NA=NA)
-    res = effective_area(omegas)
-
-    x_labels = ['Lambda']
-    y_labels = ['Effective Area']
-    plot_titles = ["Effective Area as a function of the wavelength"]
-
-    plot.plot2d(lambdas, res, x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=0.0,
-                y_ranges=[2.5*1e-20, 3.5*1e-20])
+    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(35., 110.)])

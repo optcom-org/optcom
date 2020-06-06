@@ -17,14 +17,17 @@
 
 from typing import Callable, List, Optional, Union
 
-from nptyping import Array
+import numpy as np
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
+from optcom.domain import Domain
+from optcom.effects.abstract_effect import AbstractEffect
 from optcom.effects.kerr import Kerr
-from optcom.effects.raman import Raman
-from optcom.effects.self_steepening import SelfSteepening
+from optcom.effects.raman_approx import RamanApprox
+from optcom.effects.self_steepening_approx import SelfSteepeningApprox
 from optcom.equations.abstract_nlse import AbstractNLSE
+from optcom.field import Field
 
 
 class ANLSE(AbstractNLSE):
@@ -34,6 +37,8 @@ class ANLSE(AbstractNLSE):
 
     Notes
     -----
+
+    Equations :
 
     NLSE approximation 1:
 
@@ -67,6 +72,8 @@ class ANLSE(AbstractNLSE):
               \frac{\partial A^{*}_j}{\partial t}
               + \eta \big(i S - T_R\big) \sum_{k\neq j}
               \frac{\partial |A_k|^2}{\partial t} \Bigg] A_j
+
+    Implementation:
 
     NLSE approximation 1:
 
@@ -118,18 +125,30 @@ class ANLSE(AbstractNLSE):
     """
 
     def __init__(self, alpha: Optional[Union[List[float], Callable]] = None,
-                 alpha_order: int = 1,
+                 alpha_order: int = 0,
                  beta: Optional[Union[List[float], Callable]] = None,
                  beta_order: int = 2,
                  gamma: Optional[Union[float, Callable]] = None,
-                 sigma: float = cst.KERR_COEFF, eta: float = cst.XPM_COEFF,
+                 sigma: float = cst.XPM_COEFF, eta: float = cst.XNL_COEFF,
                  T_R: float = cst.RAMAN_COEFF,
                  core_radius: float = cst.CORE_RADIUS,
-                 NA: Union[float, Callable] = cst.NA, ATT: bool = True,
+                 clad_radius: float = cst.CLAD_RADIUS,
+                 n_core: Optional[Union[float, Callable]] = None,
+                 n_clad: Optional[Union[float, Callable]] = None,
+                 NA: Optional[Union[float, Callable]] = None,
+                 v_nbr: Optional[Union[float, Callable]] = None,
+                 eff_area: Optional[Union[float, Callable]] = None,
+                 nl_index: Optional[Union[float, Callable]] = None,
+                 medium_core: str = cst.FIBER_MEDIUM_CORE,
+                 medium_clad: str = cst.FIBER_MEDIUM_CLAD,
+                 temperature: float = cst.TEMPERATURE, ATT: bool = True,
                  DISP: bool = True, SPM: bool = True, XPM: bool = False,
                  FWM: bool = False, SS: bool = False, RS: bool = False,
+                 XNL: bool = False, NOISE: bool = True,
                  approx_type: int = cst.DEFAULT_APPROX_TYPE,
-                 medium: str = cst.DEF_FIBER_MEDIUM) -> None:
+                 UNI_OMEGA: bool = True, STEP_UPDATE: bool = False,
+                 INTRA_COMP_DELAY: bool = True, INTRA_PORT_DELAY: bool = True,
+                 INTER_PORT_DELAY: bool = False) -> None:
         r"""
         Parameters
         ----------
@@ -155,16 +174,42 @@ class ANLSE(AbstractNLSE):
             provided, variable must be angular frequency.
             :math:`[ps^{-1}]`
         sigma :
-            Positive term multiplying the XPM term of the NLSE
+            Positive term multiplying the XPM terms of the NLSE.
         eta :
-            Positive term multiplying the XPM in other non linear
-            terms of the NLSE
+            Positive term multiplying the cross-non-linear terms of the
+            NLSE.
         T_R :
             The raman coefficient. :math:`[]`
         core_radius :
             The radius of the core. :math:`[\mu m]`
+        clad_radius :
+            The radius of the cladding. :math:`[\mu m]`
+        n_core :
+            The refractive index of the core.  If a callable is
+            provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
+        n_clad :
+            The refractive index of the clading.  If a callable is
+            provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
         NA :
-            The numerical aperture.
+            The numerical aperture.  If a callable is provided, variable
+            must be angular frequency. :math:`[ps^{-1}]`
+        v_nbr :
+            The V number.  If a callable is provided, variable must be
+            angular frequency. :math:`[ps^{-1}]`
+        eff_area :
+            The effective area.  If a callable is provided, variable
+            must be angular frequency. :math:`[ps^{-1}]`
+        nl_index :
+            The non-linear coefficient.  If a callable is provided,
+            variable must be angular frequency. :math:`[ps^{-1}]`
+        medium_core :
+            The medium of the fiber core.
+        medium_clad :
+            The medium of the fiber cladding.
+        temperature :
+            The temperature of the fiber. :math:`[K]`
         ATT :
             If True, trigger the attenuation.
         DISP :
@@ -179,34 +224,65 @@ class ANLSE(AbstractNLSE):
             If True, trigger the self-steepening.
         RS :
             If True, trigger the Raman scattering.
+        XNL :
+            If True, trigger cross-non linear effects.
+        NOISE :
+            If True, trigger the noise calculation.
         approx_type :
             The type of the NLSE approximation.
-        medium :
-            The main medium of the fiber.
+        UNI_OMEGA :
+            If True, consider only the center omega for computation.
+            Otherwise, considered omega discretization.
+        STEP_UPDATE :
+            If True, update fiber parameters at each spatial sub-step.
+        INTRA_COMP_DELAY :
+            If True, take into account the relative time difference,
+            between all waves, that is acquired while propagating
+            in the component.
+        INTRA_PORT_DELAY :
+            If True, take into account the initial relative time
+            difference between channels of all fields but for each port.
+        INTER_PORT_DELAY :
+            If True, take into account the initial relative time
+            difference between channels of all fields of all ports.
 
         """
         super().__init__(alpha, alpha_order, beta, beta_order, gamma,
-                         core_radius, NA, ATT, DISP, medium)
+                         core_radius, clad_radius, n_core, n_clad, NA, v_nbr,
+                         eff_area, nl_index, medium_core, medium_clad,
+                         temperature, ATT, DISP, NOISE, UNI_OMEGA, STEP_UPDATE,
+                         INTRA_COMP_DELAY, INTRA_PORT_DELAY, INTER_PORT_DELAY)
+        self._kerr: Optional[Kerr] = None
         if (XPM or SPM or FWM):
-            self._effects_non_lin.append(Kerr(SPM, XPM, FWM, sigma))
+            self._kerr = Kerr(SPM, XPM, FWM, sigma)
+            self._add_non_lin_effect(self._kerr, 0, 0)
+        self._self_steep: Optional[SelfSteepeningApprox] = None
         if (SS):
-            self._effects_non_lin.append(SelfSteepening(eta, approx_type, XPM))
+            self._self_steep = SelfSteepeningApprox(True, XNL, eta,
+                                                    approx_type)
+            self._add_non_lin_effect(self._self_steep, 0, 0)
+        self._raman: Optional[RamanApprox] = None
         if (RS):
-            self._effects_non_lin.append(Raman(T_R, eta, approx_type, XPM))
-        self._op_type = "_approx"
+            self._raman = RamanApprox(T_R, True, XNL, eta, approx_type)
+            self._add_non_lin_effect(self._raman, 0, 0)
     # ==================================================================
-    def op_non_lin(self, waves: Array[cst.NPFT], id: int,
-                   corr_wave: Optional[Array[cst.NPFT]] = None
-                   ) -> Array[cst.NPFT]:
+    def open(self, domain: Domain, *fields: List[Field]) -> None:
+        super().open(domain, *fields)
+        if (self._self_steep is not None):
+            self._self_steep.set(self._center_omega)
+    # ==================================================================
+    def op_non_lin(self, waves: np.ndarray, id: int,
+                   corr_wave: Optional[np.ndarray] = None
+                   ) -> np.ndarray:
         r"""Represent the non linear effects of the approximated NLSE.
         """
 
         return self._gamma[id] * super().op_non_lin(waves, id, corr_wave)
     # ==================================================================
-    def term_non_lin(self, waves: Array[cst.NPFT], id: int,
-                   corr_wave: Optional[Array[cst.NPFT]] = None
-                   ) -> Array[cst.NPFT]:
+    def term_non_lin(self, waves: np.ndarray, id: int, z: float,
+                   corr_wave: Optional[np.ndarray] = None
+                   ) -> np.ndarray:
         r"""Represent the non linear effects of the approximated NLSE.
         """
 
-        return self._gamma[id] * super().term_non_lin(waves, id, corr_wave)
+        return self._gamma[id] * super().term_non_lin(waves, id, z, corr_wave)

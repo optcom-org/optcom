@@ -1,0 +1,372 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python3.7" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python3.7" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>optcom.equations.boundary_conditions package &mdash; Optcom 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="optcom.equations.convergence_checker package" href="optcom.equations.convergence_checker.html" />
+    <link rel="prev" title="optcom.equations package" href="optcom.equations.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Optcom
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_perso.html">Modules Description</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">optcom</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="optcom.html">optcom package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="optcom.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="optcom.components.html">optcom.components package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.effects.html">optcom.effects package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="optcom.equations.html">optcom.equations package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.parameters.html">optcom.parameters package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.solvers.html">optcom.solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.utils.html">optcom.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.config">optcom.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.domain">optcom.domain module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.field">optcom.field module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.layout">optcom.layout module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Optcom</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">optcom</a> &raquo;</li>
+        
+          <li><a href="optcom.html">optcom package</a> &raquo;</li>
+        
+          <li><a href="optcom.equations.html">optcom.equations package</a> &raquo;</li>
+        
+      <li>optcom.equations.boundary_conditions package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/optcom.equations.boundary_conditions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="optcom-equations-boundary-conditions-package">
+<h1>optcom.equations.boundary_conditions package<a class="headerlink" href="#optcom-equations-boundary-conditions-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-optcom.equations.boundary_conditions.abstract_boundary_conditions">
+<span id="optcom-equations-boundary-conditions-abstract-boundary-conditions-module"></span><h2>optcom.equations.boundary_conditions.abstract_boundary_conditions module<a class="headerlink" href="#module-optcom.equations.boundary_conditions.abstract_boundary_conditions" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.boundary_conditions.abstract_boundary_conditions.</code><code class="sig-name descname">AbstractBoundaryConditions</code><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Define a common framework for boundary conditions.</p>
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.apply_cond">
+<em class="property">abstract </em><code class="sig-name descname">apply_cond</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves</span></em>, <em class="sig-param"><span class="n">noises</span></em>, <em class="sig-param"><span class="n">upper_bound</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.apply_cond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.dec_iter">
+<code class="sig-name descname">dec_iter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.dec_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.get_input">
+<em class="property">abstract </em><code class="sig-name descname">get_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves</span></em>, <em class="sig-param"><span class="n">noises</span></em>, <em class="sig-param"><span class="n">upper_bound</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.get_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.get_iter">
+<code class="sig-name descname">get_iter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.get_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.get_output">
+<em class="property">abstract </em><code class="sig-name descname">get_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves_f</span></em>, <em class="sig-param"><span class="n">waves_b</span></em>, <em class="sig-param"><span class="n">noises_f</span></em>, <em class="sig-param"><span class="n">noises_b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.get_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.inc_iter">
+<code class="sig-name descname">inc_iter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.inc_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">domain</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.equations.boundary_conditions.abstract_boundary_conditions.apply_cond_decorator">
+<code class="sig-prename descclassname">optcom.equations.boundary_conditions.abstract_boundary_conditions.</code><code class="sig-name descname">apply_cond_decorator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">apply_cond</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.apply_cond_decorator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-optcom.equations.boundary_conditions.boundary_conditions_ampnlse">
+<span id="optcom-equations-boundary-conditions-boundary-conditions-ampnlse-module"></span><h2>optcom.equations.boundary_conditions.boundary_conditions_ampnlse module<a class="headerlink" href="#module-optcom.equations.boundary_conditions.boundary_conditions_ampnlse" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.boundary_conditions.boundary_conditions_ampnlse.</code><code class="sig-name descname">BoundaryConditionsAmpNLSE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">AmpNLSE</span></em>, <em class="sig-param"><span class="n">REFL_SEED</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">REFL_PUMP</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">PRE_PUMP_PROP</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions" title="optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.equations.boundary_conditions.abstract_boundary_conditions.AbstractBoundaryConditions</span></code></a></p>
+<p>Boundary conditions for AmpNLSE equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AmpNLSE</strong> -- The equation to which the boundary conditions are linked.</p></li>
+<li><p><strong>REFL_SEED</strong> (<em>bool</em>) -- If True, take into account the reflected seed waves for
+computation.</p></li>
+<li><p><strong>REFL_PUMP</strong> (<em>bool</em>) -- If True, take into account the reflected pump waves for
+computation.</p></li>
+<li><p><strong>PRE_PUMP_PROP</strong> -- If True, propagate only the pump the first iteration and
+then add the seed at the second iteration.  Otherwise,
+consider both pump and seed simultaneously.  Results will be
+consistent but setting this flag to True can have a
+significant impact on the convergence speed.  Without
+knowledge of the algorithm, it is adviced to let it to
+False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.apply_cond">
+<code class="sig-name descname">apply_cond</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.apply_cond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.get_input">
+<code class="sig-name descname">get_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves</span></em>, <em class="sig-param"><span class="n">noises</span></em>, <em class="sig-param"><span class="n">upper_bound</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.get_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the initial waves and noises and return the first
+guess.  The first guess is the pump waves and noises only, the
+seeds are considered later by the boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> -- The initial values of the wave envelopes.</p></li>
+<li><p><strong>noises</strong> -- The initial values of the noise powers.</p></li>
+<li><p><strong>upper_bound</strong> -- If True, considered first guess at the end z=L.  Otherwise,
+considered at the end z=0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The first guesses of wave envelopes and noise powers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.get_output">
+<code class="sig-name descname">get_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves_f</span></em>, <em class="sig-param"><span class="n">waves_b</span></em>, <em class="sig-param"><span class="n">noises_f</span></em>, <em class="sig-param"><span class="n">noises_b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.get_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ouput of the waves and noises depending on the
+initial waves and noises saved in get_input().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves_f</strong> -- The final values of the wave envelopes at z=0.</p></li>
+<li><p><strong>waves_b</strong> -- The final values of the wave envelopes at z=L.</p></li>
+<li><p><strong>noises_f</strong> -- The final values of the noise powers at z=0.</p></li>
+<li><p><strong>noises_b</strong> -- The final values of the noise powers at z=L.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output of wave envelopes and noise powers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.boundary_conditions.boundary_conditions_ampnlse.BoundaryConditionsAmpNLSE.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.equations.boundary_conditions">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-optcom.equations.boundary_conditions" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="optcom.equations.convergence_checker.html" class="btn btn-neutral float-right" title="optcom.equations.convergence_checker package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="optcom.equations.html" class="btn btn-neutral float-left" title="optcom.equations package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Sacha Medaer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

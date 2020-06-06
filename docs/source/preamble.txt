@@ -1,0 +1,18 @@
+% ---- new commands ----------
+\newcommand*\mean[1]{\bar{#1}}
+\newcommand*\vect[1]{\mathbf{#1}}
+
+% -------- complex -----------
+%\newcommand*\conj[1]{\bar{#1}}
+\newcommand*\conj[1]{#1^{*}}
+
+% ------- operator ----------
+\newcommand*\op[1]{\mathcal{#1}}
+\newcommand*\fftop[1]{\hat{\op{#1}}}
+\newcommand*\fullop[1]{\bar{\op{#1}}}
+\newcommand*\fullfftop[1]{\bar{\fftop{#1}}}
+% -------- ft ----------
+\newcommand*\ft[1]{\hat{#1}}
+\newcommand*\fft{\mathcal{F}}
+\newcommand*\ifft{\fft^{-1}}
+

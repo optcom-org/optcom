@@ -19,34 +19,73 @@ import copy
 from typing import Callable, List, Optional
 
 import numpy as np
-from nptyping import Array
 
+import optcom.config as cfg
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
-from optcom.equations.abstract_equation import AbstractEquation
+from optcom.equations.abstract_field_equation import AbstractFieldEquation
+from optcom.equations.ampgnlse import AmpGNLSE
+from optcom.equations.cgnlse import CGNLSE
+from optcom.equations.gnlse import GNLSE
 from optcom.utils.fft import FFT
 from optcom.solvers.abstract_solver import AbstractSolver
+
+
+# Exceptions
+class NLSESolverError(Exception):
+    pass
+
+class RK4IPGNLSEError(NLSESolverError):
+    pass
 
 
 class NLSESolver(AbstractSolver):
 
     _default_method = cst.DFT_NLSEMETHOD
 
-    def __init__(self, f: AbstractEquation,
-                 method: Optional[str] = cst.DFT_NLSEMETHOD):
+    def __init__(self, f: AbstractFieldEquation,
+                 method: Optional[str] = cst.DFT_NLSEMETHOD) -> None:
         """
         Parameters
         ----------
-        f : AbstractEquation
+        f : AbstractFieldEquation
             The function to compute.
         method :
             The computation method.
+
         """
-        super().__init__(f, method)
+        # Special case for gnlse and rk4ip method
+        method_: Optional[str] = ''
+        is_gnlse_eq: bool = (isinstance(f, GNLSE) or isinstance(f, AmpGNLSE))
+        if (is_gnlse_eq and (method == "rk4ip") and cfg.RK4IP_OPTI_GNLSE):
+            method_ = "rk4ip_gnlse"
+        else:
+            method_ = method
+        super().__init__(f, method_)
+    # ==================================================================
+    def __call__(self, vectors: np.ndarray, z: float, h: float) -> np.ndarray:
+        """
+        Parameters
+        ----------
+        vectors :
+            The value of the variables at the considered time/
+            space step.
+        h :
+            The step size.
+        z :
+            The variable value. (time, space, ...)
+
+        """
+        # If not change, put this in parent __call__ method
+        vectors_ = np.array([vectors]) if (vectors.ndim == 1) else vectors
+        res = self._method(self.f, vectors_, z, h)
+        res_ = res[0] if (vectors.ndim == 1) else res
+
+        return res_
     # ==================================================================
     @staticmethod
-    def ssfm(f: AbstractEquation, waves: Array[cst.NPFT], h: float,
-             z: float) -> Array[cst.NPFT]:
+    def ssfm(f: AbstractFieldEquation, waves: np.ndarray, z: float, h: float
+             ) -> np.ndarray:
         r"""Split step Fourier method.
 
         Parameters
@@ -56,10 +95,10 @@ class NLSESolver(AbstractSolver):
         waves :
             The value of the unknown (waves) at the considered
             space step.
-        h :
-            The step size.
         z :
             The current value of the space variable.
+        h :
+            The step size.
 
         Returns
         -------
@@ -68,29 +107,44 @@ class NLSESolver(AbstractSolver):
 
         Notes
         -----
-        Having the initial system of differential equations:
 
-        .. math:: \begin{alignat}{1}
-                    A^{L} &= \mathcal{F}^{-1}\big\{\exp
-                    \big(h\hat\mathcal{{D}}\big)\mathcal{F}\{A(z,T)\}
-                    \big\}\\
-                    A(z+h,T) &= \exp\big(h\hat\mathcal{{N}}(A(z,T))
-                    \big)A^{L}
-                  \end{alignat}
+        Equations:
 
-        for :math:`j = 1, \ldots, K` where :math:`K` is the number of
-        channels.
+        .. math::
+              \begin{align}
+                A_j^{N} &= \exp\Big(h\hat{\mathcal{N}}\big(A_1(z,T),
+                    \ldots, A_j(z,T), \ldots, A_K(z,T)\big)\Big)A_j(z,T)
+                    &\forall j=1,\ldots,K\\
+                A_j(z+h,T) &= \exp\big(h\mathcal{D}\big)A_j^{N} &\forall
+                    j=1,\ldots,K
+              \end{align}
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                A_j^{N} &= \exp\Big(h\hat{\mathcal{N}\big(A_1(z),\ldots,
+                    A_j(z), \ldots, A_K(z)\big)\Big)  A_j(z) &\forall
+                    j=1,\ldots,K\\
+                A_j(z+h) &= \mathcal{F}^{-1}\Big\{\exp\Big(h
+                    \hat{\mathcal{D}}\Big)\mathcal{F}
+                    \{A_j^{N}(z)\}\Big\} &\forall j=1,\ldots,K
+              \end{align}
+
+        where :math:`K` is the number of channels.
 
         """
+        A_N = np.zeros_like(waves)
         for i in range(len(waves)):
-            waves[i] = f.exp_term_non_lin(waves, i, h, waves[i])
-            waves[i] = f.exp_term_lin(waves, i, h)
+            A_N[i] = f.exp_term_non_lin(waves, i, z, h, waves[i])
+        for i in range(len(waves)):
+            waves[i] = f.exp_term_lin(A_N, i, z, h)
 
         return waves
     # ==================================================================
     @staticmethod
-    def ssfm_symmetric(f: AbstractEquation, waves: Array[cst.NPFT], h: float,
-                       z: float) -> Array[cst.NPFT]:
+    def ssfm_symmetric(f: AbstractFieldEquation, waves: np.ndarray, z: float,
+                       h: float) -> np.ndarray:
         r"""Symmetric split step Fourier method.
 
         Parameters
@@ -100,10 +154,10 @@ class NLSESolver(AbstractSolver):
         waves :
             The value of the unknown (waves) at the considered
             space step.
-        h :
-            The step size.
         z :
             The current value of the space variable.
+        h :
+            The step size.
 
         Returns
         -------
@@ -112,34 +166,52 @@ class NLSESolver(AbstractSolver):
 
         Notes
         -----
-        Having the initial system of differential equations:
 
-        .. math:: \begin{alignat}{1}
-                    A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
-                    A_j^{N} &= \exp\Big(h\hat\mathcal{{N}}
-                    \big(A_1(z), \ldots, A_K(z)\big)\Big)  A_j^{L}\\
-                    A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
-                  \end{alignat}
+        Equations:
 
-        for :math:`j = 1, \ldots, K` where :math:`K` is the number of
-        channels.
+        .. math::
+              \begin{align}
+                A_j^{L} &= \exp\Big(\frac{h}{2}\mathcal{D}\Big)A_j(z,T)
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= A_j^{L} + h\bar{\mathcal{N}}\big(A_1(z, T),
+                    \ldots, A_j(z, T), \ldots, A_K(z, T)\big)
+                    &\forall j=1,\ldots,K\\
+                A_j(z+h,T) &=  \exp\Big(\frac{h}{2}\mathcal{D}\Big)
+                    A_j^{N} &\forall j=1,\ldots,K
+              \end{align}
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= \exp\Big(h\hat{\mathcal{N}}\big(A_1(z, T),
+                    \ldots, A_j(z), \ldots, A_K(z)\big)\Big)  A_j^{L}
+                    &\forall j=1,\ldots,K \\
+                A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+                    &\forall j=1,\ldots,K
+              \end{align}
+
+        where :math:`K` is the number of channels.
 
         """
         h_h = 0.5 * h
-        A_L = np.zeros(waves.shape, dtype=cst.NPFT)
+        A_L = np.zeros_like(waves)
+        A_N = np.zeros_like(waves)
         for i in range(len(waves)):
-            A_L[i] = f.exp_term_lin(waves, i, h_h)
+            A_L[i] = f.exp_term_lin(waves, i, z, h_h)
+            A_N[i] = f.exp_term_non_lin(waves, i, z, h, A_L[i])
         for i in range(len(waves)):
-            waves[i] = f.exp_term_non_lin(waves, i, h, A_L[i])
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            waves[i] = f.exp_term_lin(A_N, i, z, h_h)
 
         return waves
     # ==================================================================
     @staticmethod
-    def ssfm_reduced(f: AbstractEquation, waves: Array[cst.NPFT], h: float,
-                     z: float) -> Array[cst.NPFT]:
+    def ssfm_reduced(f: AbstractFieldEquation, waves: np.ndarray, z: float,
+                     h: float) -> np.ndarray:
         r"""Reduced split step Fourier method.
 
         Parameters
@@ -149,10 +221,10 @@ class NLSESolver(AbstractSolver):
         waves :
             The value of the unknown (waves) at the considered
             space step.
-        h :
-            The step size.
         z :
             The current value of the space variable.
+        h :
+            The step size.
 
         Returns
         -------
@@ -161,33 +233,52 @@ class NLSESolver(AbstractSolver):
 
         Notes
         -----
-        Having the initial system of differential equations:
 
-        .. math:: \begin{alignat}{1}
-                    A^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A(z,T)\}\Big\}\\
-                    A^{N} &= \exp\big(h\hat\mathcal{{N}}(A^{L})\big) A^{L}\\
-                    A(z+h,T) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A^{N}\}\Big\}
-                  \end{alignat}
+        Equations:
 
-        for :math:`j = 1, \ldots, K` where :math:`K` is the number of
-        channels.
+        .. math::
+              \begin{align}
+                A_j^{L} &= \exp\Big(\frac{h}{2}\mathcal{D}\Big)A_j(z,T)
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= A_j^{L} + h\bar{\mathcal{N}}(A_1^{L},\ldots,
+                    A_j^{L}, \ldots, A_K^{L}) &\forall j=1,\ldots,K\\
+                A_j(z+h,T) &=  \exp\Big(\frac{h}{2}\mathcal{D}\Big)
+                    A_j^{N} &\forall j=1,\ldots,K
+              \end{align}
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= \exp\Big(h\hat{\mathcal{N}}\big(A_1^{L},
+                    \ldots, A_j^{L}, \ldots, A_K^{L}\big)\Big)  A_j^{L}
+                    &\forall j=1,\ldots,K\\
+                A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+                    &\forall j=1,\ldots,K
+              \end{align}
+
+        where :math:`K` is the number of channels.
 
         """
         h_h = 0.5 * h
-        A_L = np.zeros(waves.shape, dtype=cst.NPFT)
+        A_L = np.zeros_like(waves)
+        A_N = np.zeros_like(waves)
         for i in range(len(waves)):
-            A_L[i] = f.exp_term_lin(waves, i, h_h)
+            A_L[i] = f.exp_term_lin(waves, i, z, h_h)
         for i in range(len(waves)):
-            waves[i] = f.exp_term_non_lin(A_L, i, h, A_L[i])
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            A_N[i] = f.exp_term_non_lin(A_L, i, z, h, A_L[i])
+        for i in range(len(waves)):
+            waves[i] = f.exp_term_lin(A_N, i, z, h_h)
 
         return waves
     # ==================================================================
     @staticmethod
-    def ssfm_opti_reduced(f: AbstractEquation, waves: Array[cst.NPFT],
-                          h: float, z: float) -> Array[cst.NPFT]:
+    def ssfm_opti_reduced(f: AbstractFieldEquation, waves: np.ndarray,
+                          z: float, h: float) -> np.ndarray:
         r"""Optimized reduced split step Fourier method.
 
         Parameters
@@ -197,10 +288,10 @@ class NLSESolver(AbstractSolver):
         waves :
             The value of the unknown (waves) at the considered
             space step.
-        h :
-            The step size.
         z :
             The current value of the space variable.
+        h :
+            The step size.
 
         Returns
         -------
@@ -209,35 +300,51 @@ class NLSESolver(AbstractSolver):
 
         Notes
         -----
-        Having the initial system of differential equations:
 
-        .. math:: \begin{alignat}{1}
-                    A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                        \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
-                    A_j^{N} &= \exp\Big(h\hat\mathcal{{N}}\big(A_1^{N}, \ldots,
-                    A_{j-1}^{N}, A_{j}^{L}, \ldots, A_K^{L}\big)\Big)
-                    A_j^{L}\\
-                    A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
-                  \end{alignat}
+        Equations:
 
-        for :math:`j = 1, \ldots, K` where :math:`K` is the number of
-        channels.
+        .. math::
+              \begin{align}
+                A_j^{L} &= \exp\Big(\frac{h}{2}\mathcal{D}\Big)A_j(z,T)
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= A_j^{L} + h\bar{\mathcal{N}}(A_1^{N},\ldots,
+                    A_{j-1}^{N}, A_{j}^{L}, \ldots, A_K^{L})
+                    &\forall j=1,\ldots,K\\
+                A_j(z+h,T) &=  \exp\Big(\frac{h}{2}\mathcal{D}\Big)
+                    A_j^{N} &\forall j=1,\ldots,K
+              \end{align}
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= \exp\Big(h\hat{\mathcal{N}}\big(A_1^{N},
+                    \ldots, A_{j-1}^{N}, A_{j}^{L}, \ldots,
+                    A_K^{L}\big)\Big) A_j^{L} &\forall j=1,\ldots,K\\
+                A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}} \Big)\mathcal{F}\{A_j^{N}\}\Big\}
+                    &\forall j=1,\ldots,K
+              \end{align}
+
+        where :math:`K` is the number of channels.
 
         """
         h_h = 0.5 * h
         for i in range(len(waves)):
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            waves[i] = f.exp_term_lin(waves, i, z, h_h)
         for i in range(len(waves)):
-            waves[i] = f.exp_term_non_lin(waves, i, h, waves[i])
+            waves[i] = f.exp_term_non_lin(waves, i, z, h, waves[i])
         for i in range(len(waves)):
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            waves[i] = f.exp_term_lin(waves, i, z, h_h)
 
         return waves
     # ==================================================================
     @staticmethod
-    def ssfm_super_sym(f: AbstractEquation, waves: Array[cst.NPFT], h: float,
-                       z: float) -> Array[cst.NPFT]:
+    def ssfm_super_sym(f: AbstractFieldEquation, waves: np.ndarray, z: float,
+                       h: float) -> np.ndarray:
         r"""Super symmetric split step Fourier method.
 
         Parameters
@@ -247,10 +354,10 @@ class NLSESolver(AbstractSolver):
         waves :
             The value of the unknown (waves) at the considered
             space step.
-        h :
-            The step size.
         z :
             The current value of the space variable.
+        h :
+            The step size.
 
         Returns
         -------
@@ -259,41 +366,61 @@ class NLSESolver(AbstractSolver):
 
         Notes
         -----
-        Having the initial system of differential equations:
 
-        .. math:: \begin{alignat}{1}
-                    A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
-                    A_j^{N'} &= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
-                    \big(A_1^{L}, \ldots, A_K^{L}\big)\Big)  A_j^{L}\\
-                    A_i^{N} &= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
-                    \big(A_1^{N'}, \ldots, A_{i}^{N}, A_{i+1}^{N},
-                    \ldots, A_K^{N}\big)\Big)  A_j^{L}\\
-                    A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
-                  \end{alignat}
+        Equations:
 
-        for :math:`j = 1, \ldots, K` and :math:`i = K, \ldots, 1`
+        .. math::
+              \begin{align}
+                A_j^{L} &= \exp\Big(\frac{h}{2}\mathcal{D}\Big)A_j(z, T)
+                    &\forall j=1,\ldots,K\\
+                A_j^{N'} &= A_j^{L} + \frac{h}{2}\bar{\mathcal{N}}
+                    \big(A_1^{L}, \ldots, A_K^{L}\big)
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= A_j^{N'} + \frac{h}{2}\bar{\mathcal{N}}\big(
+                    A_1^{N'}, \ldots, A_{j}^{N'}, A_{j+1}^{N},
+                    \ldots, A_K^{N}\big) &\forall j=K,\ldots,1\\
+                A_j(z+h, T) &=  \exp\Big(\frac{h}{2}\hat{\mathcal{D}}
+                    \Big)A_j^{N} &\forall j=1,\ldots,K
+              \end{align}
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}
+                    &\forall j=1,\ldots,K\\
+                A_j^{N'} &= \exp\Big(\frac{h}{2}\hat{\mathcal{N}}
+                    \big(A_1^{L}, \ldots, A_K^{L}\big)\Big)  A_j^{L}
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= \exp\Big(\frac{h}{2}\hat{\mathcal{N}}\big(
+                    A_1^{N'}, \ldots, A_{j}^{N'}, A_{j+1}^{N},\ldots,
+                    A_K^{N}\big)\Big)  A_j^{N'} &\forall j=K,\ldots,1\\
+                A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+                    &\forall j=1,\ldots,K
+              \end{align}
+
         where :math:`K` is the number of channels.
 
         """
         h_h = 0.5 * h
-        A_L = np.zeros(waves.shape, dtype=cst.NPFT)
+        A_L = np.zeros_like(waves)
         for i in range(len(waves)):
-            A_L[i] = f.exp_term_lin(waves, i, h_h)
+            A_L[i] = f.exp_term_lin(waves, i, z, h_h)
         for i in range(len(waves)-1):
-            waves[i] = f.exp_term_non_lin(A_L, i, h_h, A_L[i])
-        waves[-1] = f.exp_term_non_lin(A_L, len(A_L)-1, h, A_L[-1])
+            waves[i] = f.exp_term_non_lin(A_L, i, z, h_h, A_L[i])
+        waves[-1] = f.exp_term_non_lin(A_L, len(A_L)-1, z, h, A_L[-1])
         for i in range(len(waves)-2, -1, -1):
-            waves[i] = f.exp_term_non_lin(waves, i, h_h, waves[i])
+            waves[i] = f.exp_term_non_lin(waves, i, z, h_h, waves[i])
         for i in range(len(waves)):
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            waves[i] = f.exp_term_lin(waves, i, z, h_h)
 
         return waves
     # ==================================================================
     @staticmethod
-    def ssfm_opti_super_sym(f: AbstractEquation, waves: Array[cst.NPFT],
-                            h: float, z: float) -> Array[cst.NPFT]:
+    def ssfm_opti_super_sym(f: AbstractFieldEquation, waves: np.ndarray,
+                            z: float, h: float) -> np.ndarray:
         r"""Optimized super symmetric split step Fourier method.
 
         Parameters
@@ -303,10 +430,10 @@ class NLSESolver(AbstractSolver):
         waves :
             The value of the unknown (waves) at the considered
             space step.
-        h :
-            The step size.
         z :
             The current value of the space variable.
+        h :
+            The step size.
 
         Returns
         -------
@@ -315,155 +442,342 @@ class NLSESolver(AbstractSolver):
 
         Notes
         -----
-        Having the initial system of differential equations:
 
-        .. math:: \begin{alignat}{1}
-                    A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}\\
-                    A_j^{N'} &= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
-                    \big(A_1^{N'}, \ldots, A_{j-1}^{N'}, A_{j}^{L},
-                    \ldots, A_K^{L}\big)\Big)  A_j^{L}\\
-                    A_i^{N} &= \exp\Big(\frac{h}{2}\hat\mathcal{{N}}
-                    \big(A_1^{N'}, \ldots, A_{i}^{N'}, A_{i+1}^{N},
-                    \ldots, A_K^{N}\big)\Big)  A_j^{L} \\
-                    A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
-                    \hat\mathcal{{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
-                  \end{alignat}
+        Equations:
 
-        for :math:`j = 1, \ldots, K` and :math:`i = K, \ldots, 1`
+        .. math::
+              \begin{align}
+                A_j^{L} &= \exp\Big(\frac{h}{2}\mathcal{D}\Big)A_j(z, T)
+                    &\forall j=1,\ldots,K\\
+                A_j^{N'} &= A_j^{L} +\frac{h}{2}\bar{\mathcal{N}}\big(
+                    A_1^{N'},\ldots, A_{j-1}^{N'}, A_{j}^{L}, \ldots,
+                    A_K^{L}\big) &\forall j=1,\ldots,K\\
+                A_j^{N} &= A_j^{N'} +\frac{h}{2}\bar{\mathcal{N}}\big(
+                    A_1^{N'},\ldots, A_{j}^{N'}, A_{j+1}^{N}, \ldots,
+                    A_K^{N}\big)&\forall j=K,\ldots,1\\
+                A_j(z+h, T) &=  \exp\Big(\frac{h}{2}\mathcal{D}\Big)
+                    A_j^{N} &\forall j=1,\ldots,K
+              \end{align}
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                A_j^{L} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}
+                    &\forall j=1,\ldots,K\\
+                A_j^{N'} &= \exp\Big(\frac{h}{2}\hat{\mathcal{N}}
+                    \big(A_1^{N'},\ldots, A_{j-1}^{N'}, A_{j}^{L},
+                    \ldots, A_K^{L}\big)\Big)  A_j^{L}
+                    &\forall j=1,\ldots,K\\
+                A_j^{N} &= \exp\Big(\frac{h}{2}\hat{\mathcal{N}}
+                    \big(A_1^{N'},\ldots, A_{j}^{N'}, A_{j+1}^{N},
+                    \ldots, A_K^{N}\big)\Big)  A_j^{N'}
+                    &\forall j=K,\ldots,1 \\
+                A_j(z+h) &=  \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j^{N}\}\Big\}
+                    &\forall j=1,\ldots,K
+              \end{align}
+
         where :math:`K` is the number of channels.
 
         """
         h_h = 0.5 * h
         for i in range(len(waves)):
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            waves[i] = f.exp_term_lin(waves, i, z, h_h)
         for i in range(len(waves)-1):
-            waves[i] = f.exp_term_non_lin(waves, i, h_h, waves[i])
-        waves[-1] = f.exp_term_non_lin(waves, len(waves)-1, h, waves[-1])
+            waves[i] = f.exp_term_non_lin(waves, i, z, h_h, waves[i])
+        waves[-1] = f.exp_term_non_lin(waves, len(waves)-1, z, h, waves[-1])
         for i in range(len(waves)-2, -1, -1):
-            waves[i] = f.exp_term_non_lin(waves, i, h_h, waves[i])
+            waves[i] = f.exp_term_non_lin(waves, i, z, h_h, waves[i])
         for i in range(len(waves)):
-            waves[i] = f.exp_term_lin(waves, i, h_h)
+            waves[i] = f.exp_term_lin(waves, i, z, h_h)
 
         return waves
     # ==================================================================
     @staticmethod
-    def ssfm_truncated(A, h, f):
+    def ssfm_truncated(f: AbstractFieldEquation, waves: np.ndarray,
+                       z: float, h: float) -> np.ndarray:
         pass
     # ==================================================================
     @staticmethod
-    def ssfm_central_diff(f: AbstractEquation, waves: Array[cst.NPFT],
-                          h: float, z: float) -> Array[cst.NPFT]:
+    def ssfm_central_diff(f: AbstractFieldEquation, waves: np.ndarray,
+                          z: float, h: float) -> np.ndarray:
         pass
     # ==================================================================
     @staticmethod
-    def ssfm_upwind(f: AbstractEquation, waves: Array[cst.NPFT], h: float,
-                    z: float) -> Array[cst.NPFT]:
+    def ssfm_upwind(f: AbstractFieldEquation, waves: np.ndarray, z: float,
+                    h: float) -> np.ndarray:
         pass
+    # ==================================================================
+    @staticmethod
+    def rk4ip(f: AbstractFieldEquation, waves: np.ndarray, z: float,
+              h: float) -> np.ndarray:
+        r"""Runge-Kutta interaction picture method.
 
-    # ==================================================================
-    @staticmethod
-    def rk4ip(f: AbstractEquation, waves: Array[cst.NPFT], h: float, z: float
-              ) -> Array[cst.NPFT]:
+        Parameters
+        ----------
+        f :
+            The function to compute.
+        waves :
+            The value of the unknown (waves) at the considered
+            space step.
+        z :
+            The current value of the space variable.
+        h :
+            The step size.
 
-        A = copy.deepcopy(waves)
+        Returns
+        -------
+        :
+            The one step euler computation results.
+
+        Notes
+        -----
+
+        Equations:
+
+        .. math::
+              \begin{align}
+                A^L_j &=\exp\Big(\frac{h}{2}\mathcal{D}\Big)A_j(z,T)
+                    &\forall j=1,\ldots,K\\
+                k_{0,j} &=\exp\Big(\frac{h}{2}\mathcal{D}\Big) \Big(h
+                    \bar{\mathcal{N}}\big(A_1(z,T), \ldots, A_j(z,T),
+                    \ldots,A_K(z,T)\big)\Big) &\forall j=1,\ldots,K\\
+                k_{1,j} &=h \bar{\mathcal{N}}\Big(A^L_{1}
+                    + \frac{k_{0,1}}{2},\ldots, A^L_{j}
+                    + \frac{k_{0,j}}{2}, \ldots, A^L_{K}
+                    + \frac{k_{0,K}}{2}\Big) &\forall j=1,\ldots,K\\
+                k_{2,j} &=h \bar{\mathcal{N}}\Big(A^L_{1}
+                    + \frac{k_{1,1}}{2},\ldots, A^L_{j}
+                    + \frac{k_{1,j}}{2}, \ldots, A^L_{K}
+                    + \frac{k_{1,K}}{2}\Big) &\forall j=1,\ldots,K\\
+                k_{3,j} &=h \bar{\mathcal{N}}\Big(\exp\Big(\frac{h}{2}
+                    \mathcal{D}\Big)(A^L_{1} + k_{2,1}, \ldots, A^L_{j}
+                    + k_{2,j}, \ldots, A^L_{K} + k_{2,K})\Big)
+                    &\forall j=1,\ldots,K\\
+                A_j(z+h,T) &=\frac{k_{3,j}}{6}+\exp\Big(\frac{h}{2}
+                    \mathcal{D}\Big)\Big(A^L_{j}+\frac{k_{0,j}}{6}
+                    +\frac{k_{1,j}}{3}+\frac{k_{2,j}}{3}\Big)
+                    \quad &\forall j=1,\ldots,K
+              \end{align}
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                A^L_{j} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\{A_j(z)\}\Big\}
+                    &\forall j=1,\ldots,K \\
+                k_{0,j} &= \mathcal{F}^{-1}\Big\{\exp\Big(\frac{h}{2}
+                    \hat{\mathcal{D}}\Big)\mathcal{F}\big\{h
+                    \hat{\mathcal{N}}\big(A_1(z), \ldots, A_j(z),
+                    \ldots,A_K(z)\big)\big\}\Big\}
+                    &\forall j=1,\ldots,K\\
+                k_{1,j} &= h \hat{\mathcal{N}}\Big(A^L_{1}
+                    + \frac{k_{0,1}}{2}, \ldots, A^L_{j}
+                    + \frac{k_{0,j}}{2}, \ldots, A^L_{K}
+                    + \frac{k_{0,K}}{2} \Big) &\forall j=1,\ldots,K\\
+                k_{2,j} &= h \hat{\mathcal{N}}\Big(A^L_{1}
+                    + \frac{k_{1,1}}{2}, \ldots, A^L_{j}
+                    + \frac{k_{1,j}}{2}, \ldots, A^L_{K}
+                    + \frac{k_{1,K}}{2} \Big) &\forall j=1,\ldots,K\\
+                k_{3,j} &= h \hat{\mathcal{N}}\Big(\mathcal{F}^{-1}
+                    \Big\{\exp\Big(\frac{h}{2}\hat{\mathcal{D}}\Big)
+                    \mathcal{F}\{A^L_{1} + k_{2,1}\}
+                    \Big\} , \ldots, \nonumber \\
+                    & \qquad \qquad \mathcal{F}^{-1}\Big\{\exp\Big(
+                    \frac{h}{2}\hat{\mathcal{D}}\Big)\mathcal{F}
+                    \{A^L_{j} + k_{2,j}\}\Big\} ,\ldots, \nonumber \\
+                & \qquad \qquad \mathcal{F}^{-1}\Big\{\exp\Big(
+                    \frac{h}{2}\hat{\mathcal{D}} \Big)\mathcal{F}
+                    \{A^L_{K} + k_{2,K}\}\Big\} \Big)
+                    &\forall j=1,\ldots,K\\
+                A_j(z+h) &= \frac{k_{3,j}}{6}+\mathcal{F}^{-1}\Big\{
+                    \exp\Big(\frac{h}{2}\hat{\mathcal{D}}\Big)
+                    \mathcal{F}\big\{A^L_{j}
+                    +\frac{k_{0,j}}{6}+\frac{k_{1,j}}{3}
+                    +\frac{k_{2,j}}{3}\big\}\Big\} \quad
+                    &\forall j=1,\ldots,K
+              \end{align}
+
+        where :math:`K` is the number of channels.
+
+        """
         h_h = 0.5 * h
-        A_lin = np.zeros_like(waves)
+        A_L = np.zeros_like(waves)
         k_0 = np.zeros_like(waves)
         k_1 = np.zeros_like(waves)
         k_2 = np.zeros_like(waves)
         k_3 = np.zeros_like(waves)
         for i in range(len(waves)):
-            A_lin[i] = f.exp_term_lin(waves, i, h_h)
+            A_L[i] = f.exp_term_lin(waves, i, z, h_h)
         for i in range(len(waves)):
-            waves[i] = f.term_non_lin(waves, i)
-            k_0[i] = h * f.exp_term_lin(waves, i, h_h)
+            waves[i] = h * f.term_non_lin(waves, i, z)
         for i in range(len(waves)):
-            waves[i] = A[i] + 0.5*k_0[i]
-            k_1[i] = h * f.term_non_lin(waves, i)
+            k_0[i] = f.exp_term_lin(waves, i, z, h_h)
         for i in range(len(waves)):
-            waves[i] = A[i] + 0.5*k_1[i]
-            k_2[i] = h * f.term_non_lin(waves, i)
+            waves[i] = A_L[i] + 0.5*k_0[i]
         for i in range(len(waves)):
-            waves[i] = A_lin[i] + k_2[i]
-            waves[i] = f.exp_term_lin(waves, i, h_h)
-            k_3[i] = h * f.term_non_lin(waves, i)
+            k_1[i] = h * f.term_non_lin(waves, i, z)
         for i in range(len(waves)):
-            waves[i] = A_lin[i] + k_0[i]/6.0 + (k_1[i]+k_2[i])/3.0
-            waves[i] = k_3[i]/6.0 + f.exp_term_lin(waves, i, h_h)
+            waves[i] = A_L[i] + 0.5*k_1[i]
+        for i in range(len(waves)):
+            k_2[i] = h * f.term_non_lin(waves, i, z)
+        for i in range(len(waves)):
+            waves[i] = A_L[i] + k_2[i]
+            waves[i] = f.exp_term_lin(waves, i, z, h_h)
+        for i in range(len(waves)):
+            k_3[i] = h * f.term_non_lin(waves, i, z)
+        for i in range(len(waves)):
+            waves[i] = A_L[i] + (k_0[i]/6.0) + ((k_1[i]+k_2[i])/3.0)
+            waves[i] = (k_3[i]/6.0) + f.exp_term_lin(waves, i, z, h_h)
 
         return waves
     # ==================================================================
     @staticmethod
-    def rk4ip_gnlse(f: AbstractEquation, waves: Array[cst.NPFT], h: float,
-                    z: float) -> Array[cst.NPFT]:
-        if (len(waves) == 1):
+    def rk4ip_gnlse(f: AbstractFieldEquation, waves: np.ndarray, z: float,
+                    h: float) -> np.ndarray:
+        r"""Optimized Runge-Kutta interaction picture method.
+
+        Parameters
+        ----------
+        f :
+            The function to compute.
+        waves :
+            The value of the unknown (waves) at the considered
+            space step.
+        z :
+            The current value of the space variable.
+        h :
+            The step size.
+
+        Returns
+        -------
+        :
+            The one step euler computation results.
+
+        Notes
+        -----
+
+        Implementation:
+
+        .. math::
+              \begin{align}
+                &A^L_j = \exp\Big(\frac{h}{2}\hat{\mathcal{D}}\Big)
+                    \mathcal{F}\{A_j(z)\} &\forall j=1,\ldots,K\\
+                &k_0 = h \exp\Big(\frac{h}{2}\hat{\mathcal{D}}\Big)
+                    \hat{\mathcal{N}}_0\big(A_1(z), \ldots, A_j(z),
+                    \ldots, A_K(z)\big)&\forall j=1,\ldots,K\\
+                &k_1 = h \hat{\mathcal{N}}_0\Big(\mathcal{F}^{-1}
+                    \Big\{A^L_{1} +\frac{k_{0,1}}{2},\ldots,
+                    A^L_{j}+\frac{k_{0,j}}{2},\ldots, A^L_{K}
+                    + \frac{k_{0,K}}{2}\Big\} \Big)
+                    &\forall j=1,\ldots,K\\
+                &k_2 = h \hat{\mathcal{N}}_0\Big(\mathcal{F}^{-1}
+                    \Big\{A^L_{1} +\frac{k_{1,1}}{2},\ldots, A^L_{j}
+                    +\frac{k_{1,j}}{2},\ldots, A^L_{K}
+                    + \frac{k_{1,K}}{2}\Big\} \Big)
+                    &\forall j=1,\ldots,K\\
+                &k_3 = h \hat{\mathcal{N}}_0\Big(\mathcal{F}^{-1}
+                    \Big\{\exp\Big(\frac{h}{2}\hat{\mathcal{D}}\Big)
+                    (A^L_1 + k_{2, 1}) \Big\},\ldots, \nonumber \\
+                & \qquad \qquad \quad \mathcal{F}^{-1}\Big\{\exp
+                    \Big(\frac{h}{2}\hat{\mathcal{D}}\Big)(A^L_j
+                    + k_{2,j}) \Big\}, \ldots,\nonumber\\
+                & \qquad \qquad \quad \mathcal{F}^{-1}\Big\{\exp\Big(
+                    \frac{h}{2}\hat{\mathcal{D}}\Big)(A^L_K + k_{2,K})
+                    \Big\}\Big)&\forall j=1,\ldots,K\\
+                &A(z+h) = \mathcal{F}^{-1}\Big\{\frac{k_{3,j}}{6}
+                    +\exp\Big(\frac{h}{2}\hat{\mathcal{D}}\Big)
+                    \big(A^L_{j}+\frac{k_{0,j}}{6}+\frac{k_{1,j}}{3}
+                    +\frac{k_{2,j}}{3}\big)\Big\} &\forall j=1,\ldots,K
+              \end{align}
+
+        where :math:`K` is the number of channels.
+
+        """
+        if (isinstance(f, GNLSE) or isinstance(f, AmpGNLSE)):
             h_h = 0.5 * h
-            A = copy.deepcopy(waves[0])
-            exp_op_lin = f.exp_op_lin(waves, 0, h_h)
-            #if (Solver.rk4ip_gnlse.first_rk4ip_gnlse_iter):
-            A_lin = exp_op_lin * FFT.fft(A)
-            #    Solver.rk4ip_gnlse.first_rk4ip_gnlse_iter = False
-            #else:
-            #    A_lin = exp_op_lin * Solver.rk4ip_gnlse.fft_A_next
-            k_0 = h * exp_op_lin * f.op_non_lin_rk4ip(waves, 0)
-            waves[0] = FFT.ifft(A_lin + k_0/2)
-            k_1 = h * f.op_non_lin_rk4ip(waves, 0)
-            waves[0] = FFT.ifft(A_lin + k_1/2)
-            k_2 = h * f.op_non_lin_rk4ip(waves, 0)
-            waves[0] = FFT.ifft(exp_op_lin * (A_lin + k_0/2))
-            k_3 = h * f.op_non_lin_rk4ip(waves, 0)
-
-            #Solver.rk4ip_gnlse.fft_A_next = k_3/6 + (exp_op_lin
-            #                                * (A_lin + k_0/6 + (k_1+k_2)/3))
-            waves[0] = FFT.ifft(k_3/6 + (exp_op_lin
-                                         * (A_lin + k_0/6 + (k_1+k_2)/3)))
-
-            return waves
-
+            exp_op_lin = np.zeros_like(waves)
+            A_L = np.zeros_like(waves)
+            k_0 = np.zeros_like(waves)
+            k_1 = np.zeros_like(waves)
+            k_2 = np.zeros_like(waves)
+            k_3 = np.zeros_like(waves)
+            for i in range(len(waves)):
+                exp_op_lin[i] = f.exp_op_lin(waves, i, h_h)
+            for i in range(len(waves)):
+                A_L[i] = exp_op_lin[i] * FFT.fft(waves[i])
+            for i in range(len(waves)):
+                k_0[i] = h * exp_op_lin[i] * f.term_rk4ip_non_lin(waves, i, z)
+            for i in range(len(waves)):
+                waves[i] = FFT.ifft(A_L[i] + 0.5*k_0[i])
+            for i in range(len(waves)):
+                k_1[i] = h * f.term_rk4ip_non_lin(waves, i, z)
+            for i in range(len(waves)):
+                waves[i] = FFT.ifft(A_L[i] + 0.5*k_1[i])
+            for i in range(len(waves)):
+                k_2[i] = h * f.term_rk4ip_non_lin(waves, i, z)
+            for i in range(len(waves)):
+                waves[i] = FFT.ifft(exp_op_lin[i] * (A_L[i] + k_2[i]))
+            for i in range(len(waves)):
+                k_3[i] = h * f.term_rk4ip_non_lin(waves, i, z)
+            for i in range(len(waves)):
+                waves[i] = ((k_3[i]/6.0)
+                            + (exp_op_lin[i] * (A_L[i] + k_0[i]/6.0
+                                                + (k_1[i]+k_2[i])/3.0)))
+                waves[i] = FFT.ifft(waves[i])
         else:
-            util.warning_terminal("rk4ip with more than two fields "
-                "currently not supported")
+
+            raise RK4IPGNLSEError("Only the the gnlse can be computed with "
+                "the rk4ip_gnlse method.")
 
         return waves
 
+
+
 if __name__ == "__main__":
 
+    from typing import List, Optional
+
+    import optcom.config as cfg
+    import optcom.utils.constant_values.solver_cst as scst
     import optcom.utils.plot as plot
-    import optcom.layout as layout
-    import optcom.components.gaussian as gaussian
-    import optcom.domain as domain
     from optcom.components.fiber import Fiber
-    from optcom.utils.utilities_user import temporal_power, spectral_power
+    from optcom.components.gaussian import Gaussian
+    from optcom.domain import Domain
+    from optcom.layout import Layout
+    from optcom.utils.utilities_user import temporal_power, spectral_power,\
+                                            temporal_phase, spectral_phase
 
-    plot_groups = []
-    plot_labels = []
-    plot_titles = []
-    x_datas = []
-    y_datas = []
+    plot_groups: List[int] = []
+    plot_labels: List[Optional[str]] = []
+    plot_titles: List[str] = []
+    x_datas: List[np.ndarray] = []
+    y_datas: List[np.ndarray] = []
 
-    nlse_methods = ["ssfm", "ssfm_reduced", "ssfm_symmetric",
-                    "ssfm_opti_reduced", "ssfm_super_sym",
-                    "ssfm_opti_super_sym", "rk4ip", "rk4ip"]
-
+    nlse_methods: List[str] = ["ssfm", "ssfm_reduced", "ssfm_symmetric",
+                               "ssfm_opti_reduced", "ssfm_super_sym",
+                               "ssfm_opti_super_sym", "rk4ip", "rk4ip"]
+    nlse_methods = ["rk4ip", "rk4ip"]
     # ---------------- NLSE solvers test -------------------------------
-    lt = layout.Layout()
+    lt: Layout = Layout(Domain(bit_width=100.0, samples_per_bit=4096))
 
-    pulse = gaussian.Gaussian(channels=2, peak_power=[0.5, 1.0])
+    pulse: Gaussian = Gaussian(channels=2, peak_power=[0.5, 1.0], width=[0.5, 0.8])
 
-    steps = int(10e3)
-    for j, method in enumerate(nlse_methods):
-        if (j == (len(nlse_methods)-1)):
-            nl_approx = False   # To compute rk4ip_gnlse
+    steps: int = int(5e3)
+    fiber: Fiber
+    SS: bool = True
+    for j, nlse_method in enumerate(nlse_methods):
+        if (j == len(nlse_methods)-2):  # To compute rk4ip and rk4ip_gnlse
+            cfg.RK4IP_OPTI_GNLSE = False   # Can make slighty diff. output
         else:
-            nl_approx = True
+            cfg.RK4IP_OPTI_GNLSE = True
         # Propagation
-        # Put f_R = 0 to have same non-lin. operator with nl_approx
-        fiber = Fiber(length=2.0, method=method, alpha=[0.046],
-                      beta=[0.0, 1.0, -19.83, 0.031], gamma=4.3,
-                      nl_approx=nl_approx, SPM=True, f_R=0.0, XPM=False,
-                      SS=False, RS=False, approx_type=1, steps=steps,
-                      save=True)
+        fiber = Fiber(length=0.2, nlse_method=nlse_method, alpha=[0.5],
+                      beta_order=3, gamma=4.0, nl_approx=False, SPM=True,
+                      XPM=True, SS=True, RS=True, steps=steps, save=True)
         lt.link((pulse[0], fiber[0]))
         lt.run(pulse)
         lt.reset()
@@ -472,9 +786,9 @@ if __name__ == "__main__":
         y_datas.append(temporal_power(fiber[1][0].channels))
         plot_groups.append(0)
 
-    plot_labels.extend(nlse_methods)
+    plot_labels.extend(nlse_methods[:-1] + ["rk4ip_gnlse"])
     plot_titles.extend(["NLSE solvers test with n={}".format(str(steps))])
     # -------------------- Plotting results ------------------------
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                plot_labels=plot_labels, opacity=0.3)
+                plot_labels=plot_labels, opacity=[0.3])

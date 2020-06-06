@@ -18,38 +18,52 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Dict, List, Optional, overload, Tuple, Union
+from abc import ABCMeta, abstractmethod
+from typing import Any, ClassVar, Dict, List, Optional, overload, Tuple, Union
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.components.port import Port
 from optcom.domain import Domain
 from optcom.field import Field
-from optcom.storage import Storage
+from optcom.utils.storage import Storage
 
 
 default_name = 'AbstractComponent'
 
 
-class AbstractComponent(object):
+class AbstractComponent(metaclass=ABCMeta):
     """Parent of any component object. Represent a node of the layout
     graph.
 
     Attributes
     ----------
-        name : str
-            The name of the component.
-        ports_type : list of int
-            Type of each port of the component, give also the number of
-            ports in the component. For types, see
-            :mod:`optcom/utils/constant_values/port_types`.
-        save : bool
-            If True, will save each field going through each port. The
-            recorded fields can be accessed with the attribute
-            :attr:`fields`.
+    name : str
+        The name of the component.
+    ports_type : list of int
+        Type of each port of the component, give also the number of
+        ports in the component. For types, see
+        :mod:`optcom/utils/constant_values/port_types`.
+    save : bool
+        If True, will save each field going through each port. The
+        recorded fields can be accessed with the attribute
+        :attr:`fields`.
+    call_counter : int
+        Count the number of times the function
+        :func:`__call__` of the Component has been called.
+    wait :
+        If True, will wait for specified waiting port policy added
+        with the function :func:`AbstractComponent.add_wait_policy`.
+    pre_call_code :
+        A string containing code which will be executed prior to
+        the call to the function :func:`__call__`. The two parameters
+        `input_ports` and `input_fields` are available.
+    post_call_code :
+        A string containing code which will be executed posterior to
+        the call to the function :func:`__call__`. The two parameters
+        `output_ports` and `output_fields` are available.
 
     """
 
@@ -58,7 +72,8 @@ class AbstractComponent(object):
 
     def __init__(self, name: str, default_name: str, ports_type: List[int],
                  save: bool, wait: bool = False,
-                 max_nbr_pass: Optional[List[int]] = None) -> None:
+                 max_nbr_pass: Optional[List[int]] = None,
+                 pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
         ----------
@@ -81,6 +96,14 @@ class AbstractComponent(object):
             If not None, no fields will be propagated if the number of
             fields which passed through a specific port exceed the
             specified maximum number of pass for this port.
+        pre_call_code :
+            A string containing code which will be executed prior to
+            the call to the function :func:`__call__`. The two parameters
+            `input_ports` and `input_fields` are available.
+        post_call_code :
+            A string containing code which will be executed posterior to
+            the call to the function :func:`__call__`. The two parameters
+            `output_ports` and `output_fields` are available.
 
         """
         # Attr type check ----------------------------------------------
@@ -90,6 +113,8 @@ class AbstractComponent(object):
         util.check_attr_type(save, 'save', bool)
         util.check_attr_type(wait, 'wait', bool)
         util.check_attr_type(max_nbr_pass, 'max_nbr_pass', None, list)
+        util.check_attr_type(pre_call_code, 'pre_call_code', str)
+        util.check_attr_type(post_call_code, 'post_call_code', str)
         # Nbr of instances and default name management -----------------
         self.inc_nbr_instances()
         self.name: str = name
@@ -100,28 +125,34 @@ class AbstractComponent(object):
         # Others var ---------------------------------------------------
         self._nbr_ports: int = len(ports_type)
         self.save: bool = save
-        self._storages: Storage = []
-        self._ports: Port = []
+        self._storages: List[Storage] = []
+        self._ports: List[Port] = []
+        max_nbr_pass_: List[Optional[int]]
+        max_nbr_pass_ = util.make_list(max_nbr_pass, self._nbr_ports)
         for i in range(self._nbr_ports):
-            self._ports.append(Port(self, i, ports_type[i]))
+            max_nbr = max_nbr_pass_[i]
+            if (max_nbr is not None):
+                self._ports.append(Port(self, ports_type[i], max_nbr))
+            else:
+                self._ports.append(Port(self, ports_type[i]))
         self._port_policy: Dict[Tuple[int,...], Tuple[int,...]] = {}
         self._wait_policy: List[List[int]] = []
         self._wait: bool = wait
-        self._counter_pass: List[int] = [0 for i in range(self._nbr_ports)]
-        self._max_nbr_pass: List[int]
-        if (max_nbr_pass is None):
-            # 999 bcs max default recursion depth with python
-            self._max_nbr_pass = [999 for i in range(self._nbr_ports)]
-        else:
-            self._max_nbr_pass = util.make_list(max_nbr_pass, self._nbr_ports)
+        self.pre_call_code: str = pre_call_code
+        self.post_call_code: str = post_call_code
+        self.call_counter: int = 0
+        self._ptr: int = 0   # for __iter__() method
+    # ==================================================================
+    @abstractmethod
+    def __call__(self, domain: Domain) -> Tuple[List[int], List[Field]]: pass
     # ==================================================================
     def __str__(self) -> str:
-
-        util.print_terminal("State of component '{}':".format(self.name))
+        str_to_return: str = ""
+        str_to_return += "State of component '{}':\n\n".format(self.name)
         for i in range(self._nbr_ports):
-            print(self._ports[i])
+            str_to_return += str(self._ports[i]) + '\n'
 
-        return str()
+        return str_to_return
     # ==================================================================
     def __len__(self) -> int:
 
@@ -132,14 +163,47 @@ class AbstractComponent(object):
         self.dec_nbr_instances()
         self.dec_nbr_instances_with_default_name()
     # ==================================================================
-    def __getitem__(self, key: int) -> Tuple[AbstractComponent, int]:
+    def __getitem__(self, key: int) -> Port:
 
         return self._ports[key]
     # ==================================================================
+    def __iter__(self) -> AbstractComponent:
+        self._ptr = 0
+
+        return self
+    # ==================================================================
+    def __next__(self) -> Port:
+        if (self._ptr == len(self._ports)):
+
+            raise StopIteration
+        elem = self._ports[self._ptr]
+        self._ptr += 1
+
+        return elem
+    # ==================================================================
     @property
-    def storages(self):
+    def storages(self) -> List[Storage]:
 
         return self._storages
+    # ==================================================================
+    @property
+    def storage(self) -> Optional[Storage]:
+        """Return the last saved storage if exists, otherwise None."""
+        if (self._storages):
+
+            return self._storages[-1]
+        else:
+
+            return None
+    # ==================================================================
+    @property
+    def wait(self) -> bool:
+
+        return self._wait
+    # ------------------------------------------------------------------
+    @wait.setter
+    def wait(self, wait: bool) -> None:
+        self._wait = wait
     # ==================================================================
     # Counter management ===============================================
     # ==================================================================
@@ -165,22 +229,24 @@ class AbstractComponent(object):
     # ==================================================================
     # Port management ==================================================
     # ==================================================================
-    def is_port_valid(self, port_nbr: int) -> bool:
+    def port_id_of(self, port: Port) -> int:
+        if (port in self._ports):
 
-        if (0 <= port_nbr < self._nbr_ports):
+            return self._ports.index(port)
 
-            return True
-        else:
-            util.warning_terminal("Port {} out of range, component '{}' have "
-                "only {} port(s)."
-                .format(port_nbr, self.name, self._nbr_ports))
-
-            return False
+        return cst.NULL_PORT_ID
     # ==================================================================
-    def del_port(self, port_nbr: int) -> None:
+    def is_port_id_valid(self, port_id: int) -> bool:
 
-        if (self.is_port_valid(port_nbr)):
-            self._ports[port_nbr].reset()
+        return (0 <= port_id < self._nbr_ports)
+    # ==================================================================
+    def del_port_id(self, port_id: int) -> None:
+
+        if (self.is_port_id_valid(port_id)):
+            self._ports[port_id].reset()
+    # ==================================================================
+    def reset_port_policy(self) -> None:
+        self._port_policy = {}
     # ==================================================================
     def add_port_policy(self, *policy: Tuple[List[int], List[int], bool]
                         ) -> None:
@@ -195,7 +261,7 @@ class AbstractComponent(object):
                 input ports of b to output ports of a. If there is -1
                 in list b, the field entering at the corresponding
                 port in list a will not be transmitted.
-                N.B.: if (len(a) < len(b)), pad b with length of a.
+                N.B.: if (len(a) < len(b)), pad a with length of b.
                 len(a) must be >= len(b)
         """
         for pol in policy:
@@ -230,14 +296,14 @@ class AbstractComponent(object):
         """
         output_ports: List[int] = []
         if (not self._port_policy):
-            util.warning_terminal("No policy for port management for "
-                "component {}, no fields propagated.".format(self.name))
+            util.warning_terminal("No policy specified on port management "
+                "for component {}, no field propagated.".format(self.name))
         else:
             uni_ports = util.unique(input_ports)
             uni_output_ports = self._port_policy.get(tuple(uni_ports))
             if (uni_output_ports is None):
                 util.warning_terminal("The input ports {} provided for "
-                    "component {} do not match any policy, no fields "
+                    "component {} do not match any policy, no field "
                     "propagated.".format(input_ports, self.name))
             else:
                 for i in range(len(input_ports)):
@@ -248,39 +314,38 @@ class AbstractComponent(object):
     # ==================================================================
     # Link management ==================================================
     # ==================================================================
-    def is_link_to_neighbor_unique(self, neighbor_comp: AbstractComponent
-                                   ) -> bool:
+    def is_ngbr_unique(self, ngbr: AbstractComponent) -> bool:
 
         count = 0
         for port in self._ports:
-            if ((port.ngbr_comp is not None)
-                    and (port.ngbr_comp == neighbor_comp)):
-                    count += 1
+            if ((not port.is_free()) and (port.ngbr == ngbr)):
+                count += 1
 
         return count > 1
     # ==================================================================
-    def is_linked_to(self, neighbor_comp: AbstractComponent) -> bool:
+    def is_linked_to(self, ngbr: AbstractComponent) -> bool:
 
         for port in self._ports:
-            if ((port.ngbr_comp is not None)
-                    and (port.ngbr_comp == neighbor_comp)):
+            if ((not port.is_free()) and (port.ngbr == ngbr)):
 
                 return True
 
         return False
     # ==================================================================
-    def is_linked_unidir_to(self, neighbor_comp: AbstractComponent) -> bool:
+    def is_linked_unidir_to(self, ngbr: AbstractComponent) -> bool:
 
         for port in self._ports:
-            if ((port.ngbr_comp is not None)
-                    and (port.ngbr_comp == neighbor_comp)
+            if ((not port.is_free()) and (port.ngbr == ngbr)
                     and port.is_unidir()):
 
                 return True
 
         return False
     # ==================================================================
-    # Constraints management ===========================================
+    # Waiting Policy ===================================================
+    # ==================================================================
+    def reset_wait_policy(self) -> None:
+        self._wait_policy = []
     # ==================================================================
     def add_wait_policy(self, *policy: List[int]) -> None:
         """Append a new policy to automatically make a port waiting for
@@ -305,13 +370,3 @@ class AbstractComponent(object):
                     waiting_ports.append(policy)
 
         return waiting_ports
-    # ==================================================================
-    def inc_counter_pass(self, port: int) -> None:
-        self._counter_pass[port] += 1
-    # ==================================================================
-    def dec_counter_pass(self, port: int) -> None:
-        self._counter_pass[port] -= 1
-    # ==================================================================
-    def is_counter_below_max_pass(self, port: int) -> bool:
-
-        return (self._counter_pass[port] <= self._max_nbr_pass[port])

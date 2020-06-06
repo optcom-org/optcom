@@ -1,4 +1,4 @@
 #field types
-OPTI: int = 43
-ELEC: int = 44
-ANY: int = 45
+OPTI: str = 'optical_field'
+ELEC: str = 'electric_field'
+ANY: str = 'any_field'

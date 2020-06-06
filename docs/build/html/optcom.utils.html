@@ -1,0 +1,925 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python3.7" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python3.7" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>optcom.utils package &mdash; Optcom 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="optcom.utils.constant_values package" href="optcom.utils.constant_values.html" />
+    <link rel="prev" title="optcom.solvers package" href="optcom.solvers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Optcom
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_perso.html">Modules Description</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">optcom</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="optcom.html">optcom package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="optcom.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="optcom.components.html">optcom.components package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.effects.html">optcom.effects package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.equations.html">optcom.equations package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.parameters.html">optcom.parameters package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="optcom.solvers.html">optcom.solvers package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">optcom.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.config">optcom.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.domain">optcom.domain module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.field">optcom.field module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom.layout">optcom.layout module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optcom.html#module-optcom">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Optcom</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">optcom</a> &raquo;</li>
+        
+          <li><a href="optcom.html">optcom package</a> &raquo;</li>
+        
+      <li>optcom.utils package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/optcom.utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="optcom-utils-package">
+<h1>optcom.utils package<a class="headerlink" href="#optcom-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="optcom.utils.constant_values.html">optcom.utils.constant_values package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#module-optcom.utils.constant_values.domain_cst">optcom.utils.constant_values.domain_cst module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#module-optcom.utils.constant_values.fiber_cst">optcom.utils.constant_values.fiber_cst module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#module-optcom.utils.constant_values.field_types">optcom.utils.constant_values.field_types module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#module-optcom.utils.constant_values.physic_cst">optcom.utils.constant_values.physic_cst module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#module-optcom.utils.constant_values.port_types">optcom.utils.constant_values.port_types module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#module-optcom.utils.constant_values.solver_cst">optcom.utils.constant_values.solver_cst module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.constant_values.html#module-optcom.utils.constant_values">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optcom.utils.utilities_helpers.html">optcom.utils.utilities_helpers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers.array_helpers">optcom.utils.utilities_helpers.array_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers.attr_helpers">optcom.utils.utilities_helpers.attr_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers.component_helpers">optcom.utils.utilities_helpers.component_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers.data_helpers">optcom.utils.utilities_helpers.data_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers.list_helpers">optcom.utils.utilities_helpers.list_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers.physics_helpers">optcom.utils.utilities_helpers.physics_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers.terminal_display_helpers">optcom.utils.utilities_helpers.terminal_display_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optcom.utils.utilities_helpers.html#module-optcom.utils.utilities_helpers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-optcom.utils.callable_container">
+<span id="optcom-utils-callable-container-module"></span><h2>optcom.utils.callable_container module<a class="headerlink" href="#module-optcom.utils.callable_container" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.callable_container.CallableContainer">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.callable_container.</code><code class="sig-name descname">CallableContainer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">function</span></em>, <em class="sig-param"><span class="n">variables</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.callable_container.CallableContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class host a function which have argument that can be
+functions themselves (of the same arguments). The call to __call__
+allows to pass this common arguments to the function arguments of
+the main function and pass the results to the main function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function</strong> -- The main callable which will be call in the __call__.</p></li>
+<li><p><strong>variables</strong> -- Variables of the function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.callable_litt_expr">
+<span id="optcom-utils-callable-litt-expr-module"></span><h2>optcom.utils.callable_litt_expr module<a class="headerlink" href="#module-optcom.utils.callable_litt_expr" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.callable_litt_expr.CallableLittExpr">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.callable_litt_expr.</code><code class="sig-name descname">CallableLittExpr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fcts</span></em>, <em class="sig-param"><span class="n">operators</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.callable_litt_expr.CallableLittExpr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class allow to perform operations on functions of the same
+arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fcts</strong> -- A series of callables or constants which composed the
+litteral expression to evaluate.</p></li>
+<li><p><strong>operators</strong> -- A list of str which correspond to the operator to apply
+between two elements of the litteral expression.  The length
+should be len(fcts) - 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.utils.callable_litt_expr.CallableLittExprError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.callable_litt_expr.</code><code class="sig-name descname">CallableLittExprError</code><a class="headerlink" href="#optcom.utils.callable_litt_expr.CallableLittExprError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.utils.callable_litt_expr.InitError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.callable_litt_expr.</code><code class="sig-name descname">InitError</code><a class="headerlink" href="#optcom.utils.callable_litt_expr.InitError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optcom.utils.callable_litt_expr.CallableLittExprError" title="optcom.utils.callable_litt_expr.CallableLittExprError"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.utils.callable_litt_expr.CallableLittExprError</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.constants">
+<span id="optcom-utils-constants-module"></span><h2>optcom.utils.constants module<a class="headerlink" href="#module-optcom.utils.constants" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-optcom.utils.cont_array">
+<span id="optcom-utils-cont-array-module"></span><h2>optcom.utils.cont_array module<a class="headerlink" href="#module-optcom.utils.cont_array" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.cont_array.ContArray">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.cont_array.</code><code class="sig-name descname">ContArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nbr_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.cont_array.ContArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for array with identical step size.</p>
+<dl class="py method">
+<dt id="optcom.utils.cont_array.ContArray.append">
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.cont_array.ContArray.append" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.cont_array.ContArray.create_array">
+<code class="sig-name descname">create_array</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coord</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.cont_array.ContArray.create_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.csv_fit">
+<span id="optcom-utils-csv-fit-module"></span><h2>optcom.utils.csv_fit module<a class="headerlink" href="#module-optcom.utils.csv_fit" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.csv_fit.CSVFit">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.csv_fit.</code><code class="sig-name descname">CSVFit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">delimiter</span><span class="o">=</span><span class="default_value">','</span></em>, <em class="sig-param"><span class="n">conv_func</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">conv_factor</span><span class="o">=</span><span class="default_value">[1.0, 1.0]</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ext</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.csv_fit.CSVFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="optcom.utils.csv_fit.CSVFit.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.csv_fit.CSVFit.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.fft">
+<span id="optcom-utils-fft-module"></span><h2>optcom.utils.fft module<a class="headerlink" href="#module-optcom.utils.fft" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.fft.FFT">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.fft.</code><code class="sig-name descname">FFT</code><a class="headerlink" href="#optcom.utils.fft.FFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.conv_fft">
+<em class="property">static </em><code class="sig-name descname">conv_fft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">B</span></em>, <em class="sig-param"><span class="n">fft_A</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fft_B</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.conv_fft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.conv_to_fft">
+<em class="property">static </em><code class="sig-name descname">conv_to_fft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">B</span></em>, <em class="sig-param"><span class="n">fft_A</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fft_B</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.conv_to_fft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.dt_fft">
+<em class="property">static </em><code class="sig-name descname">dt_fft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">order</span></em>, <em class="sig-param"><span class="n">fft_A</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.dt_fft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.dt_to_fft">
+<em class="property">static </em><code class="sig-name descname">dt_to_fft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">order</span></em>, <em class="sig-param"><span class="n">fft_A</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.dt_to_fft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.fft">
+<em class="property">static </em><code class="sig-name descname">fft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.fft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.fft_mult_ifft">
+<em class="property">static </em><code class="sig-name descname">fft_mult_ifft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">B</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.fft_mult_ifft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.fftshift">
+<em class="property">static </em><code class="sig-name descname">fftshift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.fftshift" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.ifft">
+<em class="property">static </em><code class="sig-name descname">ifft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.ifft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.ifft_mult_fft">
+<em class="property">static </em><code class="sig-name descname">ifft_mult_fft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">B</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.ifft_mult_fft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.ifftshift">
+<em class="property">static </em><code class="sig-name descname">ifftshift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.ifftshift" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.fft.FFT.inc_fft_counter">
+<em class="property">classmethod </em><code class="sig-name descname">inc_fft_counter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.fft.FFT.inc_fft_counter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.id_tracker">
+<span id="optcom-utils-id-tracker-module"></span><h2>optcom.utils.id_tracker module<a class="headerlink" href="#module-optcom.utils.id_tracker" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.id_tracker.IdTracker">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.id_tracker.</code><code class="sig-name descname">IdTracker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nbr_eqs</span></em>, <em class="sig-param"><span class="n">prop_dir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Save the position of each field and waves.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbr_eqs</strong> -- The number of equations.</p></li>
+<li><p><strong>prop_dir</strong> -- If [i] is True, waves in equation [i] are co-propagating
+relatively to equation [0]. If [i] is False, waves in
+equations [i] are counter-propagating relatively to
+equation [0]. prop_dir[0] must be True. len(prop_dir) must
+be equal to nbr_eqs.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.are_field_ids_co_prop">
+<code class="sig-name descname">are_field_ids_co_prop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id_1</span></em>, <em class="sig-param"><span class="n">id_2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.are_field_ids_co_prop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if id_1 and id_2 are related to co-propagating
+equations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.are_wave_ids_co_prop">
+<code class="sig-name descname">are_wave_ids_co_prop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id_1</span></em>, <em class="sig-param"><span class="n">id_2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.are_wave_ids_co_prop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if id_1 and id_2 are related to co-propagating
+equations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.check_field_id">
+<code class="sig-name descname">check_field_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.check_field_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-process the field id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.check_wave_id">
+<code class="sig-name descname">check_wave_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wave_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.check_wave_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-process the wave id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.eq_id_of_field_id">
+<code class="sig-name descname">eq_id_of_field_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.eq_id_of_field_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the equation id to which field_id belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.eq_id_of_wave_id">
+<code class="sig-name descname">eq_id_of_wave_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wave_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.eq_id_of_wave_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the equation id to which wave_id belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.field_ids_in_eq_id">
+<code class="sig-name descname">field_ids_in_eq_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.field_ids_in_eq_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the start and end field_ids in the equation with id
+eq_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.fields_in_eq_id">
+<code class="sig-name descname">fields_in_eq_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fields</span></em>, <em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.fields_in_eq_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all fields from fields in the equation with id eq_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.fields_out_eq_id">
+<code class="sig-name descname">fields_out_eq_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fields</span></em>, <em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.fields_out_eq_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all fields from fields out of the equation with id
+eq_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fields_per_eq</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get positions of the waves and fields according to their
+related equation. Each element of wave_ids contains the last
+index of the wave contained in the equation, which id is the
+index in eq_ids, considering that all waves of all fields form
+one array. Each element of field_ids contains the index of the
+last fields from equation which id is the index in eq_ids.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.nbr_fields">
+<em class="property">property </em><code class="sig-name descname">nbr_fields</code><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.nbr_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the total number of fields.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.nbr_fields_in_eq">
+<code class="sig-name descname">nbr_fields_in_eq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.nbr_fields_in_eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of fields in the equation with id eq_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.nbr_waves">
+<em class="property">property </em><code class="sig-name descname">nbr_waves</code><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.nbr_waves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the total number of waves.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.nbr_waves_in_eq">
+<code class="sig-name descname">nbr_waves_in_eq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.nbr_waves_in_eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of waves in the equation with id eq_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.rel_wave_id">
+<code class="sig-name descname">rel_wave_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wave_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.rel_wave_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the wave id if there were only waves from the equation
+to which wave_id belongs to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.wave_ids_in_eq_id">
+<code class="sig-name descname">wave_ids_in_eq_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.wave_ids_in_eq_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the start and end wave_ids in the equation with id
+eq_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.waves_in_eq_id">
+<code class="sig-name descname">waves_in_eq_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves</span></em>, <em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.waves_in_eq_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all waves from waves in the equation with id eq_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.id_tracker.IdTracker.waves_out_eq_id">
+<code class="sig-name descname">waves_out_eq_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves</span></em>, <em class="sig-param"><span class="n">eq_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.id_tracker.IdTracker.waves_out_eq_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all waves from waves out of the equation with id
+eq_id.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.utils.id_tracker.IdTrackerError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.id_tracker.</code><code class="sig-name descname">IdTrackerError</code><a class="headerlink" href="#optcom.utils.id_tracker.IdTrackerError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.utils.id_tracker.InitError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.id_tracker.</code><code class="sig-name descname">InitError</code><a class="headerlink" href="#optcom.utils.id_tracker.InitError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optcom.utils.id_tracker.IdTrackerError" title="optcom.utils.id_tracker.IdTrackerError"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.utils.id_tracker.IdTrackerError</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.plot">
+<span id="optcom-utils-plot-module"></span><h2>optcom.utils.plot module<a class="headerlink" href="#module-optcom.utils.plot" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.plot.TypingMethodAttribute">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">TypingMethodAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.TypingMethodAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing_extensions.Protocol</span></code></p>
+<dl class="py attribute">
+<dt id="optcom.utils.plot.TypingMethodAttribute.counter">
+<code class="sig-name descname">counter</code><em class="property">: int</em><em class="property"> = None</em><a class="headerlink" href="#optcom.utils.plot.TypingMethodAttribute.counter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.add_2D_subplot">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">add_2D_subplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plt_to_add</span></em>, <em class="sig-param"><span class="n">x_data</span></em>, <em class="sig-param"><span class="n">y_data</span></em>, <em class="sig-param"><span class="n">x_label</span></em>, <em class="sig-param"><span class="n">y_label</span></em>, <em class="sig-param"><span class="n">x_range</span></em>, <em class="sig-param"><span class="n">y_range</span></em>, <em class="sig-param"><span class="n">plot_title</span></em>, <em class="sig-param"><span class="n">plot_label</span></em>, <em class="sig-param"><span class="n">plot_linestyle</span></em>, <em class="sig-param"><span class="n">plot_color</span></em>, <em class="sig-param"><span class="n">opacity</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.add_2D_subplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a 2D graph.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.add_3D_subplot">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">add_3D_subplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plt_to_add</span></em>, <em class="sig-param"><span class="n">x_data</span></em>, <em class="sig-param"><span class="n">y_data</span></em>, <em class="sig-param"><span class="n">z_data</span></em>, <em class="sig-param"><span class="n">x_label</span></em>, <em class="sig-param"><span class="n">y_label</span></em>, <em class="sig-param"><span class="n">z_label</span></em>, <em class="sig-param"><span class="n">x_range</span></em>, <em class="sig-param"><span class="n">y_range</span></em>, <em class="sig-param"><span class="n">z_range</span></em>, <em class="sig-param"><span class="n">plot_title</span></em>, <em class="sig-param"><span class="n">plot_color</span></em>, <em class="sig-param"><span class="n">opacity</span></em>, <em class="sig-param"><span class="n">plot_type</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.add_3D_subplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a 3D graph.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.add_subplot_para">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">add_subplot_para</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plt_to_add</span></em>, <em class="sig-param"><span class="n">x_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x_range</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_range</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z_range</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.add_subplot_para" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.animation2d">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">animation2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_datas</span></em>, <em class="sig-param"><span class="n">y_datas</span></em>, <em class="sig-param"><span class="n">z_datas</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x_range</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_range</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_linestyle</span><span class="o">=</span><span class="default_value">'-'</span></em>, <em class="sig-param"><span class="n">plot_linewidth</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">plot_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_colors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">opacity</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">fig_title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">1920.0, 1080.0</span></em>, <em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">100.0</span></em>, <em class="sig-param"><span class="n">repeat</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">repeat_delay</span><span class="o">=</span><span class="default_value">1000.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.animation2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot an 2D animation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_datas</strong> -- The data on the x axis.</p></li>
+<li><p><strong>y_datas</strong> -- The data on the y axis.</p></li>
+<li><p><strong>z_datas</strong> -- The data on the z axis.</p></li>
+<li><p><strong>x_label</strong> -- The labels for each axis along the x axis.</p></li>
+<li><p><strong>y_label</strong> -- The labels for each axis along the y axis.</p></li>
+<li><p><strong>x_range</strong> -- The ranges for each axis along the x axis.</p></li>
+<li><p><strong>y_range</strong> -- The ranges for each axis along the y axis.</p></li>
+<li><p><strong>plot_linestyle</strong> -- The linestyle of the lines.</p></li>
+<li><p><strong>plot_linewidth</strong> -- The linewidth of the lines.</p></li>
+<li><p><strong>plot_labels</strong> -- The labels for each lines.</p></li>
+<li><p><strong>plot_title</strong> -- The title of the animation.</p></li>
+<li><p><strong>plot_colors</strong> -- The color of each line.</p></li>
+<li><p><strong>opacity</strong> -- The opacity of the lines.</p></li>
+<li><p><strong>fig_title</strong> -- The figure title.</p></li>
+<li><p><strong>filename</strong> -- The filename where to save the animation. If provided, the
+animation will be saved.</p></li>
+<li><p><strong>resolution</strong> -- The resolution with which to save the animation.</p></li>
+<li><p><strong>interval</strong> -- The interval in between each frame.</p></li>
+<li><p><strong>repeat</strong> -- Either to repeat the animation when it is displayed.</p></li>
+<li><p><strong>repeat_delay</strong> -- The delay in between each repetition.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.apply_protocol_decorator">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">apply_protocol_decorator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.apply_protocol_decorator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.check_axis_labels">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">check_axis_labels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labels_to_check</span></em>, <em class="sig-param"><span class="n">labels</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.check_axis_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if can assimilate given label to recorded ones.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.get_graph_layout">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">get_graph_layout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plot_groups</span></em>, <em class="sig-param"><span class="n">split</span></em>, <em class="sig-param"><span class="n">length</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.get_graph_layout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.get_graph_structure">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">get_graph_structure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nbr_graphs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.get_graph_structure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.plot2d">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">plot2d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_datas</span></em>, <em class="sig-param"><span class="n">y_datas</span></em>, <em class="sig-param"><span class="n">x_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x_ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_linestyles</span><span class="o">=</span><span class="default_value">['-']</span></em>, <em class="sig-param"><span class="n">plot_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_titles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_colors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">opacity</span><span class="o">=</span><span class="default_value">[0.2]</span></em>, <em class="sig-param"><span class="n">fig_title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">1920.0, 1080.0</span></em>, <em class="sig-param"><span class="n">triangle_layout</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.plot2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot an 2D graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_datas</strong> -- The data on the x axis.</p></li>
+<li><p><strong>y_datas</strong> -- The data on the y axis.</p></li>
+<li><p><strong>x_label</strong> -- The labels for each axis on each plot along the x axis.</p></li>
+<li><p><strong>y_label</strong> -- The labels for each axis on each plot along the y axis.</p></li>
+<li><p><strong>x_range</strong> -- The ranges for each axis on each plot along the x axis.</p></li>
+<li><p><strong>y_range</strong> -- The ranges for each axis on each plot along the y axis.</p></li>
+<li><p><strong>plot_linestyle</strong> -- The linestyle of the lines.</p></li>
+<li><p><strong>plot_labels</strong> -- The labels for each lines on each plot.</p></li>
+<li><p><strong>plot_titles</strong> -- The title of each plot.</p></li>
+<li><p><strong>plot_colors</strong> -- The color of each line on each plot.</p></li>
+<li><p><strong>plot_groups</strong> -- The group of each line. The line having the same number will be
+displayed on the plot.</p></li>
+<li><p><strong>split</strong> -- If True, split all the lines in one plote. If False, group all
+the lines in one plot. Only considered if plot_groups is None.</p></li>
+<li><p><strong>opacity</strong> -- The opacity of the lines.</p></li>
+<li><p><strong>fig_title</strong> -- The figure title.</p></li>
+<li><p><strong>filename</strong> -- The filename where to save the image. If provided, the
+animation will be saved.</p></li>
+<li><p><strong>resolution</strong> -- The resolution with which to save the image.</p></li>
+<li><p><strong>triangle_layout</strong> -- Option for 3 plots, if True, put the one wide plot at the bottom
+and the 2 other plots on the top.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.plot3d">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">plot3d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_datas</span></em>, <em class="sig-param"><span class="n">y_datas</span></em>, <em class="sig-param"><span class="n">z_datas</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x_ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z_ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_titles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_colors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">opacity</span><span class="o">=</span><span class="default_value">[0.8]</span></em>, <em class="sig-param"><span class="n">fig_title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">1920.0, 1080.0</span></em>, <em class="sig-param"><span class="n">plot_types</span><span class="o">=</span><span class="default_value">['plot_surface']</span></em>, <em class="sig-param"><span class="n">triangle_layout</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.plot3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot an 3D graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_datas</strong> -- The data on the x axis.</p></li>
+<li><p><strong>y_datas</strong> -- The data on the y axis.</p></li>
+<li><p><strong>z_datas</strong> -- The data on the z axis.</p></li>
+<li><p><strong>x_label</strong> -- The labels for each axis on each plot along the x axis.</p></li>
+<li><p><strong>y_label</strong> -- The labels for each axis on each plot along the y axis.</p></li>
+<li><p><strong>z_label</strong> -- The labels for each axis on each plot along the z axis.</p></li>
+<li><p><strong>x_range</strong> -- The ranges for each axis on each plot along the x axis.</p></li>
+<li><p><strong>y_range</strong> -- The ranges for each axis on each plot along the y axis.</p></li>
+<li><p><strong>z_range</strong> -- The ranges for each axis on each plot along the z axis.</p></li>
+<li><p><strong>plot_linestyle</strong> -- The linestyle of the lines.</p></li>
+<li><p><strong>plot_labels</strong> -- The labels for each lines on each plot.</p></li>
+<li><p><strong>plot_titles</strong> -- The title of each plot.</p></li>
+<li><p><strong>plot_colors</strong> -- The color of each line on each plot.</p></li>
+<li><p><strong>plot_groups</strong> -- The group of each line. The line having the same number will be
+displayed on the plot.</p></li>
+<li><p><strong>split</strong> -- If True, split all the lines in one plote. If False, group all
+the lines in one plot. Only considered if plot_groups is None.</p></li>
+<li><p><strong>opacity</strong> -- The opacity of the lines.</p></li>
+<li><p><strong>fig_title</strong> -- The figure title.</p></li>
+<li><p><strong>filename</strong> -- The filename where to save the image. If provided, the
+animation will be saved.</p></li>
+<li><p><strong>resolution</strong> -- The resolution with which to save the image.</p></li>
+<li><p><strong>plot_types</strong> -- The type of each plot, see matplotlib documentation for more.</p></li>
+<li><p><strong>triangle_layout</strong> -- Option for 3 plots, if True, put the one wide plot at the bottom
+and the 2 other plots on the top.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="optcom.utils.plot.plot_graph">
+<code class="sig-prename descclassname">optcom.utils.plot.</code><code class="sig-name descname">plot_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">fig_title</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.plot.plot_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.storage">
+<span id="optcom-utils-storage-module"></span><h2>optcom.utils.storage module<a class="headerlink" href="#module-optcom.utils.storage" title="Permalink to this headline">¶</a></h2>
+<dl class="py exception">
+<dt id="optcom.utils.storage.DimWarning">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.storage.</code><code class="sig-name descname">DimWarning</code><a class="headerlink" href="#optcom.utils.storage.DimWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optcom.utils.storage.StorageWarning" title="optcom.utils.storage.StorageWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.utils.storage.StorageWarning</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="optcom.utils.storage.Storage">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.storage.</code><code class="sig-name descname">Storage</code><a class="headerlink" href="#optcom.utils.storage.Storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Store computation step parameters and waves.</p>
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.append">
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channels</span></em>, <em class="sig-param"><span class="n">noises</span></em>, <em class="sig-param"><span class="n">space</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">center_omega</span></em>, <em class="sig-param"><span class="n">rep_freq</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.storage.Storage.append" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.center_omega">
+<em class="property">property </em><code class="sig-name descname">center_omega</code><a class="headerlink" href="#optcom.utils.storage.Storage.center_omega" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.channels">
+<em class="property">property </em><code class="sig-name descname">channels</code><a class="headerlink" href="#optcom.utils.storage.Storage.channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.extend">
+<code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">storage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.storage.Storage.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extend the current storage with the provided storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>storage</strong> (<a class="reference internal" href="#optcom.utils.storage.Storage" title="optcom.utils.storage.Storage"><em>optcom.utils.storage.Storage</em></a>) -- The storage from which to extend.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.nbr_channels">
+<em class="property">property </em><code class="sig-name descname">nbr_channels</code><a class="headerlink" href="#optcom.utils.storage.Storage.nbr_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.noises">
+<em class="property">property </em><code class="sig-name descname">noises</code><a class="headerlink" href="#optcom.utils.storage.Storage.noises" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.rep_freq">
+<em class="property">property </em><code class="sig-name descname">rep_freq</code><a class="headerlink" href="#optcom.utils.storage.Storage.rep_freq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.samples">
+<em class="property">property </em><code class="sig-name descname">samples</code><a class="headerlink" href="#optcom.utils.storage.Storage.samples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.space">
+<em class="property">property </em><code class="sig-name descname">space</code><a class="headerlink" href="#optcom.utils.storage.Storage.space" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.steps">
+<em class="property">property </em><code class="sig-name descname">steps</code><a class="headerlink" href="#optcom.utils.storage.Storage.steps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.storage.Storage.time">
+<em class="property">property </em><code class="sig-name descname">time</code><a class="headerlink" href="#optcom.utils.storage.Storage.time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.utils.storage.StorageWarning">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.storage.</code><code class="sig-name descname">StorageWarning</code><a class="headerlink" href="#optcom.utils.storage.StorageWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.synchroniser">
+<span id="optcom-utils-synchroniser-module"></span><h2>optcom.utils.synchroniser module<a class="headerlink" href="#module-optcom.utils.synchroniser" title="Permalink to this headline">¶</a></h2>
+<dl class="py exception">
+<dt id="optcom.utils.synchroniser.InitializationError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.synchroniser.</code><code class="sig-name descname">InitializationError</code><a class="headerlink" href="#optcom.utils.synchroniser.InitializationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optcom.utils.synchroniser.SynchroniserError" title="optcom.utils.synchroniser.SynchroniserError"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.utils.synchroniser.SynchroniserError</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="optcom.utils.synchroniser.Synchroniser">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.synchroniser.</code><code class="sig-name descname">Synchroniser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">INTRA_COMP_DELAY</span></em>, <em class="sig-param"><span class="n">INTRA_PORT_DELAY</span></em>, <em class="sig-param"><span class="n">INTER_PORT_DELAY</span></em>, <em class="sig-param"><span class="n">REP_FREQ_DELAY</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.synchroniser.Synchroniser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>INTRA_COMP_DELAY</strong> -- If True, take into account the relative time difference,
+between all waves, that is acquired while propagating
+in the component.</p></li>
+<li><p><strong>INTRA_PORT_DELAY</strong> -- If True, take into account the initial relative time
+difference between channels of all fields but for each port.</p></li>
+<li><p><strong>INTER_PORT_DELAY</strong> -- If True, take into account the initial relative time
+difference between channels of all fields of all ports.</p></li>
+<li><p><strong>REP_FREQ_DELAY</strong> -- If True, take into account the pulses at regular interval
+specified by the repetition frequency.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="optcom.utils.synchroniser.Synchroniser.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_delays</span></em>, <em class="sig-param"><span class="n">rep_freqs</span></em>, <em class="sig-param"><span class="n">id_tracker</span></em>, <em class="sig-param"><span class="n">dtime</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.synchroniser.Synchroniser.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.utils.synchroniser.Synchroniser.sync">
+<code class="sig-name descname">sync</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">waves</span></em>, <em class="sig-param"><span class="n">delays</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.synchroniser.Synchroniser.sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust the wave envelopes in waves depending on their delays
+compare to the waves at the reference position id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waves</strong> -- The envelope value of each wave at each time step.</p></li>
+<li><p><strong>delays</strong> -- The current delays of each wave.</p></li>
+<li><p><strong>id</strong> -- The reference position of the wave from which to
+synchronise the other waves.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array containing the waves synchronised with the wave at
+reference position id.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.utils.synchroniser.SynchroniserError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.utils.synchroniser.</code><code class="sig-name descname">SynchroniserError</code><a class="headerlink" href="#optcom.utils.synchroniser.SynchroniserError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.taylor">
+<span id="optcom-utils-taylor-module"></span><h2>optcom.utils.taylor module<a class="headerlink" href="#module-optcom.utils.taylor" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.utils.taylor.Taylor">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.utils.taylor.</code><code class="sig-name descname">Taylor</code><a class="headerlink" href="#optcom.utils.taylor.Taylor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represent a Taylor series.</p>
+<dl class="py method">
+<dt id="optcom.utils.taylor.Taylor.series">
+<em class="property">static </em><code class="sig-name descname">series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">derivative</span></em>, <em class="sig-param"><span class="n">x_diff</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">skip</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.utils.taylor.Taylor.series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Taylor series according to the given
+parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>derivative</strong> -- The derivatives of the function to approximate.</p></li>
+<li><p><strong>x_diff</strong> -- The values of the variables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Taylor series evaluation.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(x) &amp;= \sum_{n=0}^N \frac{f_n}{n!}
+(x - x_0)^n \quad \text{where}
+\quad f_n = \left. \frac{d^n f}{dx^n}
+\right\rvert_{x = x_0}\\\end{split}\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.utils.utilities">
+<span id="optcom-utils-utilities-module"></span><h2>optcom.utils.utilities module<a class="headerlink" href="#module-optcom.utils.utilities" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-optcom.utils.utilities_user">
+<span id="optcom-utils-utilities-user-module"></span><h2>optcom.utils.utilities_user module<a class="headerlink" href="#module-optcom.utils.utilities_user" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-optcom.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-optcom.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="optcom.utils.constant_values.html" class="btn btn-neutral float-right" title="optcom.utils.constant_values package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="optcom.solvers.html" class="btn btn-neutral float-left" title="optcom.solvers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Sacha Medaer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

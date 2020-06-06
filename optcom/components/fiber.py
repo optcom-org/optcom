@@ -20,13 +20,16 @@ from typing import Callable, List, Optional, Sequence, Tuple, Union
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.components.abstract_pass_comp import AbstractPassComp
+from optcom.components.abstract_pass_comp import call_decorator
 from optcom.domain import Domain
+from optcom.equations.abstract_nlse import AbstractNLSE
 from optcom.equations.anlse import ANLSE
 from optcom.equations.gnlse import GNLSE
 from optcom.equations.nlse import NLSE
 from optcom.field import Field
+from optcom.solvers.field_stepper import FieldStepper
 from optcom.solvers.nlse_solver import NLSESolver
-from optcom.solvers.stepper import Stepper
+from optcom.solvers.ode_solver import ODESolver
 
 
 default_name = 'Fiber'
@@ -44,7 +47,23 @@ class Fiber(AbstractPassComp):
         ports in the component. For types, see
         :mod:`optcom/utils/constant_values/port_types`.
     save : bool
-        If True, the last wave to enter/exit a port will be saved.
+        If True, will save each field going through each port. The
+        recorded fields can be accessed with the attribute
+        :attr:`fields`.
+    call_counter : int
+        Count the number of times the function
+        :func:`__call__` of the Component has been called.
+    wait :
+        If True, will wait for specified waiting port policy added
+        with the function :func:`AbstractComponent.add_wait_policy`.
+    pre_call_code :
+        A string containing code which will be executed prior to
+        the call to the function :func:`__call__`. The two parameters
+        `input_ports` and `input_fields` are available.
+    post_call_code :
+        A string containing code which will be executed posterior to
+        the call to the function :func:`__call__`. The two parameters
+        `output_ports` and `output_fields` are available.
 
     Notes
     -----
@@ -59,22 +78,36 @@ class Fiber(AbstractPassComp):
 
     def __init__(self, name: str = default_name, length: float = 1.0,
                  alpha: Optional[Union[List[float], Callable]] = None,
-                 alpha_order: int = 1,
+                 alpha_order: int = 0,
                  beta: Optional[Union[List[float], Callable]] = None,
                  beta_order: int = 2,
                  gamma: Optional[Union[float, Callable]] = None,
-                 sigma: float = cst.KERR_COEFF, eta: float = cst.XPM_COEFF,
+                 sigma: float = cst.XPM_COEFF, eta: float = cst.XNL_COEFF,
                  T_R: float = cst.RAMAN_COEFF,
-                 tau_1: float = cst.TAU_1, tau_2: float = cst.TAU_2,
+                 h_R: Optional[Union[float, Callable]] = None,
                  f_R: float = cst.F_R, core_radius: float = cst.CORE_RADIUS,
-                 NA: Union[float, Callable] = cst.NA, nl_approx: bool = True,
-                 ATT: bool = True, DISP: bool = True, SPM: bool = True,
-                 XPM: bool = False, FWM: bool = False, SS: bool = False,
-                 RS: bool = False, approx_type: int = cst.DEFAULT_APPROX_TYPE,
-                 method: str = "rk4ip", steps: int = 100,
-                 medium: str = cst.DEF_FIBER_MEDIUM, save: bool = False,
-                 save_all: bool = False,
-                 max_nbr_pass: Optional[List[int]] = None) -> None:
+                 clad_radius: float = cst.CLAD_RADIUS,
+                 n_core: Optional[Union[float, Callable]] = None,
+                 n_clad: Optional[Union[float, Callable]] = None,
+                 NA: Optional[Union[float, Callable]] = None,
+                 v_nbr: Optional[Union[float, Callable]] = None,
+                 eff_area: Optional[Union[float, Callable]] = None,
+                 nl_index: Optional[Union[float, Callable]] = None,
+                 nl_approx: bool = True,
+                 medium_core: str = cst.FIBER_MEDIUM_CORE,
+                 medium_clad: str = cst.FIBER_MEDIUM_CLAD,
+                 temperature: float = cst.TEMPERATURE, ATT: bool = True,
+                 DISP: bool = True, SPM: bool = True, XPM: bool = False,
+                 FWM: bool = False, SS: bool = False, RS: bool = False,
+                 XNL: bool = False, NOISE: bool = True,
+                 approx_type: int = cst.DEFAULT_APPROX_TYPE,
+                 noise_ode_method: str = 'rk4', UNI_OMEGA: bool = True,
+                 STEP_UPDATE: bool = False, INTRA_COMP_DELAY: bool = True,
+                 INTRA_PORT_DELAY: bool = True, INTER_PORT_DELAY: bool = False,
+                 nlse_method: str = "rk4ip", step_method: str = "fixed",
+                 steps: int = 100, save: bool = False, save_all: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None,
+                 pre_call_code: str = '', post_call_code: str = '') -> None:
         r"""
         Parameters
         ----------
@@ -104,26 +137,50 @@ class Fiber(AbstractPassComp):
             provided, variable must be angular frequency.
             :math:`[ps^{-1}]`
         sigma :
-            Positive term multiplying the XPM term of the NLSE
+            Positive term multiplying the XPM terms of the NLSE.
         eta :
-            Positive term muiltiplying the XPM in other non linear
-            terms of the NLSE
+            Positive term multiplying the cross-non-linear terms of the
+            NLSE.
         T_R :
             The raman coefficient. :math:`[]`
-        tau_1 :
-            The inverse of vibrational frequency of the fiber core
-            molecules. :math:`[ps]`
-        tau_2 :
-            The damping time of vibrations. :math:`[ps]`
+        h_R :
+            The Raman response function values.  If a callable is
+            provided, variable must be time. :math:`[ps]`
         f_R :
             The fractional contribution of the delayed Raman response.
             :math:`[]`
         core_radius :
             The radius of the core. :math:`[\mu m]`
+        clad_radius :
+            The radius of the cladding. :math:`[\mu m]`
+        n_core :
+            The refractive index of the core.  If a callable is
+            provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
+        n_clad :
+            The refractive index of the clading.  If a callable is
+            provided, variable must be angular frequency.
+            :math:`[ps^{-1}]`
         NA :
-            The numerical aperture.
+            The numerical aperture.  If a callable is provided, variable
+            must be angular frequency. :math:`[ps^{-1}]`
+        v_nbr :
+            The V number.  If a callable is provided, variable must be
+            angular frequency. :math:`[ps^{-1}]`
+        eff_area :
+            The effective area.  If a callable is provided, variable
+            must be angular frequency. :math:`[ps^{-1}]`
+        nl_index :
+            The non-linear coefficient.  If a callable is provided,
+            variable must be angular frequency. :math:`[ps^{-1}]`
         nl_approx :
             If True, the approximation of the NLSE is used.
+        medium_core :
+            The medium of the fiber core.
+        medium_clad :
+            The medium of the fiber cladding.
+        temperature :
+            The temperature of the fiber. :math:`[K]`
         ATT :
             If True, trigger the attenuation.
         DISP :
@@ -138,14 +195,36 @@ class Fiber(AbstractPassComp):
             If True, trigger the self-steepening.
         RS :
             If True, trigger the Raman scattering.
+        XNL :
+            If True, trigger cross-non linear effects.
         approx_type :
             The type of the NLSE approximation.
-        method :
-            The solver method type
+        NOISE :
+            If True, trigger the noise calculation.
+        noise_ode_method :
+            The ode solver method type for noise propagation
+            computation.
+        UNI_OMEGA :
+            If True, consider only the center omega for computation.
+            Otherwise, considered omega discretization.
+        STEP_UPDATE :
+            If True, update fiber parameters at each spatial sub-step.
+        INTRA_COMP_DELAY :
+            If True, take into account the relative time difference,
+            between all waves, that is acquired while propagating
+            in the component.
+        INTRA_PORT_DELAY :
+            If True, take into account the initial relative time
+            difference between channels of all fields but for each port.
+        INTER_PORT_DELAY :
+            If True, take into account the initial relative time
+            difference between channels of all fields of all ports.
+        nlse_method :
+            The nlse solver method type.
+        step_method :
+            The method for spatial step size generation.
         steps :
             The number of steps for the solver
-        medium :
-            The main medium of the fiber.
         save :
             If True, the last wave to enter/exit a port will be saved.
         save_all :
@@ -155,12 +234,22 @@ class Fiber(AbstractPassComp):
             No fields will be propagated if the number of
             fields which passed through a specific port exceed the
             specified maximum number of pass for this port.
+        pre_call_code :
+            A string containing code which will be executed prior to
+            the call to the function :func:`__call__`. The two parameters
+            `input_ports` and `input_fields` are available.
+        post_call_code :
+            A string containing code which will be executed posterior to
+            the call to the function :func:`__call__`. The two parameters
+            `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
         ports_type = [cst.OPTI_ALL, cst.OPTI_ALL]
         super().__init__(name, default_name, ports_type, save,
-                         max_nbr_pass=max_nbr_pass)
+                         max_nbr_pass=max_nbr_pass,
+                         pre_call_code=pre_call_code,
+                         post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
         util.check_attr_type(length, 'length', float)
         util.check_attr_type(alpha, 'alpha', None, Callable, float, List)
@@ -171,12 +260,20 @@ class Fiber(AbstractPassComp):
         util.check_attr_type(sigma, 'sigma', float)
         util.check_attr_type(eta, 'eta', float)
         util.check_attr_type(T_R, 'T_R', float)
-        util.check_attr_type(tau_1, 'tau_1', float)
-        util.check_attr_type(tau_2, 'tau_2', float)
+        util.check_attr_type(h_R, 'h_R', None, float, callable)
         util.check_attr_type(f_R, 'f_R', float)
-        util.check_attr_type(nl_approx, 'nl_approx', bool)
         util.check_attr_type(core_radius, 'core_radius', float)
-        util.check_attr_type(NA, 'NA', float, Callable)
+        util.check_attr_type(clad_radius, 'clad_radius', float)
+        util.check_attr_type(n_core, 'n_core', None, float, Callable)
+        util.check_attr_type(n_clad, 'n_clad', None, float, Callable)
+        util.check_attr_type(NA, 'NA', None, float, Callable)
+        util.check_attr_type(v_nbr, 'v_nbr', None, float, Callable)
+        util.check_attr_type(eff_area, 'eff_area', None, float, Callable)
+        util.check_attr_type(nl_index, 'nl_index', None, float, Callable)
+        util.check_attr_type(nl_approx, 'nl_approx', bool)
+        util.check_attr_type(medium_core, 'medium_core', str)
+        util.check_attr_type(medium_clad, 'medium_clad', str)
+        util.check_attr_type(temperature, 'temperature', float)
         util.check_attr_type(ATT, 'ATT', bool)
         util.check_attr_type(DISP, 'DISP', bool)
         util.check_attr_type(SPM, 'SPM', bool)
@@ -184,34 +281,55 @@ class Fiber(AbstractPassComp):
         util.check_attr_type(FWM, 'FWM', bool)
         util.check_attr_type(SS, 'SS', bool)
         util.check_attr_type(RS, 'RS', bool)
+        util.check_attr_type(XNL, 'XNL', bool)
+        util.check_attr_type(NOISE, 'NOISE', bool)
         util.check_attr_type(approx_type, 'approx_type', int)
-        util.check_attr_type(method, 'method', str)
+        util.check_attr_type(noise_ode_method, 'noise_ode_method', str)
+        util.check_attr_type(UNI_OMEGA, 'UNI_OMEGA', bool)
+        util.check_attr_type(STEP_UPDATE, 'STEP_UPDATE', bool)
+        util.check_attr_type(INTRA_COMP_DELAY, 'INTRA_COMP_DELAY', bool)
+        util.check_attr_type(INTRA_PORT_DELAY, 'INTRA_PORT_DELAY', bool)
+        util.check_attr_type(INTER_PORT_DELAY, 'INTER_PORT_DELAY', bool)
+        util.check_attr_type(nlse_method, 'nlse_method', str)
+        util.check_attr_type(step_method, 'step_method', str)
         util.check_attr_type(steps, 'steps', int)
-        util.check_attr_type(medium, 'medium', str)
         # Attr ---------------------------------------------------------
-        if (nl_approx):
+        nlse: AbstractNLSE
+        if (nl_approx or (not RS and not SS)):
             nlse = ANLSE(alpha, alpha_order, beta, beta_order, gamma, sigma,
-                         eta, T_R, core_radius, NA, ATT, DISP, SPM, XPM, FWM,
-                         SS, RS, approx_type, medium)
+                         eta, T_R, core_radius, clad_radius, n_core, n_clad,
+                         NA, v_nbr, eff_area, nl_index, medium_core,
+                         medium_clad, temperature, ATT, DISP, SPM, XPM, FWM,
+                         SS, RS, XNL, NOISE, approx_type, UNI_OMEGA,
+                         STEP_UPDATE, INTRA_COMP_DELAY, INTRA_PORT_DELAY,
+                         INTER_PORT_DELAY)
         else:
             if (SS):
                 nlse = GNLSE(alpha, alpha_order, beta, beta_order, gamma,
-                             sigma, tau_1, tau_2, f_R, core_radius, NA, ATT,
-                             DISP, SPM, XPM, FWM, medium)
+                             sigma, eta, h_R, f_R, core_radius, clad_radius,
+                             n_core, n_clad, NA, v_nbr, eff_area, nl_index,
+                             medium_core, medium_clad, temperature, ATT, DISP,
+                             SPM, XPM, FWM, XNL, NOISE, UNI_OMEGA, STEP_UPDATE,
+                             INTRA_COMP_DELAY, INTRA_PORT_DELAY,
+                             INTER_PORT_DELAY)
             else:
-                nlse = NLSE(alpha, alpha_order, beta, beta_order, gamma, sigma,
-                            tau_1, tau_2, f_R, core_radius, NA, ATT, DISP, SPM,
-                            XPM, FWM, medium)
-        # Special case for gnlse and rk4ip method
-        if (SS and not nl_approx and (method == "rk4ip") and cst.RK4IP_GNLSE):
-            method = "rk4ip_gnlse"
-        solver = NLSESolver(nlse, method)
-        step_method = "fixed"   # to change later when implementing adaptative
-        self._stepper = Stepper([solver], length, [steps],
-                                [step_method], save_all=save_all)
+                nlse = NLSE(alpha, alpha_order, beta, beta_order, gamma,
+                            sigma, eta, h_R, f_R, core_radius, clad_radius,
+                            n_core, n_clad, NA, v_nbr, eff_area, nl_index,
+                            medium_core, medium_clad, temperature, ATT, DISP,
+                            SPM, XPM, FWM, XNL, NOISE, UNI_OMEGA, STEP_UPDATE,
+                            INTRA_COMP_DELAY, INTRA_PORT_DELAY,
+                            INTER_PORT_DELAY)
+        solver: NLSESolver = NLSESolver(nlse, nlse_method)
+        noise_solver: ODESolver = ODESolver(nlse.calc_noise, 'rk4')
+        self._stepper: FieldStepper = FieldStepper([solver], [noise_solver],
+                                                   length, [steps],
+                                                   [step_method],
+                                                   save_all=save_all)
         # Policy -------------------------------------------------------
         self.add_port_policy(([0], [1], True))
     # ==================================================================
+    @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
@@ -226,42 +344,60 @@ class Fiber(AbstractPassComp):
 
 
 if __name__ == "__main__":
+    """Give an example of Fiber usage.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
 
-    import sys
+    from typing import Callable, List, Optional
+
     import numpy as np
-    from scipy import interpolate
+
     import optcom.utils.plot as plot
-    import optcom.layout as layout
-    import optcom.components.gaussian as gaussian
-    import optcom.domain as domain
+    from optcom.components.fiber import Fiber
+    from optcom.components.gaussian import Gaussian
+    from optcom.domain import Domain
+    from optcom.layout import Layout
+    from optcom.parameters.fiber.effective_area import EffectiveArea
+    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
+    from optcom.parameters.fiber.v_number import VNumber
+    from optcom.parameters.refractive_index.sellmeier import Sellmeier
     from optcom.utils.utilities_user import temporal_power, spectral_power,\
-        CSVFit
+                                            temporal_phase, spectral_phase
 
+    noise_samples = 200
+    domain: Domain = Domain(samples_per_bit=2048,bit_width=70.0,
+                            noise_samples=noise_samples)
+    lt: Layout = Layout(domain)
 
-    lt = layout.Layout(domain.Domain(samples_per_bit=512,bit_width=20.0))
-    pulse = gaussian.Gaussian(channels=2, peak_power=[10.0, 10e-1],
-                              width=[1.0, 5.0], center_lambda=[1050.0, 1048.0])
-    gamma_data = CSVFit('./data/gamma_test.txt')
-    fiber = Fiber(length=.10, method="ssfm_symmetric", alpha=[0.046],
-                  alpha_order=4, beta_order=4, gamma=1.5,
-                  nl_approx=False, ATT=True, DISP=True,
-                  SPM=True, XPM=False, SS=False, RS=False, approx_type=1,
-                  steps=1000, medium='sio2')
+    pulse: Gaussian = Gaussian(channels=4, peak_power=[10.0, 10e-1, 5.0, 7.0],
+                               width=[0.1, 5.0, 3.0, 4.0],
+                               center_lambda=[1050.0, 1048.0, 1049.0, 1051.0],
+                               noise=np.ones(noise_samples)*4)
+    fiber = Fiber(length=0.05, nlse_method="ssfm", alpha=[.46],
+                  nl_approx=False, ATT=True, DISP=True, gamma=10.,
+                  SPM=True, XPM=False, SS=True, RS=True, XNL=False,
+                  approx_type=1, steps=1000, medium_core='sio2',
+                  UNI_OMEGA=True, STEP_UPDATE=False, save_all=True,
+                  INTRA_COMP_DELAY=True, INTRA_PORT_DELAY=False,
+                  INTER_PORT_DELAY=False, noise_ode_method='rk1',
+                  NOISE=True)
     lt.link((pulse[0], fiber[0]))
     lt.run(pulse)
 
-    x_datas = [pulse[0][0].nu, fiber[1][0].nu,
-               pulse[0][0].time, fiber[1][0].time]
+    x_datas: List[np.ndarray] = [pulse[0][0].nu, fiber[1][0].nu,
+                                 pulse[0][0].time, fiber[1][0].time]
 
-    y_datas = [spectral_power(pulse[0][0].channels),
-               spectral_power(fiber[1][0].channels),
-               temporal_power(pulse[0][0].channels),
-               temporal_power(fiber[1][0].channels)]
+    y_datas: List[np.ndarray] = [spectral_power(pulse[0][0].channels),
+                                 spectral_power(fiber[1][0].channels),
+                                 temporal_power(pulse[0][0].channels),
+                                 temporal_power(fiber[1][0].channels)]
 
-    x_labels = ['nu', 'nu', 't', 't']
-    y_labels = ['P_nu', 'P_nu', 'P_t', 'P_t']
-    plot_titles = ["Original Pulse", "Pulse at the end of the fiber"]
+    x_labels: List[str] = ['nu', 'nu', 't', 't']
+    y_labels: List[str] = ['P_nu', 'P_nu', 'P_t', 'P_t']
+    plot_titles: List[str] = ["Original Pulses",
+                              "Pulses at the end of the fiber"]
     plot_titles.extend(plot_titles)
 
     plot.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, plot_groups=[0,1,2,3], opacity=0.3)
+                plot_titles=plot_titles, split=True, opacity=[0.3])

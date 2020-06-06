@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python3.7" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python3.7" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Modules Description &mdash; Optcom 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="optcom" href="modules.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Optcom
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Modules Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-framework">Simulation Framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#field">Field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#component">Component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#domain">Domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#layout">Layout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-tools">Simulation Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#constraints">Constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#effects">Effects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#equations">Equations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solvers">Solvers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">optcom</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Optcom</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Modules Description</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/modules_perso.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="modules-description">
+<h1>Modules Description<a class="headerlink" href="#modules-description" title="Permalink to this headline">¶</a></h1>
+<p>This document will drive you through the architecture of Optcom.</p>
+<div class="section" id="simulation-framework">
+<h2>Simulation Framework<a class="headerlink" href="#simulation-framework" title="Permalink to this headline">¶</a></h2>
+<p>The Layout, Domain, Field and Component are the building blocks of Optcom's optical system simulation framework.</p>
+<div class="section" id="field">
+<h3>Field<a class="headerlink" href="#field" title="Permalink to this headline">¶</a></h3>
+<p>Fields represent an electric or optical signal. The object Field can contain multiple channels and save the values of the electro-magnetic field envelopes as well as other physic's characteristics. Moreover, a variety of helper functions are available for Field objects.</p>
+</div>
+<div class="section" id="component">
+<h3>Component<a class="headerlink" href="#component" title="Permalink to this headline">¶</a></h3>
+<p>Components represent electric or optical physical block such as laser, fiber and so on. There are two types of components in Optcom. First, <code class="docutils literal notranslate"><span class="pre">StartComp</span></code> which create a Field object and can launch the simulation. Second, <code class="docutils literal notranslate"><span class="pre">PassComp</span></code> which receive Field objects, transform it, and pass it along to the next component. A component is composed of ports.</p>
+</div>
+<div class="section" id="domain">
+<h3>Domain<a class="headerlink" href="#domain" title="Permalink to this headline">¶</a></h3>
+<p>The domain contains information, i.e. physic's parameters, that will be shared by all components.</p>
+</div>
+<div class="section" id="layout">
+<h3>Layout<a class="headerlink" href="#layout" title="Permalink to this headline">¶</a></h3>
+<p>A Layout allow to build a system by connecting the components to each other via their ports. Morevore, the Layout is managing the propagation of the Domain and Fields through the system.</p>
+</div>
+</div>
+<div class="section" id="simulation-tools">
+<h2>Simulation Tools<a class="headerlink" href="#simulation-tools" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="constraints">
+<h3>Constraints<a class="headerlink" href="#constraints" title="Permalink to this headline">¶</a></h3>
+<p>The Constraint objects represent constraints that the layout must comply whith while propagating Field objects in the Layout.</p>
+</div>
+<div class="section" id="effects">
+<h3>Effects<a class="headerlink" href="#effects" title="Permalink to this headline">¶</a></h3>
+<p>The Effect object represent electric / optical effect that can be used to define equations.</p>
+</div>
+<div class="section" id="equations">
+<h3>Equations<a class="headerlink" href="#equations" title="Permalink to this headline">¶</a></h3>
+<p>The Equation object is used to define equations that need a numerical solver and which describe the Field object transformation in a component.</p>
+</div>
+<div class="section" id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
+<p>The Parameter object is a standalone object which can be used as a helper object. It describes a physic's parameter such as the refractive index.</p>
+</div>
+<div class="section" id="solvers">
+<h3>Solvers<a class="headerlink" href="#solvers" title="Permalink to this headline">¶</a></h3>
+<p>The solver object is used to numerically solve the Equation objects.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modules.html" class="btn btn-neutral float-right" title="optcom" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Sacha Medaer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

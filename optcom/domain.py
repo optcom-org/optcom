@@ -17,10 +17,9 @@
 
 from __future__ import annotations
 
-from typing import Any, overload
+from typing import Any, overload, Tuple
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
@@ -28,7 +27,8 @@ import optcom.utils.utilities as util
 
 class Domain(object):
     r"""Contain shared information about fields propagating in the
-    layout.
+    same layout. Contain static methods for main physics variable
+    conversion.
 
     Attributes
     ----------
@@ -37,29 +37,39 @@ class Domain(object):
     samples : int
         Total number of samples per signal.
     time : numpy.ndarray of float
-        Absolute time values for any signal.
+        Absolute time values for any signal. :math:`[ps]`
     dtime : float
-        The time step size.
+        The time step size. :math:`[ps]`
     time_window: float
-        The time window.
+        The time window. :math:`[ps]`
     omega : numpy.ndarray of float
         Absolute angular frequency values for any signal.
+        :math:`[ps^{-1}]`
     domega : float
-        The angular frequency step size.
+        The angular frequency step size. :math:`[ps^{-1}]`
     omega_window: float
-        The angular frequency window.
+        The angular frequency window. :math:`[ps^{-1}]`
     nu : numpy.ndarray of float
-        Absolute frequency values for any signal.
+        Absolute frequency values for any signal. :math:`[ps^{-1}]`
     dnu : float
-        The frequency step size.
+        The frequency step size. :math:`[ps^{-1}]`
     nu_window: float
-        The frequency window.
+        The frequency window. :math:`[ps^{-1}]`
+    noise_samples :
+        The number of samples in the noise wavelength range.
+    noise_domega :
+        The angular frequency step size of the noise. :math:`[ps^{-1}]`
+    noise_omega_window :
+        The angular frequency window of the noise. :math:`[ps^{-1}]`
+    noise_omega :
+        The angular frequency values of the noise :math:`[ps^{-1}]`
 
     """
 
     def __init__(self, bits: int = 1, bit_width: float = 100.0,
-                 samples_per_bit: int = 512, memory_storage: float = 1.0
-                 ) -> None:
+                 samples_per_bit: int = 512, memory_storage: float = 1.0,
+                 noise_range: Tuple[float, float] = (900.0,1600.0),
+                 noise_samples: int = 250) -> None:
         r"""
         Parameters
         ----------
@@ -73,6 +83,11 @@ class Domain(object):
             Max memory available if recording all steps of computation.
             Will be used if the attribute :attr:`save_all` of
             :class:`AbstractComponent` is True. :math:`[Gb]`
+        noise_range :
+            The wavelength range in which the noise must be considered.
+            :math:`[nm]`
+        noise_samples :
+            The number of samples in the noise wavelength range.
 
         """
         # Attr types check ---------------------------------------------
@@ -80,6 +95,8 @@ class Domain(object):
         util.check_attr_type(bit_width, 'bit_width', int, float)
         util.check_attr_type(samples_per_bit, 'samples_per_bit', int)
         util.check_attr_type(memory_storage, 'memory_storage', int, float)
+        util.check_attr_type(noise_range, 'noise_range', tuple)
+        util.check_attr_type(noise_samples, 'noise_samples', int)
         # Attr range check ---------------------------------------------
         util.check_attr_range(bits, 'bits', cst.MIN_BITS, cst.MAX_BITS)
         util.check_attr_range(samples_per_bit, 'samples_per_bit',
@@ -96,13 +113,46 @@ class Domain(object):
         self._time_window: float = self._bits * self._bit_width
         self._time, self._dtime = np.linspace(0.0, self._time_window,
                                               self._samples, False, True)
-        #  Angular Frequency -------------------------------------------
+        # Angular Frequency --------------------------------------------
         # log for omega compared to t
         self._omega_window = Domain.nu_to_omega(1.0 / self._dtime)
         self._omega, self._domega = np.linspace(-0.5*self._omega_window,
                                                 0.5*self._omega_window,
                                                 self._samples, False,
                                                 True)
+        # Noise --------------------------------------------------------
+        omega_noise_lower = Domain.lambda_to_omega(noise_range[1])
+        omega_noise_upper = Domain.lambda_to_omega(noise_range[0])
+        self._noise_omega_window: float = omega_noise_upper - omega_noise_lower
+        self._noise_samples: int = noise_samples
+        self._noise_omega, self._noise_domega = np.linspace(omega_noise_lower,
+                                                            omega_noise_upper,
+                                                            noise_samples,
+                                                            False, True)
+    # ==================================================================
+    # In-build methods =================================================
+    # ==================================================================
+    def __eq__(self, operand) -> bool:
+        """Two domains are equal if they share the same characteristics.
+        """
+        if (not isinstance(operand, Domain)):
+
+            return False
+        else:
+
+            return ((self.memory == operand.memory)
+                    and (self.bits == operand.bits)
+                    and (self.samples == operand.samples)
+                    and (np.array_equal(self.time, operand.time))
+                    and (self.dtime == operand.dtime)
+                    and (self.time_window == operand.time_window)
+                    and (np.array_equal(self.omega, operand.omega))
+                    and (self.domega == operand.domega)
+                    and (self.omega_window == operand.omega_window)
+                    and (self.noise_samples == operand.noise_samples)
+                    and (self.noise_omega_window == operand.noise_omega_window)
+                    and (np.array_equal(self.noise_omega, operand.noise_omega))
+                    and (self.noise_domega == operand.noise_domega))
     # ==================================================================
     # Getters ==========================================================
     # ==================================================================
@@ -123,7 +173,7 @@ class Domain(object):
         return self._samples
     # ==================================================================
     @property
-    def time(self) -> Array[float, 1,...]:
+    def time(self) -> np.ndarray:
 
         return self._time
     # ==================================================================
@@ -138,7 +188,7 @@ class Domain(object):
         return self._time_window
     # ==================================================================
     @property
-    def omega(self) -> Array[float, 1,...]:
+    def omega(self) -> np.ndarray:
 
         return self._omega
     # ==================================================================
@@ -153,7 +203,7 @@ class Domain(object):
         return self._omega_window
     # ==================================================================
     @property
-    def nu(self) -> Array[float, 1,...]:
+    def nu(self) -> np.ndarray:
 
         return Domain.omega_to_nu(self._omega)
     # ==================================================================
@@ -171,6 +221,31 @@ class Domain(object):
     # to convert nu/omega window to lambda window which can be different
     # for each channels of each fields.
     # ==================================================================
+    @property
+    def noise_samples(self) -> int:
+
+        return self._noise_samples
+    # ==================================================================
+    @property
+    def noise_domega(self) -> float:
+
+        return self._noise_domega
+    # ==================================================================
+    @property
+    def noise_omega_window(self) -> float:
+
+        return self._noise_omega_window
+    # ==================================================================
+    @property
+    def noise_nu(self) -> np.ndarray:
+
+        return Domain.omega_to_nu(self._noise_omega)
+    # ==================================================================
+    @property
+    def noise_omega(self) -> np.ndarray:
+
+        return self._noise_omega
+    # ==================================================================
     # nu-omega-Lambda static conversion ================================
     # ==================================================================
     # NB for typing: the most specific type must be first for overload
@@ -180,7 +255,7 @@ class Domain(object):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def nu_to_omega(nu: Array[float, 1,...]) -> Array[float, 1,...]: ...
+    def nu_to_omega(nu: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def nu_to_omega(nu):
@@ -211,7 +286,7 @@ class Domain(object):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def nu_to_lambda(nu: Array[float, 1,...]) -> Array[float, 1,...]: ...
+    def nu_to_lambda(nu: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def nu_to_lambda(nu):
@@ -242,7 +317,7 @@ class Domain(object):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def omega_to_nu(omega: Array[float, 1,...]) -> Array[float, 1,...]: ...
+    def omega_to_nu(omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def omega_to_nu(omega):
@@ -273,8 +348,7 @@ class Domain(object):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def omega_to_lambda(omega: Array[float, 1,...]
-                        ) -> Array[float, 1,...]: ...
+    def omega_to_lambda(omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def omega_to_lambda(omega):
@@ -307,7 +381,7 @@ class Domain(object):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def lambda_to_nu(Lambda: Array[float, 1,...]) -> Array[float, 1,...]: ...
+    def lambda_to_nu(Lambda: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def lambda_to_nu(Lambda):
@@ -339,8 +413,7 @@ class Domain(object):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def lambda_to_omega(Lambda: Array[float, 1,...]
-                        ) -> Array[float, 1,...]: ...
+    def lambda_to_omega(Lambda: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def lambda_to_omega(Lambda):
@@ -473,9 +546,10 @@ class Domain(object):
     # ==================================================================
     # Others ===========================================================
     # ==================================================================
-    def get_shift_time(self, rel_pos: float) -> Array[float, 1, ...]:
+    def get_shift_time(self, rel_pos: float) -> np.ndarray:
 
         return self.time - rel_pos*self.time_window
+
 
 if __name__ == "__main__":
 

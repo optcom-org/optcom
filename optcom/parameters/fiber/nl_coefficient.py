@@ -18,17 +18,17 @@
 from typing import Callable, List, overload, Union
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.parameters.abstract_parameter import AbstractParameter
+from optcom.utils.callable_container import CallableContainer
 
 
 class NLCoefficient(AbstractParameter):
 
-    def __init__(self, nl_index: Union[float, Array[float], Callable],
-                 eff_area: Union[float, Array[float], Callable]) -> None:
+    def __init__(self, nl_index: Union[float, Callable],
+                 eff_area: Union[float, Callable]) -> None:
         """
         Parameters
         ----------
@@ -38,22 +38,55 @@ class NLCoefficient(AbstractParameter):
             The effective area. :math:`[\mu m^2]`
 
         """
-        self._nl_index: Union[float, Array[float], Callable] = nl_index
-        self._eff_area: Union[float, Array[float], Callable] = eff_area
+        self._nl_index: Union[float, Callable] = nl_index
+        self._eff_area: Union[float, Callable] = eff_area
+    # ==================================================================
+    @property
+    def nl_index(self) -> Union[float, Callable]:
+
+        return self._nl_index
+    # ------------------------------------------------------------------
+    @nl_index.setter
+    def nl_index(self, nl_index: Union[float, Callable]) -> None:
+
+        self._nl_index = nl_index
+    # ==================================================================
+    @property
+    def eff_area(self) -> Union[float, Callable]:
+
+        return self._eff_area
+    # ------------------------------------------------------------------
+    @eff_area.setter
+    def eff_area(self, eff_area: Union[float, Callable]) -> None:
+
+        self._eff_area = eff_area
     # ==================================================================
     @overload
     def __call__(self, omega: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
-    def __call__(self, omega: Array[float]) -> Array[float]: ...
+    def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        nl_index = self._nl_index(omega) if callable(self._nl_index)\
-            else self._nl_index
-        eff_area = self._eff_area(omega) if callable(self._eff_area)\
-            else self._eff_area
+        r"""Calculate the non linear parameter.
 
-        return NLCoefficient.calc_nl_coefficient(omega, nl_index, eff_area)
+        Parameters
+        ----------
+        omega :
+            The angular frequency.  :math:`[rad\cdot ps^{-1}]`
+
+
+        Returns
+        -------
+        :
+            Value of the non linear parameter.
+            :math:`[rad\cdot W^{-1}\cdot km^{-1}]`
+
+        """
+        fct = CallableContainer(NLCoefficient.calc_nl_coefficient,
+                                [omega, self._nl_index, self._eff_area])
+
+        return fct(omega)
     # ==================================================================
     # Static methods ===================================================
     # ==================================================================
@@ -64,12 +97,12 @@ class NLCoefficient(AbstractParameter):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_nl_coefficient(omega: Array[float], nl_index: Array[float],
-                            eff_area: Array[float]) -> Array[float]: ...
+    def calc_nl_coefficient(omega: np.ndarray, nl_index: np.ndarray,
+                            eff_area: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def calc_nl_coefficient(omega, nl_index, eff_area):
-        r"""Calculate the non linear parameter. [2]_
+        r"""Calculate the non linear parameter. [6]_
 
         Parameters
         ----------
@@ -93,7 +126,7 @@ class NLCoefficient(AbstractParameter):
 
         References
         ----------
-        .. [2] Govind Agrawal, Chapter 2: Pulse Propaga(\omega_0)tion in
+        .. [6] Govind Agrawal, Chapter 2: Pulse Propaga(\omega_0)tion in
            Fibers, Nonlinear Fiber Optics (Fifth Edition), Academic
            Press, 2013, Page 38.
 
@@ -111,8 +144,8 @@ class NLCoefficient(AbstractParameter):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_nl_length(power: Array[float], nl_coeff: Array[float]
-                       ) -> Array[float]: ...
+    def calc_nl_length(power: np.ndarray, nl_coeff: np.ndarray
+                       ) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def calc_nl_length(power, nl_coeff):
@@ -142,44 +175,49 @@ class NLCoefficient(AbstractParameter):
 
 
 if __name__ == "__main__":
+    """Plot the non linear coefficient as a function of the wavelength.
+    This piece of code is standalone, i.e. can be used in a separate
+    file as an example.
+    """
+
+    from typing import List
 
     import numpy as np
 
     import optcom.utils.plot as plot
     from optcom.domain import Domain
     from optcom.parameters.fiber.effective_area import EffectiveArea
-    from optcom.parameters.fiber.nl_index import NLIndex
+    from optcom.parameters.fiber.nl_coefficient import NLCoefficient
+    from optcom.parameters.fiber.numerical_aperture import NumericalAperture
+    from optcom.parameters.fiber.v_number import VNumber
+    from optcom.parameters.refractive_index.nl_index import NLIndex
+    from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
-    medium = "SiO2"
+    medium: str = "SiO2"
     # With float
-    omega = Domain.lambda_to_omega(1552.0)
-    core_radius = 5.0
-    n_core = 1.43
-    n_clad = 1.425
+    omega: float = Domain.lambda_to_omega(1552.0)
+    core_radius: float = 5.0
+    n_clad: float = 1.44
+    sellmeier: Sellmeier = Sellmeier(medium)
+    NA_inst: NumericalAperture = NumericalAperture(sellmeier, n_clad)
+    v_nbr_inst: VNumber = VNumber(NA_inst, core_radius)
+    eff_area_inst: EffectiveArea = EffectiveArea(v_nbr_inst, core_radius)
+    nl_ind_inst: NLIndex = NLIndex(medium)
+    nl_coeff: NLCoefficient = NLCoefficient(nl_ind_inst, eff_area_inst)
+    print(nl_coeff(omega))
+    nl_ind: float = nl_ind_inst(omega)
+    eff_area: float = eff_area_inst(omega)
+    print(NLCoefficient.calc_nl_coefficient(omega, nl_ind, eff_area))
+    # With np.ndarray
+    lambdas: np.ndarray = np.linspace(900., 1550., 1000)
+    omegas: np.ndarray = Domain.lambda_to_omega(lambdas)
+    res: np.ndarray = nl_coeff(omegas)
+    x_labels: List[str] = ['Lambda']
+    y_labels: List[str] = ['Non-linear coefficient, '
+                           '$\,\gamma\,(rad\cdot W^{-1}\cdot km^{-1})$']
+    plot_titles: List[str] = ["Non linear coefficient as a function of the "
+                              "wavelength \n for Silica core with constant "
+                              "cladding refractive index."]
 
-    eff_area = EffectiveArea.calc_effective_area(omega,
-                                                 core_radius=core_radius,
-                                                 n_core=n_core, n_clad=n_clad)
-    nl_index = NLIndex.calc_nl_index(omega, medium=medium)
-    print(NLCoefficient.calc_nl_coefficient(omega, nl_index=nl_index,
-                                            eff_area=eff_area))
-
-    # With numpy ndarray
-    lambdas = np.linspace(900, 1550, 10)
-    omegas = Domain.lambda_to_omega(lambdas)
-    n_core = np.linspace(1.42, 1.43, 10)
-    n_clad = np.linspace(1.415, 1.425, 10)
-
-    eff_area = EffectiveArea.calc_effective_area(omegas,
-                                                 core_radius=core_radius,
-                                                 n_core=n_core, n_clad=n_clad)
-    nl_index = NLIndex.calc_nl_index(omega, medium=medium)
-    res = NLCoefficient.calc_nl_coefficient(omegas, nl_index=nl_index,
-                                            eff_area=eff_area)
-
-    x_labels = ['Lambda']
-    y_labels = ['gamma']
-    plot_titles = ["Non linear coefficient of Silica"]
-
-    plot.plot2d(lambdas, res, x_labels=x_labels, y_labels=y_labels,
-                plot_titles=plot_titles, opacity=0.0)
+    plot.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
+                plot_titles=plot_titles, opacity=[0.0], y_ranges=[(1., 5.)])

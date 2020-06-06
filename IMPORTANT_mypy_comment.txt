@@ -1,3 +1,0 @@
-This is scheduled to become the default in Python 4.0. Since Python still is a dynamically typed language so no type checking is done at runtime, typing annotations should have no performance impact, right? Wrong! Before python 3.7 the typing module used to be one of the slowest python modules in core so if you import typing you will see up to 7 times increase in performance when you upgrade to 3.7.
-
-ref: https://stackoverflow.com/questions/33533148/how-do-i-specify-that-the-return-type-of-a-method-is-the-same-as-the-class-itsel

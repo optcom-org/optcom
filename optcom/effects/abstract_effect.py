@@ -15,15 +15,15 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
+from abc import ABCMeta, abstractmethod
 from typing import List, Optional
 
 import numpy as np
-from nptyping import Array
 
 import optcom.utils.constants as cst
 
 
-class AbstractEffect(object):
+class AbstractEffect(metaclass=ABCMeta):
     r"""Generic class for effect object.
 
     Attributes
@@ -32,50 +32,43 @@ class AbstractEffect(object):
         The angular frequency array. :math:`[ps^{-1}]`
     time : numpy.ndarray of float
         The time array. :math:`[ps]`
-    center_omega : numpy.ndarray of float
-        The center angular frequency. :math:`[ps^{-1}]`
+    domega : float
+        The angular frequency step. :math:`[ps^{-1}]`
+    dtime : float
+        The time step. :math:`[ps]`
 
     """
 
-    def __init__(self, omega: Optional[Array[float]] = None,
-                 time: Optional[Array[float]] = None,
-                 center_omega: Optional[Array[float]] = None) -> None:
+    def __init__(self, omega: np.ndarray = np.array([]),
+                 time: np.ndarray = np.array([]),
+                 domega: float = 0.0, dtime: float = 0.0) -> None:
 
-        self._omega: Optional[Array[float]] = omega
-        self._time: Optional[Array[float]] = time
-        self._center_omega: Optional[Array[float]] = center_omega
-        self._domega: Optional[float] = None
-        self._dtime: Optional[float] = None
+        self._omega: np.ndarray = omega
+        self._time: np.ndarray = time
+        self._domega: float = domega
+        self._dtime: float = dtime
+        self._rep_freq: np.ndarray = np.array([])
     # ==================================================================
     @property
-    def omega(self) -> Array[float]:
+    def omega(self) -> np.ndarray:
 
         return self._omega
     # ------------------------------------------------------------------
     @omega.setter
-    def omega(self, omega: Optional[Array[float]]) -> None:
+    def omega(self, omega: np.ndarray) -> None:
         self._omega = omega
     # ==================================================================
     @property
-    def time(self) -> Array[float]:
+    def time(self) -> np.ndarray:
 
         return self._time
     # ------------------------------------------------------------------
     @time.setter
-    def time(self, time: Optional[Array[float]]) -> None:
+    def time(self, time: np.ndarray) -> None:
         self._time = time
     # ==================================================================
     @property
-    def center_omega(self) -> Optional[Array[float]]:
-
-        return self._center_omega
-    # ------------------------------------------------------------------
-    @center_omega.setter
-    def center_omega(self, center_omega: Array[float]) -> None:
-        self._center_omega = center_omega
-    # ==================================================================
-    @property
-    def domega(self) -> Optional[float]:
+    def domega(self) -> float:
 
         return self._domega
     # ------------------------------------------------------------------
@@ -84,7 +77,7 @@ class AbstractEffect(object):
         self._domega = domega
     # ==================================================================
     @property
-    def dtime(self) -> Optional[float]:
+    def dtime(self) -> float:
 
         return self._dtime
     # ------------------------------------------------------------------
@@ -92,8 +85,27 @@ class AbstractEffect(object):
     def dtime(self, dtime: float) -> None:
         self._dtime = dtime
     # ==================================================================
-    def op(self, waves: Array[cst.NPFT], id: int,
-           corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
+    @property
+    def rep_freq(self) -> np.ndarray:
+
+        return self._rep_freq
+    # ------------------------------------------------------------------
+    @rep_freq.setter
+    def rep_freq(self, rep_freq: np.ndarray) -> None:
+        self._rep_freq = rep_freq
+    # ==================================================================
+    def delay_factors(self, id: int) -> List[float]:
+        """Return the time delay induced by the effect."""
+
+        return []
+    # ==================================================================
+    @abstractmethod
+    def set(self, center_omega: np.ndarray = np.array([]),
+            abs_omega: np.ndarray = np.array([])) -> None: pass
+    # ==================================================================
+    @abstractmethod
+    def op(self, waves: np.ndarray, id: int,
+           corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
         """The operator of the effect.
 
         Parameters
@@ -103,7 +115,7 @@ class AbstractEffect(object):
         id :
             The ID of the considered wave in the wave packet.
         corr_wave :
-            Corrective wave, optional, used if needed.
+            Corrective wave, optional, use if needed.
 
         Returns
         -------
@@ -111,34 +123,10 @@ class AbstractEffect(object):
             The operator of the effect.
 
         """
-
-        return np.zeros(waves[id].shape, dtype=cst.NPFT)
+        ...
     # ==================================================================
-    def op_approx(self, waves: Array[cst.NPFT], id: int,
-                  corr_wave: Optional[Array[cst.NPFT]] = None
-                  ) -> Array[cst.NPFT]:
-        """The approximated operator of the effect.
-
-        Parameters
-        ----------
-        waves :
-            The wave packet.
-        id :
-            The ID of the considered wave in the wave packet.
-        corr_wave :
-            Corrective wave, optional, used if needed.
-
-        Returns
-        -------
-        :
-            The approximated operator of the effect.
-
-        """
-
-        return self.op(waves, id, corr_wave)
-    # ==================================================================
-    def term(self, waves: Array[cst.NPFT], id: int,
-             corr_wave: Optional[Array[cst.NPFT]] = None) -> Array[cst.NPFT]:
+    def term(self, waves: np.ndarray, id: int,
+             corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
         """The term of the effect.
 
         Parameters
@@ -148,7 +136,7 @@ class AbstractEffect(object):
         id :
             The ID of the considered wave in the wave packet.
         corr_wave :
-            Corrective wave, optional, used if needed.
+            Corrective wave, optional, use if needed.
 
         Returns
         -------
@@ -160,28 +148,3 @@ class AbstractEffect(object):
             corr_wave = waves[id]
 
         return self.op(waves, id, corr_wave) * corr_wave
-    # ==================================================================
-    def term_approx(self, waves: Array[cst.NPFT], id: int,
-                    corr_wave: Optional[Array[cst.NPFT]] = None
-                    ) -> Array[cst.NPFT]:
-        """The approximated term of the effect.
-
-        Parameters
-        ----------
-        waves :
-            The wave packet.
-        id :
-            The ID of the considered wave in the wave packet.
-        corr_wave :
-            Corrective wave, optional, used if needed.
-
-        Returns
-        -------
-        :
-            The approximated term of the effect.
-
-        """
-        if (corr_wave is None):
-            corr_wave = waves[id]
-
-        return self.op_approx(waves, id, corr_wave) * corr_wave

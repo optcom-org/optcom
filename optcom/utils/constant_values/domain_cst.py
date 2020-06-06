@@ -1,5 +1,5 @@
 
-DEF_LAMBDA = 1552.0 # nm
+DEF_LAMBDA: float = 1552.0 # nm
 
 # domain boundaries (range)
 MAX_BITS: int = 4096
