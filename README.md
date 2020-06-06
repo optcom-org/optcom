@@ -14,7 +14,11 @@
 Optcom is a Python library which aims to simulate optical systems.
 Optcom has been build for both advanced research and teaching purposes.
 
+<<<<<<< HEAD
+On one hand, Optcom can be used as an optical system simulation
+=======
 One one hand, Optcom can be used as an optical system simulation
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 framework in which users can create their own optical / electric
 components and benefit from a wide range of helper functions. On the
 other hand, Optcom can be used with the in-build components for
@@ -22,7 +26,11 @@ state-of-the art optical system simulation.
 
 Moreover, user-friendly experience is at the heart of Optcom approach.
 In Optcom, an optical system is built by linking the ports of different
+<<<<<<< HEAD
+components to each other. Here is a small example of what can be done:
+=======
 components to each other. Here is a small example of what can be done.
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 
 ```python
 from optcom import *
@@ -65,20 +73,34 @@ sudo apt-get install python3 python3-pip
 ```
 
 ## Install
+<<<<<<< HEAD
+Optcom can be installed using pip with:
+=======
 Optcom can be install using pip with:
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 
 ```sh
 python3 -m pip install optcom
 ```
+<<<<<<< HEAD
+Or in order to run the latest version of the code from the git repo:
+=======
 Or in order to run the later version of the code from the git repo:
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 
 ```sh
 python3 -m pip install git+git://github.com/optcom-org/optcom/
 ```
 
+<<<<<<< HEAD
+The required dependencies should have been installed along the pip
+installation, if any trouble is encountered, the dependencies can be
+manually install by chance of the requirements.txt file with:
+=======
 The require dependencies should be installed along the pip installation,
 if any trouble is encountered, the dependencies can be manually install
 by chance of the requirements.txt file with:
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 
 ```sh
 python3 -m pip install -r requirements.txt
@@ -89,7 +111,11 @@ python3 -m pip install -r requirements.txt
 For bug report or suggestion, please use the Optcom issue tracker:
 https://github.com/optcom-org/optcom/issues
 
+<<<<<<< HEAD
+To ask questions about the usage of Optcom, use the Gitter repo:
+=======
 To ask questions about the usage of Optcom, use the gitter repo:
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 https://gitter.im/optcom-org/optcom
 
 For any matter that does not concern the aforementioned ones, send an
@@ -102,7 +128,11 @@ Any contribution is welcome !
 
 Optcom provides an optical system simulation framework and is as rich
 as the number of components that can be used. You enjoy Optcom and
+<<<<<<< HEAD
+created your own component to fulfill your simulation need ? Share it
+=======
 createed your own component to fulfill your simulation need ? Share it
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 with the community!  See [`tutorials/`](tutorials) to learn
 how to create your own component.
 
@@ -119,7 +149,11 @@ Find the built documentation at https://readthedocs.org/projects/optcom/
 
 To manually build the documentation, go in [`docs/`](docs/) and type:
 ```sh
+<<<<<<< HEAD
+make clean && make html
+=======
 make html
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 ```
 
 ## Release History
@@ -131,7 +165,11 @@ make html
 
 ## Hosting
 
+<<<<<<< HEAD
+The source code is hosted at https://github.com/optcom-org/optcom
+=======
 The source code is host at https://github.com/optcom-org/optcom
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 
 ## Citation
 
@@ -154,7 +192,11 @@ Optcom is licensed under the terms of the GNU V3 License, see
 
 ## Disclaimer
 
+<<<<<<< HEAD
+Optcom is a free open source Software developed and maintained by
+=======
 Optcom is an free open source Software developed and maintained by
+>>>>>>> 88e09f0dfee0692730bbab7800a2d2dcc13e131a
 volunteers. The authors take no responsibility, see
 [`LICENSE.md`](LICENSE.md).
 

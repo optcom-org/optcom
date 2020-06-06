@@ -1,6 +1,0 @@
-matplotlib
-numpy
-pillow
-pyfftw
-scipy
-typing_extensions

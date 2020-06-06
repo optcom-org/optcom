@@ -1,4 +1,6 @@
 # Also include:
-include License
-include README.rst
+include LICENSE
+include README.md
+include ROADMAP.md
+include CONTRIBUTING.md
 include requirements.txt
