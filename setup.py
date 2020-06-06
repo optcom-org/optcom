@@ -13,9 +13,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/optcom-org/optcom",
-    download_url = 'https://github.com/optcom-org/optcom/archive/v_01.tar.gz',
+    download_url='https://github.com/optcom-org/optcom/archive/v0.2.0.tar.gz',
     license="GNU",
-    packages=setuptools.find_packages(exclude=("tests","branding",)),
+    packages=setuptools.find_packages(exclude=("tests",)),
     include_package_data=True,	# controls whether non-code files are copied when package is installed
     install_requires=["scipy", "numpy", "matplotlib", "pillow", "pyfftw",
                       "typing_extensions"],
