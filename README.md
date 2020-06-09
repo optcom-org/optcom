@@ -8,6 +8,7 @@
 [![PyPI version](https://badge.fury.io/py/optcom.svg)](https://badge.fury.io/py/optcom)
 [![Gitter](https://badges.gitter.im/optcom-org/optcom.svg)](https://gitter.im/optcom-org/optcom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Documentation Status](https://readthedocs.org/projects/optcom/badge/?version=latest)](https://optcom.readthedocs.io/en/latest/?badge=latest)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 ## What is Optcom ?
 
@@ -128,6 +129,7 @@ make clean && make html
 * 0.2.0 : Complete refactoring of v0.1.0 and new features
   * 0.2.1 : Bug fix of v0.2.0
   * 0.2.2 : Clear user interface
+* 0.3.0 : Change of License + all OS support
 
 ## Hosting
 
