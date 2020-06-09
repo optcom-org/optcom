@@ -49,7 +49,7 @@ def gssn_fiber_layout():
                           beta_order=3, nl_approx=False, ATT=True, DISP=True,
                           SPM=True, XPM=True, SS=True, RS=True, steps=1000,
                           save=True)
-            lt.link((gssn[0], fiber[0]))
+            lt.add_link(gssn[0], fiber[0])
             lt.run(gssn)
             lt.reset()
             out_temporal_power.append(temporal_power(fiber[1][0].channels))
@@ -90,7 +90,7 @@ def gssn_fiber_gnlse():
                           beta_order=3, nl_approx=False, ATT=True, DISP=True,
                           SPM=True, XPM=True, SS=True, RS=True, steps=1000,
                           save=True)
-            lt.link((gssn[0], fiber[0]))
+            lt.add_link(gssn[0], fiber[0])
             lt.run(gssn)
             lt.reset()
             out_temporal_power.append(temporal_power(fiber[1][0].channels))

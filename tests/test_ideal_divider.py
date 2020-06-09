@@ -34,7 +34,7 @@ def test_output_divider(nbr_channels, ratios):
     nbr_arms = len(ratios)
     divider = IdealDivider(arms=nbr_arms, ratios=ratios, save=True)
     lt = Layout()
-    lt.link((gssn[0], divider[0]))
+    lt.add_link(gssn[0], divider[0])
     lt.run_all()
     # Testing
     init_power = temporal_power(gssn[0][0].channels)
@@ -58,7 +58,7 @@ def test_no_divide_output():
     gssn = Gaussian(channels=nbr_channels, save=True)
     divider = IdealDivider(arms=arms, divide=False, save=True)
     lt = Layout()
-    lt.link((gssn[0], divider[0]))
+    lt.add_link(gssn[0], divider[0])
     lt.run_all()
     # Testing
     init_power = temporal_power(gssn[0][0].channels)

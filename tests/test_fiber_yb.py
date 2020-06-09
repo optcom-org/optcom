@@ -42,7 +42,7 @@ def split_noise_option_co_prop():
                         PROP_PUMP=True, alpha=[0.05], max_nbr_iter=2,
                         NOISE=True)
         lt = Layout(Domain(samples_per_bit=64, noise_samples=10))
-        lt.link_unidir((gssn[0], fiber[0]), (pump[0], fiber[2]))
+        lt.add_unidir_links((gssn[0], fiber[0]), (pump[0], fiber[2]))
         lt.run_all()
 
         noise_power_input = fiber[0].fields[0].noise
@@ -85,7 +85,7 @@ def co_seed_co_pump_scheme():
                         save_all=True, alpha=[0.05], max_nbr_iter=2,
                         NOISE=NOISE)
         lt = Layout(Domain(samples_per_bit=64, noise_samples=10))
-        lt.link_unidir((gssn[0], fiber[0]), (pump[0], fiber[2]))
+        lt.add_unidir_links((gssn[0], fiber[0]), (pump[0], fiber[2]))
         lt.run_all()
 
         return fiber.storages[0]
@@ -126,8 +126,8 @@ def co_seed_counter_pump_scheme():
                         save_all=True, alpha=[0.05], max_nbr_iter=2,
                         NOISE=NOISE)
         lt = Layout(Domain(samples_per_bit=64, noise_samples=10))
-        lt.link_unidir((gssn[0], fiber[0]), (pump[0], fiber[2]),
-                       (pump_[0], fiber[3]))
+        lt.add_unidir_links((gssn[0], fiber[0]), (pump[0], fiber[2]),
+                            (pump_[0], fiber[3]))
         lt.run_all()
 
         return fiber.storages[0]
@@ -168,8 +168,8 @@ def counter_seed_co_pump_scheme():
                         save_all=True, alpha=[0.05], max_nbr_iter=2,
                         NOISE=NOISE)
         lt = Layout(Domain(samples_per_bit=64, noise_samples=10))
-        lt.link_unidir((gssn[0], fiber[0]), (pump[0], fiber[2]),
-                       (gssn_[0], fiber[1]))
+        lt.add_unidir_links((gssn[0], fiber[0]), (pump[0], fiber[2]),
+                            (gssn_[0], fiber[1]))
         lt.run_all()
 
         return fiber.storages[0]
@@ -213,8 +213,8 @@ def counter_seed_counter_pump_scheme():
                         save_all=True, alpha=[0.05], max_nbr_iter=2,
                         NOISE=NOISE)
         lt = Layout(Domain(samples_per_bit=64, noise_samples=10))
-        lt.link_unidir((gssn[0], fiber[0]), (pump[0], fiber[2]),
-                       (gssn_[0], fiber[1]), (pump_[0], fiber[3]))
+        lt.add_unidir_links((gssn[0], fiber[0]), (pump[0], fiber[2]),
+                            (gssn_[0], fiber[1]), (pump_[0], fiber[3]))
         lt.run_all()
 
         return fiber.storages[0]

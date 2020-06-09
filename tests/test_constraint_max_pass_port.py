@@ -34,7 +34,7 @@ def test_constraint_max_pass():
     cplr = IdealCoupler(save=True, max_nbr_pass=[max_pass])
     gssn = Gaussian()
     amp = IdealAmplifier()
-    lt.link((gssn[0], cplr[0]), (cplr[1], amp[0]), (cplr[3], amp[1]))
+    lt.add_links((gssn[0], cplr[0]), (cplr[1], amp[0]), (cplr[3], amp[1]))
     # Testing
     pytest.warns(MaxPassPortWarning, lt.run, gssn)
     assert len(cplr[3]) == max_pass

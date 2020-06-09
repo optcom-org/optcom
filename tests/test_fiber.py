@@ -48,7 +48,7 @@ def fiber_layout():
             fiber = Fiber(length=1.0, nlse_method=nlse_method, alpha=[0.046],
                           nl_approx=flag, ATT=ATT, DISP=DISP, SPM=SPM, SS=SS,
                           RS=RS, steps=1000, save=True, approx_type=i)
-            lt.link((starter[0], fiber[0]))
+            lt.add_link(starter[0], fiber[0])
             lt.run(starter)
             lt.reset()
             out_temporal_power.append(temporal_power(fiber[1][0].channels))
@@ -168,7 +168,7 @@ def test_interplay_dispersion_and_spm():
                       gamma=2.0, nl_approx=flag, ATT=False, DISP=True,
                       SPM=True, SS=False, RS=False, steps=1000, save=True,
                       approx_type=i, beta=[1e5, 1e3, 20.0])
-        lt.link((gssn[0], fiber[0]))
+        lt.add_link(gssn[0], fiber[0])
         lt.run(gssn)
         lt.reset()
         time_pos_gvd.append(fiber[1][0].time)
@@ -181,7 +181,7 @@ def test_interplay_dispersion_and_spm():
                       gamma=2.0, nl_approx=flag, ATT=False, DISP=True,
                       SPM=True, SS=False, RS=False, steps=1000, save=True,
                       approx_type=i, beta=[1e5, 1e3, -20.0])
-        lt.link((gssn[0], fiber[0]))
+        lt.add_link(gssn[0], fiber[0])
         lt.run(gssn)
         lt.reset()
         time_neg_gvd.append(fiber[1][0].time)

@@ -124,10 +124,11 @@ make clean && make html
 
 ## Release History
 
-* 0.1.0
-    * The first Alpha version of Optcom.
-* 0.2.0
-    * The first Beta version of Optcom.
+* 0.1.0 : The first Alpha version of Optcom
+* 0.2.0 : Complete refactoring of v. 0.1.0 and new features
+  * 0.2.1 :
+  * 0.2.2 :
+* 0.3.0 : Change of License + all OS support
 
 ## Hosting
 

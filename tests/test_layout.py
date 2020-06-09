@@ -22,8 +22,8 @@ def test_link_to_itself():
     a = IdealCoupler(name='a')
     layout = Layout()
     # Testing
-    pytest.raises(SelfLinkError, layout.link, (a[1], a[1]))
-    pytest.raises(SelfLinkError, layout.link, (a[1], a[0]))
+    pytest.raises(SelfLinkError, layout.add_links, (a[1], a[1]))
+    pytest.raises(SelfLinkError, layout.add_links, (a[1], a[0]))
 
 
 @pytest.mark.layout
@@ -34,11 +34,11 @@ def test_already_linked():
     b = IdealCoupler(name='b')
     c = IdealCoupler(name='c')
     layout = Layout()
-    layout.link((a[1],b[0]))
+    layout.add_link(a[1],b[0])
     # Testing
-    pytest.raises(LinkError, layout.link, (c[1], b[0]))
-    pytest.raises(LinkError, layout.link, (b[0], c[2]))
-    pytest.raises(LinkError, layout.link, (a[1], b[0]))
+    pytest.raises(LinkError, layout.add_links, (c[1], b[0]))
+    pytest.raises(LinkError, layout.add_links, (b[0], c[2]))
+    pytest.raises(LinkError, layout.add_links, (a[1], b[0]))
 
 
 @pytest.mark.layout
@@ -48,8 +48,8 @@ def test_link_unidir_to_itself():
     a = IdealCoupler(name='a')
     layout = Layout()
     # Testing
-    pytest.raises(LinkError, layout.link_unidir, (a[1], a[1]))
-    pytest.raises(LinkError, layout.link_unidir, (a[1], a[0]))
+    pytest.raises(LinkError, layout.add_unidir_links, (a[1], a[1]))
+    pytest.raises(LinkError, layout.add_unidir_links, (a[1], a[0]))
 
 
 @pytest.mark.layout
@@ -60,11 +60,11 @@ def test_already_unidir_linked():
     b = IdealCoupler(name='b')
     c = IdealCoupler(name='c')
     layout = Layout()
-    layout.link_unidir((a[1],b[0]))
+    layout.add_unidir_link(a[1],b[0])
     # Testing
-    pytest.raises(LinkError, layout.link_unidir, (c[1], b[0]))
-    pytest.raises(LinkError, layout.link_unidir, (b[0], c[2]))
-    pytest.raises(LinkError, layout.link_unidir, (a[1], b[0]))
+    pytest.raises(LinkError, layout.add_unidir_links, (c[1], b[0]))
+    pytest.raises(LinkError, layout.add_unidir_links, (b[0], c[2]))
+    pytest.raises(LinkError, layout.add_unidir_links, (a[1], b[0]))
 
 
 @pytest.mark.layout
@@ -75,13 +75,13 @@ def test_non_existant_link_del():
     b = IdealCoupler(name='b')
     c = IdealCoupler(name='c')
     layout = Layout()
-    layout.link((a[1],b[0]), (a[2], b[1]))
-    layout.link_unidir((b[2],c[2]), (a[0], c[1]))
-    layout.del_link((c[2],b[2]))  # Valid (even if unidir in other dir.)
+    layout.add_links((a[1],b[0]), (a[2], b[1]))
+    layout.add_unidir_links((b[2],c[2]), (a[0], c[1]))
+    layout.del_link(c[2],b[2])  # Valid (even if unidir in other dir.)
     # Testing
-    pytest.raises(DelError, layout.del_link, (c[2], b[2]))
-    pytest.raises(DelError, layout.del_link, (a[1], b[1]))
-    pytest.raises(DelError, layout.del_link, (a[2], c[2]))
+    pytest.raises(DelError, layout.del_links, (c[2], b[2]))
+    pytest.raises(DelError, layout.del_links, (a[1], b[1]))
+    pytest.raises(DelError, layout.del_links, (a[2], c[2]))
 
 
 @pytest.mark.layout
@@ -95,8 +95,8 @@ def test_degree():
     e = IdealCoupler(name='e')
     f = IdealCoupler(name='f')
     layout = Layout()
-    layout.link((a[0],b[0]), (a[1],c[0]), (b[1], d[0]), (b[2], e[0]),
-                (c[1], a[2]))
+    layout.add_links((a[0],b[0]), (a[1],c[0]), (b[1],d[0]), (b[2],e[0]),
+                     (c[1],a[2]))
     # Testing
     assert layout.get_degree(a) == 3
     assert layout.get_degree(b) == 3
@@ -117,7 +117,7 @@ def test_leafs():
     e = IdealCoupler(name='e')
     f = IdealCoupler(name='f')
     layout = Layout()
-    layout.link((a[0],b[0]), (a[1],c[0]), (b[1], d[0]), (b[2], e[0]))
+    layout.add_links((a[0],b[0]), (a[1],c[0]), (b[1],d[0]), (b[2],e[0]))
     # Testing
     assert layout.get_leafs_of_comps([a,b,c,d,e,f]) == [c,d,e]
     assert layout.leafs == [c,d,e]
@@ -137,7 +137,7 @@ def test_wrong_start_comp_output():
     start = DummyStartComp()
     a = IdealCoupler(name='a')
     layout = Layout()
-    layout.link((start[0], a[0]))
+    layout.add_link(start[0], a[0])
     # Testing
     pytest.raises(PropagationError, layout.run, start)
 
@@ -156,7 +156,7 @@ def test_wrong_start_comp_ports():
     start = DummyStartComp()
     a = IdealCoupler(name='a')
     layout = Layout()
-    layout.link((start[0], a[0]))
+    layout.add_link(start[0], a[0])
     # Testing
     pytest.warns(WrongPortWarning, layout.run, start)
 
@@ -176,7 +176,7 @@ def test_wrong_pass_comp_output():
     pass_comp = DummyPassComp()
     a = IdealCoupler()
     layout = Layout()
-    layout.link((start[0], pass_comp[0]), (pass_comp[1], a[0]))
+    layout.add_links((start[0],pass_comp[0]), (pass_comp[1],a[0]))
     # Testing
     pytest.raises(PropagationError, layout.run, start)
 
@@ -196,7 +196,7 @@ def test_wrong_pass_comp_ports():
     pass_comp = DummyPassComp()
     a = IdealCoupler()
     layout = Layout()
-    layout.link((start[0], pass_comp[0]), (pass_comp[1], a[0]))
+    layout.add_links((start[0],pass_comp[0]), (pass_comp[1],a[0]))
     # Testing
     pytest.warns(WrongPortWarning, layout.run, start)
 
@@ -208,6 +208,6 @@ def test_wrong_start_comp_for_run():
     start = Gaussian()
     a = IdealCoupler()
     layout = Layout()
-    layout.link((a[0], start[0]))
+    layout.add_link(a[0], start[0])
     # Testing
     pytest.raises(StartSimError, layout.run, a)

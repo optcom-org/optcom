@@ -4,9 +4,9 @@ import optcom as oc
 pulse = oc.Gaussian(channels=2, center_lambda=[1030., 1550.], peak_power=[0.5, 1.0])
 # Create fiber with a user-defined attenuation coefficient
 fiber = oc.Fiber(length=1.0, alpha=[0.4], ATT=True, DISP=True, SPM=True, save_all=True)
-# Create an optical layout and link the 2 first ports of pulse and fiber
+# Create an optical layout and link the first port of 'pulse' to the first port of 'fiber'
 layout = oc.Layout()
-layout.link((pulse[0], fiber[0]))
+layout.add_link(pulse.get_port(0), fiber.get_port(0))
 layout.run_all()
 # Extract outputs and plot
 time = fiber.storage.time

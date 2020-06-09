@@ -40,7 +40,7 @@ def test_output_combiner_no_combine(nbr_channels, ratios):
                              combine=False)
     lt = Layout()
     for i in range(nbr_arms):
-        lt.link((gssns[i][0], combiner[i]))
+        lt.add_link(gssns[i][0], combiner[i])
     lt.run_all()
     # Testing
     init_fields = []
@@ -83,7 +83,7 @@ def test_combine_output_diff_omega(nbr_channels, ratios):
                              combine=True)
     lt = Layout()
     for i in range(nbr_arms):
-        lt.link((gssns[i][0], combiner[i]))
+        lt.add_link(gssns[i][0], combiner[i])
     lt.run_all()
     lt.reset()
     # Testing
@@ -124,7 +124,7 @@ def test_combine_output_same_omega(nbr_channels, ratios):
                              combine=True)
     lt = Layout()
     for i in range(nbr_arms):
-        lt.link((gssns[i][0], combiner[i]))
+        lt.add_link(gssns[i][0], combiner[i])
     lt.run_all()
     lt.reset()
     # Testing
@@ -167,7 +167,7 @@ def test_combine_output_diff_rep_freq(nbr_channels, ratios):
                              combine=True)
     lt = Layout()
     for i in range(nbr_arms):
-        lt.link((gssns[i][0], combiner[i]))
+        lt.add_link(gssns[i][0], combiner[i])
     lt.run_all()
     lt.reset()
     # Testing
@@ -211,7 +211,7 @@ def test_combine_output_same_rep_freq(nbr_channels, ratios):
                              combine=True)
     lt = Layout()
     for i in range(nbr_arms):
-        lt.link((gssns[i][0], combiner[i]))
+        lt.add_link(gssns[i][0], combiner[i])
     lt.run_all()
     lt.reset()
     # Testing
@@ -255,7 +255,7 @@ def test_combine_output_diff_omega_and_rep_freq(nbr_channels, ratios):
                              combine=True)
     lt = Layout()
     for i in range(nbr_arms):
-        lt.link((gssns[i][0], combiner[i]))
+        lt.add_link(gssns[i][0], combiner[i])
     lt.run_all()
     lt.reset()
     # Testing

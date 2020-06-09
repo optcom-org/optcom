@@ -31,7 +31,7 @@ def test_constraint_waiting():
     nbr_sig = 5
     combiner = IdealCombiner(arms=nbr_sig, combine=False, save=True)
     for i in range(nbr_sig):
-        lt.link((Gaussian()[0], combiner[i]))
+        lt.add_link(Gaussian()[0], combiner[i])
     lt.run_all()
 
     assert (len(combiner[nbr_sig]) == nbr_sig)

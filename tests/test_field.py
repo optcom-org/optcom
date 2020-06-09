@@ -25,7 +25,7 @@ def operator_fixture():
         for operand in operands:
             new_field = Field(Domain(samples_per_bit=samples), type)
             for i, channel in enumerate(field_channel):
-                new_field.append(channel, center_omega[i], rep_freq[i])
+                new_field.add_channel(channel, center_omega[i], rep_freq[i])
             if (right_op):  # Right operand operator
                 res.append(op(operand, new_field))
             else:           # Left operand operator
@@ -45,8 +45,8 @@ type_op_test = 1
 center_omega_op_test = [1550.]
 rep_freq_op_test = [1e3]
 field_ = Field(Domain(samples_per_bit=length), type_op_test)
-field_.append(scale*np.ones(length), center_omega_op_test[0],
-              rep_freq_op_test[0])
+field_.add_channel(scale*np.ones(length), center_omega_op_test[0],
+                   rep_freq_op_test[0])
 operand_args = [int(scale), float(scale), complex(scale),
                 scale*np.ones(length), field_]
 
@@ -134,7 +134,7 @@ def test_copy_field(reset_channels, reset_noise, reset_delays):
     delay = 10.
     field = Field(domain, type)
     field.noise = np.ones(uni_length)
-    field.append(np.arange(uni_length), center_omega, rep_freq, delay)
+    field.add_channel(np.arange(uni_length), center_omega, rep_freq, delay)
     new_field = field.get_copy('', reset_channels, reset_noise,
                                reset_delays)
     equal_channels = np.array_equal(new_field.channels, field.channels)
@@ -172,7 +172,7 @@ def test_same_omega(operator_fixture, op, right_op):
     rep_freqs = [1., 2., 3.]
     channels = [np.ones(length)*(i+1) for i in range(len(center_omegas))]
     for i in range(len(center_omegas)):
-        field.append(channels[i], center_omegas[i], rep_freqs[i])
+        field.add_channel(channels[i], center_omegas[i], rep_freqs[i])
     operands = [field]
     res = operator_fixture(op, right_op, channels, type_op_test,
                            center_omegas, rep_freqs, length, *operands)
@@ -196,7 +196,7 @@ def test_same_unorder_omega(operator_fixture, op, right_op):
     rep_freqs = [1., 2., 3.]
     channels = [np.ones(length)*(i+1) for i in range(len(center_omegas))]
     for i in range(len(center_omegas)):
-        field.append(channels[i], center_omegas[i], rep_freqs[i])
+        field.add_channel(channels[i], center_omegas[i], rep_freqs[i])
     operands = [field]
     center_omegas = [1025., 1020., 1030.]
     rep_freqs = [2., 3., 1.]
@@ -221,7 +221,7 @@ def test_same_unorder_omega(operator_fixture, op, right_op):
     rep_freqs = [1., 2., 3.]
     channels = [np.ones(length)*(i+1) for i in range(len(center_omegas))]
     for i in range(len(center_omegas)):
-        field.append(channels[i], center_omegas[i], rep_freqs[i])
+        field.add_channel(channels[i], center_omegas[i], rep_freqs[i])
     operands = [field]
     center_omegas = [1095., 1000., 1040.]
     rep_freqs = [2., 3., 1.]
@@ -247,7 +247,7 @@ def test_no_common_omegas(operator_fixture, op, right_op):
     rep_freqs = [1., 2., 3.]
     channels = [np.ones(length)*(i+1) for i in range(len(center_omegas))]
     for i in range(len(center_omegas)):
-        field.append(channels[i], center_omegas[i], rep_freqs[i])
+        field.add_channel(channels[i], center_omegas[i], rep_freqs[i])
     operands = [field]
     center_omegas = [1029., 1021.]
     channels = [np.ones(length)*(i+1) for i in range(len(center_omegas))]

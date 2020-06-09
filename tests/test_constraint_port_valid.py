@@ -36,7 +36,7 @@ def test_constraint_port_valid():
     lt = Layout()
     gssn = Gaussian()
     dummy = DummyPassComp()
-    lt.link((gssn[0], dummy[0]))
+    lt.add_link(gssn[0], dummy[0])
     lt.run(gssn)
     # Testing
     pytest.warns(PortValidWarning, lt.run, gssn)

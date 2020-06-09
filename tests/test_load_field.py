@@ -25,7 +25,7 @@ def test_load_field():
     gssn_2 = Gaussian(channels=1, width=[10.0])
     field_saver_2 = SaveField()
 
-    lt.link((gssn_1[0], field_saver_1[0]), (gssn_2[0], field_saver_2[0]))
+    lt.add_links((gssn_1[0], field_saver_1[0]), (gssn_2[0], field_saver_2[0]))
     lt.run(gssn_1, gssn_2)
 
     fields = field_saver_1.fields + field_saver_2.fields

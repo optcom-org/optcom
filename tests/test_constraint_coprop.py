@@ -33,9 +33,9 @@ def test_constraint_coprop():
     nbr_sig = 5
     combiner = IdealCombiner(arms=nbr_sig, combine=False)
     for i in range(nbr_sig):
-        lt.link((Gaussian()[0], combiner[i]))
+        lt.add_link(Gaussian()[0], combiner[i])
     dummy_comp = IdealAmplifier(save=True)
-    lt.link((combiner[nbr_sig], dummy_comp[0]))
+    lt.add_link(combiner[nbr_sig], dummy_comp[0])
     lt.run_all()
 
     assert (len(dummy_comp[1]) == nbr_sig)
