@@ -95,21 +95,20 @@ class LoadFieldFromFile(AbstractStartComp):
     _nbr_instances_with_default_name: int = 0
 
     def __init__(self, name: str = default_name,
-                 file_name: str = 'fields_saved',
+                 file_name: str = 'saved_fields',
                  list_index_to_load: List[int] = [],
-                 raise_type_error: bool = True, save: bool = False,
-                 pre_call_code: str = '', post_call_code: str = '') -> None:
+                 raise_type_error: bool = True, root_dir: str = '.',
+                 save: bool = False, pre_call_code: str = '',
+                 post_call_code: str = '') -> None:
         r"""
         Parameters
         ----------
         name :
             The name of the component.
         file_name :
-            The name of the file in which the fields are saved. Please
-            specify full path to file folder if not saving in current
-            directory. If no extension is provided, the default file
-            extension will be considered. See :mod:`config` for default
-            extension.
+            The name of the file in which the fields are saved. If no
+            extension is provided, the default file extension will be
+            considered. See :mod:`config` for default extension.
         list_index_to_load :
             The indices of the fields from the loaded Field list to
             propagate. If the index is out of range, this index is
@@ -118,6 +117,8 @@ class LoadFieldFromFile(AbstractStartComp):
             If True, raise an error if the type of the loaded object
             from file is not a list of Field. If False, ignore the
             object.
+        root_dir :
+            The root directory where to save the fields.
         pre_call_code :
             A string containing code which will be executed prior to
             the call to the function :func:`__call__`. The two parameters
@@ -137,12 +138,40 @@ class LoadFieldFromFile(AbstractStartComp):
         util.check_attr_type(file_name, 'file_name', str)
         util.check_attr_type(list_index_to_load, 'list_index_to_load', list)
         util.check_attr_type(raise_type_error, 'raise_type_error', bool)
+        util.check_attr_type(root_dir, 'root_dir', str)
         # Attr ---------------------------------------------------------
-        self.file_name: str = file_name
-        if (len(self.file_name.split('.')) < 2):
-            self.file_name += '.' + cfg.FILE_EXT
+        self._file_name: str = ''
+        self._root_dir: str = ''
+        self._full_path_to_file: str = ''
+        self.file_name = file_name
+        self.root_dir = root_dir
         self.list_index_to_load: List[int] = list_index_to_load
         self.raise_type_error: bool = raise_type_error
+    # ==================================================================
+    def _update_path_to_file(self) -> None:
+        self._full_path_to_file = os.path.join(self._root_dir, self.file_name)
+    # ==================================================================
+    @property
+    def file_name(self) -> str:
+
+        return self._file_name
+    # ------------------------------------------------------------------
+    @file_name.setter
+    def file_name(self, file_name: str) -> None:
+        self._file_name = file_name
+        if (self._file_name.split('.')[-1] != cfg.FILE_EXT):
+            self._file_name += '.' + cfg.FILE_EXT
+        self._update_path_to_file()
+    # ==================================================================
+    @property
+    def root_dir(self) -> str:
+
+        return self._root_dir
+    # ------------------------------------------------------------------
+    @root_dir.setter
+    def root_dir(self, root_dir: str) -> None:
+        self._root_dir = root_dir
+        self._update_path_to_file()
     # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain) -> Tuple[List[int], List[Field]]:

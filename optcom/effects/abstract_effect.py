@@ -38,9 +38,7 @@ class AbstractEffect(metaclass=ABCMeta):
 
     """
 
-    def __init__(self, omega: np.ndarray = np.array([]),
-                 time: np.ndarray = np.array([]),
-                 domega: float = 0.0, dtime: float = 0.0) -> None:
+    def __init__(self) -> None:
 
         self._omega: np.ndarray = omega
         self._time: np.ndarray = time
