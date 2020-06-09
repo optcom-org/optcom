@@ -434,7 +434,7 @@ if __name__ == "__main__":
     pump: oc.CW = oc.CW(channels=nbr_ch_p, peak_power=peak_power_p,
                         center_lambda=lambdas_p)
 
-    steps: int = 200
+    steps: int = 100
     length: float = 0.002   # km
 
     file_sigma_a: str = './data/fiber_amp/cross_section/absorption/yb.txt'

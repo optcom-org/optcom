@@ -40,11 +40,11 @@ class AbstractEffect(metaclass=ABCMeta):
 
     def __init__(self) -> None:
 
-        self._omega: np.ndarray = omega
-        self._time: np.ndarray = time
-        self._domega: float = domega
-        self._dtime: float = dtime
+        self._omega: np.ndarray = np.array([])
+        self._time: np.ndarray = np.array([])
         self._rep_freq: np.ndarray = np.array([])
+        self._domega: float = 0.0
+        self._dtime: float = 0.0
     # ==================================================================
     @property
     def omega(self) -> np.ndarray:
