@@ -122,7 +122,9 @@ mod_cst = ['C', 'PI', 'KB', 'H', 'HBAR', 'M_E', 'C_E', 'EPS_0']
 
 
 # from config
-from optcom.config import set_separator_terminal, get_separator_terminal,\
+from optcom.config import set_log_filename, get_log_filename,\
+                          set_print_log, get_print_log,\
+                          set_separator_terminal, get_separator_terminal,\
                           set_rk4ip_opti_gnlse, get_rk4ip_opti_gnlse,\
                           set_file_extension, get_file_extension,\
                           set_save_leaf_fields, get_save_leaf_fields,\

@@ -16,6 +16,34 @@
 
 import sys
 
+OPTCOM_LOG_FILENAME = 'optcom.log'
+def set_log_filename(filename: str):
+    if (isinstance(filename, str)):
+        global OPTCOM_LOG_FILENAME
+        OPTCOM_LOG_FILENAME = filename
+    else:
+
+        raise TypeError('set_log_filename argument must be a string.')
+
+def get_log_filename() -> str:
+
+    return OPTCOM_LOG_FILENAME
+
+
+PRINT_LOG = False
+def set_print_log(flag: bool):
+    if (isinstance(flag, bool)):
+        global PRINT_LOG
+        PRINT_LOG = flag
+    else:
+
+        raise TypeError('set_print_log argument must be a bool.')
+
+def get_print_log() -> bool:
+
+    return PRINT_LOG
+
+
 STR_SEPARATOR_TERMINAL: str = "----------------------------------------------"\
                               "---------------------------------\n"# 79 charact
 def set_separator_terminal(separator: str):

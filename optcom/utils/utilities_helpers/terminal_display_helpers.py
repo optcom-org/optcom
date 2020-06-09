@@ -14,6 +14,7 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
+import logging
 from typing import Any, Callable, List, Optional, overload, Set, Tuple, Union
 
 import optcom.config as cfg
@@ -22,13 +23,21 @@ import optcom.config as cfg
 def print_terminal(to_print: Optional[str] = None,
                    sep_type: str = cfg.STR_SEPARATOR_TERMINAL) -> None:
     """Print a string on the terminal."""
-    print(sep_type, end='')
+    str_to_log = ''
+    str_to_log += sep_type
     if (to_print is not None):
-        print(to_print)
+        str_to_log += to_print
+    if (cfg.PRINT_LOG):
+        print(str_to_log)
+    logging.basicConfig(filename=cfg.OPTCOM_LOG_FILENAME, level=logging.INFO)
+    logging.info(str_to_log)
 
 
 def warning_terminal(to_print: str,
                      sep_type: str = cfg.STR_SEPARATOR_TERMINAL) -> None:
     """Print a warning on the terminal."""
-    print(sep_type, end='')
-    print("!WARNING!: ", to_print)
+    str_to_log = ''
+    str_to_log += sep_type
+    str_to_log += to_print
+    if (cfg.PRINT_LOG):
+        print("!WARNING!: ", str_to_log)
