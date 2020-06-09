@@ -1,5 +1,5 @@
 # Also include:
-include LICENSE.txt
+include LICENSE
 include README.md
 include ROADMAP.md
 include CONTRIBUTING.md

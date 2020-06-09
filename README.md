@@ -150,12 +150,12 @@ If you use Optcom, please cite it as:
 ## License
 
 Optcom is licensed under the terms of the GNU V3 License, see
-[`LICENSE.txt`](LICENSE.txt).
+[`LICENSE`](LICENSE).
 
 ## Disclaimer
 
 Optcom is a free open source Software developed and maintained by
 volunteers. The authors take no responsibility, see
-[`LICENSE.txt`](LICENSE.txt).
+[`LICENSE`](LICENSE).
 
 <!-- Markdown link & img dfn's -->
