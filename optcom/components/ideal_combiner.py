@@ -199,8 +199,8 @@ if __name__ == "__main__":
 
     combiner: oc.IdealCombiner = oc.IdealCombiner(arms=3, combine=False)
 
-    lt.link((pulse_1[0], combiner[0]), (pulse_2[0], combiner[1]),
-            (pulse_3[0], combiner[2]), (combiner[3], pm[0]))
+    lt.add_links((pulse_1[0], combiner[0]), (pulse_2[0], combiner[1]),
+                 (pulse_3[0], combiner[2]), (combiner[3], pm[0]))
 
     lt.run(pulse_1, pulse_2, pulse_3)
 
@@ -230,8 +230,8 @@ if __name__ == "__main__":
 
     combiner = oc.IdealCombiner(arms=3, combine=True)
 
-    lt.link((pulse_1[0], combiner[0]), (pulse_2[0], combiner[1]),
-            (pulse_3[0], combiner[2]), (combiner[3], pm[0]))
+    lt.add_links((pulse_1[0], combiner[0]), (pulse_2[0], combiner[1]),
+                 (pulse_3[0], combiner[2]), (combiner[3], pm[0]))
 
     lt.run(pulse_1, pulse_2, pulse_3)
 

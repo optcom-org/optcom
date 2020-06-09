@@ -187,7 +187,7 @@ if __name__ == "__main__":
     ratios: List[float] = [round(random.uniform(0,1),2) for i in range(arms)]
     divider: oc.IdealDivider = oc.IdealDivider(arms=arms, divide=True,
                                                ratios=ratios, save=True)
-    lt.link((pulse[0], divider[0]))
+    lt.add_link(pulse[0], divider[0])
     lt.run(pulse)
     y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels)]
     x_datas: List[np.ndarray] = [pulse[0][0].time]
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     pulse = oc.Gaussian(channels=2, peak_power=[10.0, 7.0])
     divider = oc.IdealDivider(arms=arms, divide=False, save=True)
     lt.reset()
-    lt.link((pulse[0], divider[0]))
+    lt.add_link(pulse[0], divider[0])
     lt.run(pulse)
     plot_titles.extend(["Original pulse", "Pulses coming out of the ideal "
                         "divider (3 ports) \n with no division."])

@@ -204,6 +204,10 @@ class AbstractComponent(metaclass=ABCMeta):
     def wait(self, wait: bool) -> None:
         self._wait = wait
     # ==================================================================
+    def get_port(self, port_nbr: int) -> Port:
+
+        return self[port_nbr]
+    # ==================================================================
     # Counter management ===============================================
     # ==================================================================
     @classmethod

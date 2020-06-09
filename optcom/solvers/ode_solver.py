@@ -198,7 +198,7 @@ if __name__ == "__main__":
                                XPM=False, ASYM=True, COUP=True, approx_type=1,
                                nlse_method='ssfm_super_sym', steps=steps,
                                ode_method=method, save=True, wait=False)
-        lt.link((pulse[0], coupler[0]))
+        lt.add_link(pulse[0], coupler[0])
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves

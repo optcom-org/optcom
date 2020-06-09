@@ -494,8 +494,8 @@ if __name__ == "__main__":
                               INTRA_COMP_DELAY=True, INTRA_PORT_DELAY=False,
                               INTER_PORT_DELAY=False, noise_ode_method='rk4',
                               NOISE=True)
-    lt.link((pulse_1[0], coupler[0]))
-    lt.link((pulse_2[0], coupler[1]))
+    lt.add_link(pulse_1[0], coupler[0])
+    lt.add_link(pulse_2[0], coupler[1])
 
     lt.run(pulse_1, pulse_2)
 

@@ -393,8 +393,10 @@ class Field(object):
         res: Field = getattr(self, operator)(field_operand)
         for i in range(len(field_operand[:])):
             if (i not in map):
-                res.append(field_operand[i], field_operand.center_omega[i],
-                           field_operand.rep_freq[i], field_operand.delays[i])
+                res.add_channel(field_operand[i],
+                                field_operand.center_omega[i],
+                                field_operand.rep_freq[i],
+                                field_operand.delays[i])
 
         return res
     # ==================================================================
@@ -501,8 +503,8 @@ class Field(object):
         """
         if (self.has_equal_charact(field)):
             for j in range(len(field)):
-                self.append(field[j], field.center_omega[j], field.rep_freq[j],
-                            field.delays[j])
+                self.add_channel(field[j], field.center_omega[j],
+                                 field.rep_freq[j], field.delays[j])
             self._noise += field.noise
         else:
             warning_message: str = ("Two fields must have same number of "
@@ -510,9 +512,9 @@ class Field(object):
                 "Operation aborted.")
             warnings.warn(warning_message, CompatibilityWarning)
     # ==================================================================
-    def append(self, channel: np.ndarray, center_omega: float,
-               rep_freq: float, delay: float = 0.0):
-        """Append a channel to the field.  The channel must comply with
+    def add_channel(self, channel: np.ndarray, center_omega: float,
+                    rep_freq: float, delay: float = 0.0):
+        """Aadd a channel to the field.  The channel must comply with
         the field characteristics.
         """
         success: bool = True

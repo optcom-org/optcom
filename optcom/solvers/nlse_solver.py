@@ -776,7 +776,7 @@ if __name__ == "__main__":
         fiber = Fiber(length=0.2, nlse_method=nlse_method, alpha=[0.5],
                       beta_order=3, gamma=4.0, nl_approx=False, SPM=True,
                       XPM=True, SS=True, RS=True, steps=steps, save=True)
-        lt.link((pulse[0], fiber[0]))
+        lt.add_link(pulse[0], fiber[0])
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves

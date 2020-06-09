@@ -192,8 +192,9 @@ class CW(AbstractStartComp):
             phi = (self.init_phi[i]
                    - Domain.nu_to_omega(self.offset_nu[i])*domain.time)
             res += math.sqrt(peak_power[i]) * np.exp(1j*phi)
-            field.append(res, Domain.lambda_to_omega(self.center_lambda[i]),
-                         rep_freq)
+            field.add_channel(res,
+                              Domain.lambda_to_omega(self.center_lambda[i]),
+                              rep_freq)
 
         output_fields.append(field)
         output_ports.append(0)

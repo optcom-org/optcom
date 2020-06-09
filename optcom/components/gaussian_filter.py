@@ -160,7 +160,7 @@ if __name__ == "__main__":
                                      width=[10., 6.])
     filter: oc.GaussianFilter = oc.GaussianFilter(nu_bw=nu_bw, nu_offset=0.,
                                                   order=1)
-    lt.link((pulse[0], filter[0]))
+    lt.add_link(pulse[0], filter[0])
     lt.run(pulse)
     plot_titles: List[str] = ["Original pulse", r"After Gaussian filter with "
                               "frequency bandwidth {} THz.".format(nu_bw)]

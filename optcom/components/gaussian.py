@@ -258,8 +258,9 @@ class Gaussian(AbstractStartComp):
                        - 0.5*self.chirp[i]*var_time)
                 res += (math.sqrt(self.peak_power[i])
                         * np.exp((-0.5*var_time) + 1j*phi))
-            field.append(res, Domain.lambda_to_omega(self.center_lambda[i]),
-                         self.rep_freq[i])
+            field.add_channel(res,
+                              Domain.lambda_to_omega(self.center_lambda[i]),
+                              self.rep_freq[i])
             if (self.noise is not None):
                 field.noise = self.noise
         output_fields.append(field)

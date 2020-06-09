@@ -270,8 +270,9 @@ class Soliton(AbstractStartComp):
                 res += (self.order[i] / width
                         * math.sqrt(-self.beta_2[i]/self.gamma[i])
                         * np.exp(1j*phi) / np.cosh(norm_time))
-            field.append(res, Domain.lambda_to_omega(self.center_lambda[i]),
-                         self.rep_freq[i])
+            field.add_channel(res,
+                              Domain.lambda_to_omega(self.center_lambda[i]),
+                              self.rep_freq[i])
 
         output_fields.append(field)
         output_ports.append(0)

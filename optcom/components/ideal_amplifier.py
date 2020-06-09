@@ -163,7 +163,7 @@ if __name__ == "__main__":
     pulse: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[10.0])
     gain: float = 3.0
     amp: oc.IdealAmplifier = oc.IdealAmplifier(gain=gain)
-    lt.link((pulse[0], amp[0]))
+    lt.add_link(pulse[0], amp[0])
     lt.run(pulse)
     plot_titles: List[str] = (["Original pulse", "Pulses coming out of the "
                                "ideal amplifier with gain {} dB."
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     peak_power: float = 15.0
     amp = oc.IdealAmplifier(gain=5.6, peak_power=peak_power)
     lt.reset()
-    lt.link((pulse[0], amp[0]))
+    lt.add_link(pulse[0], amp[0])
     lt.run(pulse)
     plot_titles.extend(["Pulses coming out of the ideal amplifier with target "
                         "peak power {} W.".format(peak_power)])
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     gain_fct: Callable = lambda t: 1e-1*t
     amp = oc.IdealAmplifier(gain=gain_fct)
     lt.reset()
-    lt.link((pulse[0], amp[0]))
+    lt.add_link(pulse[0], amp[0])
     lt.run(pulse)
     plot_titles.extend(["Pulses coming out of the ideal amplifier with gain: "
                         "f(t) = t."])

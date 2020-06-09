@@ -169,7 +169,7 @@ if __name__ == "__main__":
             # Propagation
             pulse = oc.Gaussian(peak_power=[10.0], chirp=[chirp])
             mod = oc.IdealPhaseMod(phase_shift=phase_shift)
-            lt.link((pulse[0], mod[0]))
+            lt.add_link(pulse[0], mod[0])
             lt.run(pulse)
             lt.reset()
             # Plot parameters and get waves

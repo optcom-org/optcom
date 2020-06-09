@@ -186,7 +186,7 @@ if __name__ == "__main__":
     for i in range(4):
         # Propagation
         coupler = oc.IdealCoupler(ratios_ports=[ratios_ports[i]])
-        lt.link((pulse[0], coupler[i]))
+        lt.add_link(pulse[0], coupler[i])
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves

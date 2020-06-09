@@ -164,7 +164,7 @@ if __name__ == "__main__":
     field_saver_2: oc.SaveFieldToFile = oc.SaveFieldToFile(file_name=file_name,
                                                            add_fields=True)
 
-    lt.link((gssn_1[0], field_saver_1[0]), (gssn_2[0], field_saver_2[0]))
+    lt.add_links((gssn_1[0], field_saver_1[0]), (gssn_2[0], field_saver_2[0]))
     lt.run(gssn_1, gssn_2)
 
     fields: List[oc.Field] = []

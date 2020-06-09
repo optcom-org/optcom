@@ -372,7 +372,7 @@ if __name__ == "__main__":
                      INTRA_COMP_DELAY=True, INTRA_PORT_DELAY=False,
                      INTER_PORT_DELAY=False, noise_ode_method='rk1',
                      NOISE=True)
-    lt.link((pulse[0], fiber[0]))
+    lt.add_link(pulse[0], fiber[0])
     lt.run(pulse)
 
     x_datas: List[np.ndarray] = [pulse[0][0].nu, fiber[1][0].nu,

@@ -231,7 +231,21 @@ class Layout(object):
 
             raise DelError(error_msg + str(port_1) + str(port_2))
     # ==================================================================
-    def link(self, *links: Tuple[Port, Port]) -> None:
+    def add_link(self, port_1: Port, port_2: Port) -> None:
+        """Add one bidirectionnal edge in the Layout.
+
+        Parameters
+        ----------
+        port_1 :
+            First port to be linked.
+        port_2 :
+            Second port to be linked.
+
+        """
+
+        self._add_edge(port_1, port_2, False)
+    # ==================================================================
+    def add_links(self, *links: Tuple[Port, Port]) -> None:
         """Add a series of bidirectionnal edges in the Layout.
 
         Parameters
@@ -244,7 +258,20 @@ class Layout(object):
         for edge in links:
             self._add_edge(edge[0], edge[1], False)
     # ==================================================================
-    def link_unidir(self, *links: Tuple[Port, Port]) -> None:
+    def add_unidir_link(self, port_1: Port, port_2: Port) -> None:
+        """Add one unidirectionnal edge in the Layout
+
+        Parameters
+        ----------
+        port_1 :
+            First port to be linked.
+        port_2 :
+            Second port to be linked.
+
+        """
+        self._add_edge(port_1, port_2, True)
+    # ==================================================================
+    def add_unidir_links(self, *links: Tuple[Port, Port]) -> None:
         """Add a series of unidirectionnal edges in the Layout
 
         Parameters
@@ -256,7 +283,20 @@ class Layout(object):
         for edge in links:
             self._add_edge(edge[0], edge[1], True)
     # ==================================================================
-    def del_link(self, *links: Tuple[Port, Port]) -> None:
+    def del_link(self, port_1: Port, port_2: Port) -> None:
+        """Delete a series of edges in the Layout.
+
+        Parameters
+        ----------
+        port_1 :
+            First port in the edge to be deleted.
+        port_2 :
+            Second port in the edge to be deleted.
+
+        """
+        self._del_edge(port_1, port_2)
+    # ==================================================================
+    def del_links(self, *links: Tuple[Port, Port]) -> None:
         """Delete a series of edges in the Layout.
 
         Parameters

@@ -251,8 +251,9 @@ class Sech(AbstractStartComp):
                        - 0.5*self.chirp[i]*var_time)
                 res += (math.sqrt(self.peak_power[i]) / np.cosh(norm_time)
                         * np.exp(1j*phi))
-            field.append(res, Domain.lambda_to_omega(self.center_lambda[i]),
-                         self.rep_freq[i])
+            field.add_channel(res,
+                              Domain.lambda_to_omega(self.center_lambda[i]),
+                              self.rep_freq[i])
             if (self.noise is not None):
                 field.noise = self.noise
         output_fields.append(field)

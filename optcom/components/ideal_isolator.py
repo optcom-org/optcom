@@ -141,7 +141,7 @@ if __name__ == "__main__":
     pulse: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[10.0])
     isolator_1: oc.IdealIsolator = oc.IdealIsolator(blocked_port=1, save=True)
 
-    lt.link((pulse[0], isolator_1[0]))
+    lt.add_link(pulse[0], isolator_1[0])
 
     lt.run(pulse)
 

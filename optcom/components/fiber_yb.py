@@ -485,7 +485,7 @@ if __name__ == "__main__":
                         max_nbr_iter=max_nbr_iter, PROP_REFL=False,
                         PRE_PUMP_PROP=False, RESO_INDEX=True)
 
-    lt.link((pulse[0], fiber[0]), (pump[0], fiber[2]))
+    lt.add_links((pulse[0], fiber[0]), (pump[0], fiber[2]))
     lt.run(pulse, pump)
 
     # Power vs time plotting -------------------------------------------

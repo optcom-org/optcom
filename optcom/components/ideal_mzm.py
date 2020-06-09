@@ -303,7 +303,7 @@ if __name__ == "__main__":
     for i, phase_shift in enumerate(phase_shifts):
         # Propagation
         mz = oc.IdealMZM(phase_shift=phase_shift, loss=loss)
-        lt.link((pulse[0], mz[0]))
+        lt.add_link(pulse[0], mz[0])
         lt.run(pulse)
         lt.reset()
         # Plot parameters and get waves
@@ -321,7 +321,7 @@ if __name__ == "__main__":
                              lambda t: math.sin(math.pi/2.0*t)]
     v_bias: List[float] = [1.2, 2.1]
     mz = oc.IdealMZM(v_pi=v_pi, v_mod=v_mod, v_bias=v_bias)
-    lt.link((pulse[0], mz[0]))
+    lt.add_link(pulse[0], mz[0])
     lt.run(pulse)
     lt.reset()
     # Plot parameters and get waves
@@ -331,7 +331,7 @@ if __name__ == "__main__":
     phase_shift_s: List[float] = [0., 0.]
     er: float = 20.0  # db
     mz = oc.IdealMZM(phase_shift=phase_shift_s, extinction=er)
-    lt.link((pulse[0], mz[0]))
+    lt.add_link(pulse[0], mz[0])
     lt.run(pulse)
     # Plot parameters and get waves
     y_datas.append(oc.temporal_power(mz[1][0].channels))
