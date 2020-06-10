@@ -146,8 +146,8 @@ def test_rk4ip_vs_opti_rk4ip_single_pulse(gssn_fiber_gnlse):
     temporal_powers = outputs[0]
     spectral_powers = outputs[1]
     for i in range(1, len(temporal_powers)):
-        assert_array_almost_equal(temporal_powers[i-1], temporal_powers[i], 15)
-        assert_array_almost_equal(spectral_powers[i-1], spectral_powers[i], 15)
+        assert_array_almost_equal(temporal_powers[i-1], temporal_powers[i], 10)
+        assert_array_almost_equal(spectral_powers[i-1], spectral_powers[i], 10)
 
 
 @pytest.mark.solvers

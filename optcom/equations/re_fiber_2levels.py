@@ -174,7 +174,7 @@ class REFiber2Levels(AbstractREFiber):
         # if time dependency would be : (to do)
         # self._prop: np.ndarray[float, steps, samples, nbr_levels]
         # self._pop: np.ndarray = np.zeros((0, 0, self._nbr_levels),
-        #                                   dtype=np.float128)
+        #                                   dtype=np.float64)
         # if no time dependency
         # self._prop: np.ndarray[float, steps, nbr_levels]
         self._pop: np.ndarray = np.array([])
@@ -260,8 +260,8 @@ class REFiber2Levels(AbstractREFiber):
         if (self._NOISE):
             self._back_up_noise = np.sum(noises, axis=0)
         if (not self._pop.size):
-            self._pop = np.zeros((0, self._nbr_levels), dtype=np.float128)
-        to_add: np.ndarray = np.zeros((1, self._nbr_levels), dtype=np.float128)
+            self._pop = np.zeros((0, self._nbr_levels), dtype=np.float64)
+        to_add: np.ndarray = np.zeros((1, self._nbr_levels), dtype=np.float64)
         self._pop = np.vstack((self._pop, to_add))
     # ==================================================================
     def _update_variables(self):

@@ -315,7 +315,7 @@ class AbstractREFiber(AbstractFieldEquation):
             self._sigma_a.append(sigma_a_)
             self._sigma_e.append(sigma_e_)
         # Population density -------------------------------------------
-        self._pop = np.zeros(0, dtype=np.float128)
+        self._pop = np.zeros(0, dtype=np.float64)
     # ==================================================================
     @property
     def population_levels(self):

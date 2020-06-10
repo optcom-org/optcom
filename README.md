@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="branding/logo/logo_crop.png">
+  <img src="https://www.github.com/optcom-org/optcom/raw/master/branding/logo/logo_crop.png">
 </div>
 
 # Optcom: Open Source Optical System Simulator
@@ -45,8 +45,9 @@ oc.animation2d(time, power, space, x_label=['t'], y_label=['P_t'],
                plot_labels=['1030. nm channel', '1550. nm channel'])
 ```
 
-![](./examples/example_anim_readme/example_anim_readme.gif)
-
+<div align="center">
+  ![](https://www.github.com/optcom-org/optcom/raw/master/examples/example_anim_readme/example_anim_readme.gif)
+</div>
 
 ## Tutorials
 
@@ -151,7 +152,7 @@ If you use Optcom, please cite it as:
 
 ## License
 
-Optcom is licensed under the terms of the GNU V3 License, see
+Optcom is licensed under the terms of the Apache 2.0 License, see
 [`LICENSE`](LICENSE).
 
 ## Disclaimer

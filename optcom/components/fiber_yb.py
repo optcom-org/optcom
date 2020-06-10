@@ -422,7 +422,7 @@ if __name__ == "__main__":
     or_p: float = 1e0
     lambdas_s: List[float] = [1030.0, 1020.0, 1025.0, 1015., 1010., 1100.]
     fwhm_s: List[float] =  [1.0 for i in range(nbr_ch_s)]
-    peak_power_s: List[float] = [3.0, 2.0, 1.0, 0.5, 0.3, 0.1]
+    peak_power_s: List[float] = [7.0, 2.0, 1.0, 0.5, 0.3, 0.1]
     rep_freq = [20e-6]   # THz
     pulse: oc.Gaussian = oc.Gaussian(channels=nbr_ch_s,
                                      peak_power=peak_power_s,
@@ -437,26 +437,23 @@ if __name__ == "__main__":
     steps: int = 100
     length: float = 0.002   # km
 
-    file_sigma_a: str = './data/fiber_amp/cross_section/absorption/yb.txt'
-    # emission max at 1024 nm
-    file_sigma_e: str = './data/fiber_amp/cross_section/emission/yb.txt'
-    sigma_a: List[Union[float, Callable, None]]
-    sigma_e: List[Union[float, Callable, None]]
-    sigma_a = [oc.CSVFit(file_sigma_a, conv_factor=[1e9, 1e18],
-                         conv_func=[oc.Domain.lambda_to_omega])]
-    sigma_e = [oc.CSVFit(file_sigma_e, conv_factor=[1e9, 1e18],
-                         conv_func=[oc.Domain.lambda_to_omega])]
-    n_core: List[Union[float, Callable, None]] = [None]
-    n_clad: List[Union[float, Callable, None]] = [None]
-    NA: List[Union[float, Callable, None]] = [0.11]
+    # Values taken partially from:
+    # https://www.osapublishing.org/oe/abstract.cfm?uri=oe-15-6-3236
+    sigma_a_s: float = 6.4e-9   # nm^{2}
+    sigma_a_p: float = 2.5e-6   # nm^{2}
+    sigma_a: List[Union[float, Callable, None]] = [sigma_a_s, sigma_a_p]
+    sigma_e_s: float = 3.2e-7   # nm^{2}
+    sigma_e_p: float = 2.5e-6   # nm^{2}
+    sigma_e: List[Union[float, Callable, None]] = [sigma_e_s, sigma_e_p]
+    NA: List[Union[float, Callable, None]] = [0.06]
     r_core: float = 6.0 / 2.0   # um
     r_clad: float = 125.0 / 2.0  # um
     temperature: float = 293.15    # K
     tau: float = 840.0    # us
-    N_T: float = 2.5e-2    # nm^{-3}
-    eta_s: float = 1.26     # km^-1
-    eta_p: float = 1.41     # km^-1
-    alpha: List[Union[List[float], Callable, None]] = [[eta_s], [eta_p]]
+    N_T: float = 4.6e-2    # nm^{-3}
+    alpha_s: float = 2.0     # km^-1
+    alpha_p: float = 0.4     # km^-1
+    alpha: List[Union[List[float], Callable, None]] = [[alpha_s], [alpha_p]]
     R_0: float = 8e-4
     R_L: float = R_0
     medium_core: str = 'sio2'
@@ -464,14 +461,13 @@ if __name__ == "__main__":
     max_nbr_iter: int = 10
     fiber: oc.FiberYb
     fiber = oc.FiberYb(length=length, nlse_method="rk4ip",
-                        alpha=alpha, beta_order = 2, alpha_order = 0,
+                        alpha=alpha, beta_order=2, alpha_order=0,
                         gain_order=0, GAIN_SAT=True,
                         nl_approx=False, ATT=[True, True], DISP=[True, False],
                         SPM=[True, False], XPM=[True, False], SS=[True, False],
                         RS=[True, False], XNL=[False, False],
                         approx_type=1, split_noise_option='seed_split',
-                        sigma_e=sigma_e, sigma_a=sigma_a,
-                        n_core=n_core, n_clad=n_clad, NA=NA,
+                        sigma_a=sigma_a, sigma_e=sigma_e, NA=NA,
                         core_radius=r_core, clad_radius=r_clad,
                         temperature=temperature, tau=tau,
                         N_T=N_T, R_0=R_0, R_L=R_L,

@@ -14,6 +14,7 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
+import os
 from typing import Callable, List, Optional, overload
 
 import numpy as np
@@ -28,8 +29,9 @@ class CSVFit(object):
     def __init__(self, file_name: str, delimiter: str = ',',
                  conv_func: List[Callable] = [],
                  conv_factor: List[float] = [1e0, 1e0],
-                 order: Optional[int] = None, ext: int = 1):
-        self.file_name = file_name
+                 order: Optional[int] = None, ext: int = 1,
+                 root_dir: str = '.'):
+        self._full_path_to_file = os.path.join(root_dir, file_name)
         self.delimiter = delimiter
         self.conv_func = conv_func
         self.conv_factor = conv_factor
@@ -69,8 +71,8 @@ class CSVFit(object):
     # ==================================================================
     def update(self):
 
-        self._func = self._fit(self.file_name, self.delimiter, self.conv_func,
-                               self.conv_factor)
+        self._func = self._fit(self._full_path_to_file, self.delimiter,
+                               self.conv_func, self.conv_factor)
     # ==================================================================
     def _fit(self, file_name: str, delimiter: str, conv_func: List[Callable],
              conv_factor: List[float]) -> List[Callable]:
