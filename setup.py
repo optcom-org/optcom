@@ -14,7 +14,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/optcom-org/optcom",
     download_url='https://github.com/optcom-org/optcom/archive/v0.2.2.tar.gz',
-    license="GNU",
+    license="Apache",
     packages=setuptools.find_packages(exclude=("tests",)),
     include_package_data=True,	# controls whether non-code files are copied when package is installed
     install_requires=["scipy", "numpy", "matplotlib", "pillow", "pyfftw",
@@ -22,8 +22,7 @@ setuptools.setup(
     classifiers=[
         "Natural Language :: English",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License v3 or later "
-        "(GPLv3+)",
+        "License :: OSI Approved :: Apache 2.0",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
