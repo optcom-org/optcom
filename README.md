@@ -45,9 +45,7 @@ oc.animation2d(time, power, space, x_label=['t'], y_label=['P_t'],
                plot_labels=['1030. nm channel', '1550. nm channel'])
 ```
 
-<div align="center">
-  ![](https://www.github.com/optcom-org/optcom/raw/master/examples/example_anim_readme/example_anim_readme.gif)
-</div>
+![](https://www.github.com/optcom-org/optcom/raw/master/examples/example_anim_readme/example_anim_readme.gif)
 
 ## Tutorials
 
