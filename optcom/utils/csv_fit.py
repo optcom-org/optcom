@@ -38,7 +38,8 @@ class CSVFit(object):
         self.order = order
         self.ext = ext  # from scipy.interpolate.splev
         self._func: List[Callable]
-        self._func = self._fit(file_name, delimiter, conv_func, conv_factor)
+        self._func = self._fit(self._full_path_to_file, delimiter, conv_func,
+                               conv_factor)
     # ==================================================================
     @overload
     def __call__(self, var: float, order: Optional[int]) -> float: ...
@@ -74,11 +75,11 @@ class CSVFit(object):
         self._func = self._fit(self._full_path_to_file, self.delimiter,
                                self.conv_func, self.conv_factor)
     # ==================================================================
-    def _fit(self, file_name: str, delimiter: str, conv_func: List[Callable],
+    def _fit(self, file_path: str, delimiter: str, conv_func: List[Callable],
              conv_factor: List[float]) -> List[Callable]:
         # conv factor first before conv func
         func = []
-        data, names = util.read_csv(file_name, delimiter)
+        data, names = util.read_csv(file_path, delimiter)
         if (not len(data)):
             util.warning_terminal("The csv file provided is either empty or "
                 "do not comply with correct synthax.")
@@ -111,9 +112,11 @@ if __name__ == "__main__":
     import optcom.domain as domain
     import optcom.utils.plot as plot
 
-    file_name = ('./data/fiber_amp/cross_section/absorption/yb.txt')
+    root_dir = './data/fiber_amp/cross_section/absorption/'
+    file_name = ('yb.txt')
     csv = CSVFit(file_name, ',', conv_factor=[1e9, 1e18],
-                 conv_func=[domain.Domain.lambda_to_omega])
+                 conv_func=[domain.Domain.lambda_to_omega],
+                 root_dir=root_dir)
     Lambda = 976.0
     omega = domain.Domain.lambda_to_omega(Lambda)
     print(csv(omega, 1))
@@ -122,9 +125,11 @@ if __name__ == "__main__":
     omega = domain.Domain.lambda_to_omega(Lambda)
     res_1 = csv(omega, 0)
 
-    file_name = ('./data/fiber_amp/cross_section/emission/yb.txt')
+    root_dir = "./data/fiber_amp/cross_section/emission/"
+    file_name = ('yb.txt')
     csv = CSVFit(file_name, ',', conv_factor=[1e9, 1e18],
-                 conv_func=[domain.Domain.lambda_to_omega])
+                 conv_func=[domain.Domain.lambda_to_omega],
+                 root_dir=root_dir)
     res_2 = csv(omega, 0)
     print('1010 : ', csv(domain.Domain.lambda_to_omega(1010.), 0))
     print('1015 : ', csv(domain.Domain.lambda_to_omega(1015.), 0))

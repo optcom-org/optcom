@@ -149,7 +149,7 @@ class LoadFieldFromFile(AbstractStartComp):
         self.raise_type_error: bool = raise_type_error
     # ==================================================================
     def _update_path_to_file(self) -> None:
-        self._full_path_to_file = os.path.join(self._root_dir, self.file_name)
+        self._full_path_to_file = os.path.join(self.root_dir, self.file_name)
     # ==================================================================
     @property
     def file_name(self) -> str:
@@ -178,16 +178,16 @@ class LoadFieldFromFile(AbstractStartComp):
 
         output_ports: List[int] = []
         output_fields: List[Field] = []
-        if (not os.path.isfile(self.file_name)):
+        if (not os.path.isfile(self._full_path_to_file)):
 
             raise FileError("The specified file '{}' has not been found, "
                             "please verify that the file exists."
-                            .format(self.file_name))
+                            .format(self._full_path_to_file))
 
         else:
             loading_failed = False
             # Open file
-            file_container = open(self.file_name, 'rb')
+            file_container = open(self._full_path_to_file, 'rb')
             while (not loading_failed):
                 try:
                     new_fields = pickle.load(file_container)
@@ -213,11 +213,12 @@ class LoadFieldFromFile(AbstractStartComp):
                         output_fields.extend(accepted_fields)
                     else:
                         if (self.raise_type_error):
+                            error_msg: str = ("The object loaded from file "
+                                              "'{}' is not a list of Field, "
+                                              "can not be loaded."
+                                              .format(self.file_name))
 
-                            raise DataTypeError("The object loaded from file "
-                                                "'{}' is not a list of Field, "
-                                                "can not be loaded."
-                                                .format(self.file_name))
+                            raise DataTypeError(erro_msg)
 
             util.print_terminal("{} field(s) loaded from file '{}'"
                                 .format(len(output_fields), self.file_name))
@@ -240,23 +241,27 @@ if __name__ == "__main__":
 
     import optcom as oc
 
+    root_dir = '.'
     file_name: str = 'example_saved_fields.pk1'
 
     lt: oc.Layout = oc.Layout()
     gssn_1: oc.Gaussian = oc.Gaussian(channels=1, width=[5.0],
                                       field_name='field 1 to be saved in file')
     field_saver_1: oc.SaveFieldToFile = oc.SaveFieldToFile(file_name=file_name,
-                                                           add_fields=False)
+                                                           add_fields=False,
+                                                           root_dir=root_dir)
     gssn_2: oc.Gaussian = oc.Gaussian(channels=1, width=[10.0],
                                       field_name='field 2 to be saved in file')
     field_saver_2: oc.SaveFieldToFile = oc.SaveFieldToFile(file_name=file_name,
-                                                           add_fields=True)
+                                                           add_fields=True,
+                                                           root_dir=root_dir)
 
     lt.add_links((gssn_1[0], field_saver_1[0]), (gssn_2[0], field_saver_2[0]))
     lt.run(gssn_1, gssn_2)
 
     lt_: oc.Layout = oc.Layout()
-    load_field: oc.LoadFieldFromFile = oc.LoadFieldFromFile(file_name=file_name)
+    load_field: oc.LoadFieldFromFile = oc.LoadFieldFromFile(file_name=file_name,
+                                                            root_dir=root_dir)
 
     lt_.run(load_field)
     fields: List[oc.Field] = load_field[0].fields

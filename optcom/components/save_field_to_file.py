@@ -125,7 +125,7 @@ class SaveFieldToFile(AbstractPassComp):
         self.add_fields: bool = add_fields
     # ==================================================================
     def _update_path_to_file(self) -> None:
-        self._full_path_to_file = os.path.join(self._root_dir, self.file_name)
+        self._full_path_to_file = os.path.join(self.root_dir, self.file_name)
     # ==================================================================
     @property
     def file_name(self) -> str:
@@ -153,13 +153,13 @@ class SaveFieldToFile(AbstractPassComp):
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
-        if (os.path.isfile(self.file_name) and self.add_fields):
-            with open(self.file_name, 'ab') as file_container:
+        if (os.path.isfile(self._full_path_to_file) and self.add_fields):
+            with open(self._full_path_to_file, 'ab') as file_container:
                 pickle.dump(fields, file_container)
             util.print_terminal("{} field(s) added to existing file '{}'."
                                 .format(len(fields), self.file_name))
         else:
-            with open(self.file_name, 'wb') as file_container:
+            with open(self._full_path_to_file, 'wb') as file_container:
                 pickle.dump(fields, file_container)
                 util.print_terminal("{} field(s) added in new file '{}'."
                                     .format(len(fields), self.file_name))
@@ -180,17 +180,20 @@ if __name__ == "__main__":
 
     import optcom as oc
 
+    root_dir = '.'
     file_name: str = 'example_saved_fields.pk1'
 
     lt: oc.Layout = oc.Layout()
     gssn_1: oc.Gaussian = oc.Gaussian(channels=1, width=[5.0],
                                       field_name='field 1 to be saved in file')
     field_saver_1: oc.SaveFieldToFile = oc.SaveFieldToFile(file_name=file_name,
-                                                           add_fields=False)
+                                                           add_fields=False,
+                                                           root_dir=root_dir)
     gssn_2: oc.Gaussian = oc.Gaussian(channels=1, width=[10.0],
                                       field_name='field 2 to be saved in file')
     field_saver_2: oc.SaveFieldToFile = oc.SaveFieldToFile(file_name=file_name,
-                                                           add_fields=True)
+                                                           add_fields=True,
+                                                           root_dir=root_dir)
 
     lt.add_links((gssn_1[0], field_saver_1[0]), (gssn_2[0], field_saver_2[0]))
     lt.run(gssn_1, gssn_2)
