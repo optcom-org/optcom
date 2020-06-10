@@ -22,7 +22,7 @@ The domain contains information, i.e. physic's parameters, that will be shared b
 
 Layout
 ^^^^^^
-A Layout allow to build a system by connecting the components to each other via their ports. Morevore, the Layout is managing the propagation of the Domain and Fields through the system.
+A Layout allows to build a system by connecting the components to each other via their ports. Moreover, the Layout is managing the propagation of the Domain and Fields through the system.
 
 
 Simulation Tools

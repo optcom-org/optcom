@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="optcom",
-    version="0.2.2",
+    version="0.3.0",
     author="Sacha Medaer",
     author_email="sacha.medaer@optcom.org",
     python_requires=">=3.7.0",
@@ -13,8 +13,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/optcom-org/optcom",
-    download_url='https://github.com/optcom-org/optcom/archive/v0.2.2.tar.gz',
-    license="Apache",
+    download_url='https://github.com/optcom-org/optcom/archive/v0.3.0.tar.gz',
+    license='Apache License 2.0',
     packages=setuptools.find_packages(exclude=("tests",)),
     include_package_data=True,	# controls whether non-code files are copied when package is installed
     install_requires=["scipy", "numpy", "matplotlib", "pillow", "pyfftw",
@@ -22,7 +22,7 @@ setuptools.setup(
     classifiers=[
         "Natural Language :: English",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: Apache 2.0",
+        "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
