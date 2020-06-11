@@ -121,6 +121,16 @@ class Port(object):
         return self._counter_pass
     # ==================================================================
     @property
+    def field(self) -> Optional[Field]:
+        """Return the last saved field if exists, otherwise None."""
+        if (self._fields):
+
+            return self._fields[-1]
+        else:
+
+            return None
+    # ==================================================================
+    @property
     def fields(self) -> List[Field]:
 
         return self._fields
