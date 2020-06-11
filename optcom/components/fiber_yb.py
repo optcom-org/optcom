@@ -531,34 +531,34 @@ if __name__ == "__main__":
             ase_backward[i] += np.sum(storage.noises[2][i])
         y_datas.extend([ase_forward, ase_backward])
         # Preparing labels and other plotting parameters
-        plot_labels: List[Optional[str]]
-        plot_labels = ["Seed {}".format(i+1) for i in range(nbr_ch_s)]
-        plot_labels.extend(["Pump {}".format(i+1) for i in range(nbr_ch_p)])
-        plot_labels.extend(["Reflection seed {}"
+        line_labels: List[Optional[str]]
+        line_labels = ["Seed {}".format(i+1) for i in range(nbr_ch_s)]
+        line_labels.extend(["Pump {}".format(i+1) for i in range(nbr_ch_p)])
+        line_labels.extend(["Reflection seed {}"
                             .format(i+1) for i in range(nbr_ch_s)])
-        plot_labels.extend(["Reflection pump {}"
+        line_labels.extend(["Reflection pump {}"
                           .format(i+1) for i in range(nbr_ch_p)])
-        plot_labels.extend(['ASE forward', 'ASE backward'])
-        plot_linestyles: List[str]
-        plot_linestyles = ['-' for i in range(nbr_ch_s)]
-        plot_linestyles.extend(['-.' for i in range(nbr_ch_p)])
-        plot_linestyles.extend(['-' for i in range(nbr_ch_s)])
-        plot_linestyles.extend(['-.' for i in range(nbr_ch_p)])
-        plot_linestyles.extend([':' for i in range(2)])
+        line_labels.extend(['ASE forward', 'ASE backward'])
+        line_styles: List[str]
+        line_styles = ['-' for i in range(nbr_ch_s)]
+        line_styles.extend(['-.' for i in range(nbr_ch_p)])
+        line_styles.extend(['-' for i in range(nbr_ch_s)])
+        line_styles.extend(['-.' for i in range(nbr_ch_p)])
+        line_styles.extend([':' for i in range(2)])
         plot_titles = ['Power evolution of signal, ase and pump along the '
                        'fiber amplifier.']
 
         oc.plot2d(x_datas, y_datas, x_labels=[r'Fiber length, $\, z\,(km)$'],
-                  y_labels=['Average Power (W)'], plot_labels=plot_labels,
-                  plot_linestyles=plot_linestyles, split=False,
+                  y_labels=['Average Power (W)'], line_labels=line_labels,
+                  line_styles=line_styles, split=False,
                   plot_titles=plot_titles)
 
         # Animation power vs space plotting ----------------------------
-        plot_labels = [str(lambdas_s[i]) + ' nm channel '
+        line_labels = [str(lambdas_s[i]) + ' nm channel '
                        for i in range(len(lambdas_s))]
 
         oc.animation2d(storage.time,
                        oc.temporal_power(storage.channels[:(nbr_ch_s)]),
-                       storage.space, x_label=['t'], y_label=['P_t'],
+                       storage.space, x_label='t', y_label='P_t',
                        plot_title='Channels propagation in fiber amplifier.',
-                       plot_labels=plot_labels)
+                       line_labels=line_labels)

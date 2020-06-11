@@ -512,8 +512,8 @@ if __name__ == "__main__":
                               .format(str(round(length*kappa_,2)))]
     plot_titles.append(plot_titles[-1])
 
-    plot_labels: List[Optional[str]] = ["port 0", "port 1", "port 2", "port 3"]
+    line_labels: List[Optional[str]] = ["port 0", "port 1", "port 2", "port 3"]
 
     oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
               plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-              plot_labels=plot_labels, opacity=[0.3])
+              line_labels=line_labels, opacity=[0.3])

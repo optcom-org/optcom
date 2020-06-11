@@ -176,7 +176,7 @@ if __name__ == "__main__":
     ratios_ports: List[List[float]] = [[0.6, 0.4], [0.5, 0.5],
                                        [0.4, 0.6], [0.0, 1.0]]
 
-    plot_labels: List[Optional[str]] = [None]
+    line_labels: List[Optional[str]] = [None]
     plot_groups: List[int] = [0]
     plot_titles: List[str] = ["Original pulse"]
     y_datas: List[np.ndarray] = []
@@ -195,7 +195,7 @@ if __name__ == "__main__":
         y_datas.append(oc.temporal_power(coupler[port_saved][0].channels))
         x_datas.append(coupler[port_saved-1][0].time)
         x_datas.append(coupler[port_saved][0].time)
-        plot_labels += ["port " + str(port_saved-1), "port " + str(port_saved)]
+        line_labels += ["port " + str(port_saved-1), "port " + str(port_saved)]
         plot_groups += [i+1, i+1]
         plot_titles += ["Pulses coming out of the ideal coupler from input "
                         "port {} with ratios {}".format(i, ratios_ports[i])]
@@ -205,4 +205,4 @@ if __name__ == "__main__":
 
     oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
               plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-              plot_labels=plot_labels, opacity=[0.3])
+              line_labels=line_labels, opacity=[0.3])

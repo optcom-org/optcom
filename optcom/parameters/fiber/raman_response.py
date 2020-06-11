@@ -280,7 +280,7 @@ if __name__ == "__main__":
 
     x_data: List[np.ndarray] = []
     y_data: List[np.ndarray] = []
-    plot_labels: List[Optional[str]] = []
+    line_labels: List[Optional[str]] = []
 
     f_R: float = cst.F_R
     n_0: float = 1.40
@@ -293,23 +293,23 @@ if __name__ == "__main__":
     h_R: oc.RamanResponse = oc.RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b,
                                                       f_c=f_c)
     y_data.append(h_R)
-    plot_labels.append('Isotropic and anisotropic part')
+    line_labels.append('Isotropic and anisotropic part')
     f_a = 1.0
     f_b = 0.0
     f_c = 1.0
     x_data.append(time)
     h_R = oc.RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b, f_c=f_c)
     y_data.append(h_R)
-    plot_labels.append('W/o anisotropic part')
+    line_labels.append('W/o anisotropic part')
     f_a = 0.0
     f_b = 1.0
     f_c = 0.0
     x_data.append(time)
     h_R = oc.RamanResponse.calc_h_R(time, f_a=f_a, f_b=f_b, f_c=f_c)
     y_data.append(h_R)
-    plot_labels.append('W/o isotropic part')
+    line_labels.append('W/o isotropic part')
     plot_titles: List[str] = ['Raman response function', 'Raman gain']
 
     oc.plot2d(x_data, y_data, x_labels=['t'], y_labels=['h_R'],
               plot_groups=[0,0,0], plot_titles=plot_titles, opacity=[0.0],
-              plot_labels=plot_labels)
+              line_labels=line_labels)

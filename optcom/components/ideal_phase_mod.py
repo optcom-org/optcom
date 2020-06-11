@@ -159,7 +159,7 @@ if __name__ == "__main__":
 
     plot_groups: List[int] = []
     plot_titles: List[str] = []
-    plot_labels: List[Optional[str]] = []
+    line_labels: List[Optional[str]] = []
 
     pulse: oc.Gaussian
     mod: oc.IdealPhaseMod
@@ -179,7 +179,7 @@ if __name__ == "__main__":
             y_datas_nu.append(oc.spectral_phase(mod[1][0].channels))
             plot_groups += [count, count]
             count += 1
-            plot_labels += ["Original pulse", "Exit pulse"]
+            line_labels += ["Original pulse", "Exit pulse"]
             if (isinstance(phase_shift, float)):
                 temp_phase = phase_shift
             else:
@@ -191,11 +191,11 @@ if __name__ == "__main__":
     x_datas_t: List[np.ndarray] = [pulse[0][0].time, mod[1][0].time]
 
     oc.plot2d(x_datas_t, y_datas_t, plot_groups=plot_groups,
-              plot_titles=plot_titles, plot_labels=plot_labels,
+              plot_titles=plot_titles, line_labels=line_labels,
               x_labels=['t'], y_labels=['phi_t'], opacity=[0.3])
 
     x_datas_nu: List[np.ndarray] = [pulse[0][0].nu, mod[1][0].nu]
 
     oc.plot2d(x_datas_nu, y_datas_nu, plot_groups=plot_groups,
-              plot_titles=plot_titles, plot_labels=plot_labels,
+              plot_titles=plot_titles, line_labels=line_labels,
               x_labels=['nu'], y_labels=['phi_nu'], opacity=[0.3])

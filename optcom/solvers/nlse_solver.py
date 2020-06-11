@@ -750,7 +750,7 @@ if __name__ == "__main__":
     from optcom.field import Field
 
     plot_groups: List[int] = []
-    plot_labels: List[Optional[str]] = []
+    line_labels: List[Optional[str]] = []
     plot_titles: List[str] = []
     x_datas: List[np.ndarray] = []
     y_datas: List[np.ndarray] = []
@@ -758,7 +758,6 @@ if __name__ == "__main__":
     nlse_methods: List[str] = ["ssfm", "ssfm_reduced", "ssfm_symmetric",
                                "ssfm_opti_reduced", "ssfm_super_sym",
                                "ssfm_opti_super_sym", "rk4ip", "rk4ip"]
-    nlse_methods = ["rk4ip", "rk4ip"]
     # ---------------- NLSE solvers test -------------------------------
     lt: Layout = Layout(Domain(bit_width=100.0, samples_per_bit=4096))
 
@@ -784,9 +783,9 @@ if __name__ == "__main__":
         y_datas.append(Field.temporal_power(fiber[1][0].channels))
         plot_groups.append(0)
 
-    plot_labels.extend(nlse_methods[:-1] + ["rk4ip_gnlse"])
+    line_labels.extend(nlse_methods[:-1] + ["rk4ip_gnlse"])
     plot_titles.extend(["NLSE solvers test with n={}".format(str(steps))])
     # -------------------- Plotting results ------------------------
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                plot_labels=plot_labels, opacity=[0.3])
+                line_labels=line_labels, opacity=[0.3])

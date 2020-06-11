@@ -156,7 +156,7 @@ if __name__ == "__main__":
     from optcom.field import Field
 
     plot_groups: List[int] = []
-    plot_labels: List[Optional[str]] = []
+    line_labels: List[Optional[str]] = []
     plot_titles: List[str] = []
     x_datas: List[np.ndarray] = []
     y_datas: List[np.ndarray] = []
@@ -206,9 +206,9 @@ if __name__ == "__main__":
         y_datas.append(Field.temporal_power(coupler[2][0].channels))
         plot_groups.append(0)
 
-    plot_labels.extend(ode_methods)
+    line_labels.extend(ode_methods)
     plot_titles.extend(["ODE solvers test with n={}".format(str(steps))])
     # -------------------- Plotting results ------------------------
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                plot_labels=plot_labels, opacity=[0.1])
+                line_labels=line_labels, opacity=[0.1])

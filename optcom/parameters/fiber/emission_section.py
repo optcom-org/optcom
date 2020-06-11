@@ -164,8 +164,8 @@ if __name__ == "__main__":
     x_data: List[np.ndarray] = []
     y_data: List[np.ndarray] = []
     plot_titles: List[str] = []
-    plot_labels: List[Optional[str]] = []
-    plot_colors: List[str] = []
+    line_labels: List[Optional[str]] = []
+    line_colors: List[str] = []
     T: float = 293.1
     medium: str = 'sio2'
     nbr_samples: int = 1000
@@ -185,16 +185,16 @@ if __name__ == "__main__":
         sigmas = absorp(omegas)
         x_data.append(lambdas)
         y_data.append(sigmas)
-        plot_labels.append('absorption')
-        plot_colors.append('blue')
+        line_labels.append('absorption')
+        line_colors.append('blue')
         emission = oc.EmissionSection(dopant=dopant, medium=medium, T=T,
                                      sigma_a=absorp)
         sigmas = emission(omegas)
         x_data.append(lambdas)
         y_data.append(sigmas)
         dopant_name = dopant[0].upper()+dopant[1:]
-        plot_labels.append('emission')
-        plot_colors.append('red')
+        line_labels.append('emission')
+        line_colors.append('red')
         plot_titles.append("Cross sections {} from formula"
                            .format(dopant_name)
                            + "\n (absorption sections + McCumber relations)")
@@ -211,13 +211,13 @@ if __name__ == "__main__":
     sigmas = csv_sigma_a(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
-    plot_labels.append('absoprtion')
-    plot_colors.append('blue')
+    line_labels.append('absoprtion')
+    line_colors.append('blue')
     sigmas = csv_sigma_e(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
-    plot_labels.append('emission')
-    plot_colors.append('red')
+    line_labels.append('emission')
+    line_colors.append('red')
     plot_titles.append('Cross sections Yb from files.')
     # From file and McCumber
     emission = oc.EmissionSection(dopant='yb', medium=medium, T=T,
@@ -225,17 +225,17 @@ if __name__ == "__main__":
     sigmas = csv_sigma_a(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
-    plot_labels.append('absoprtion')
-    plot_colors.append('blue')
+    line_labels.append('absoprtion')
+    line_colors.append('blue')
     sigmas = emission(omegas)
     x_data.append(lambdas)
     y_data.append(sigmas)
-    plot_labels.append('emission')
-    plot_colors.append('red')
+    line_labels.append('emission')
+    line_colors.append('red')
     plot_titles.append("Cross sections from absorption Yb file and McCumber")
 
     oc.plot2d(x_data, y_data, x_labels=['Lambda'],
               y_labels=[r'Emission cross section, $\,\sigma_e\,(nm^2)$'],
-              plot_colors=plot_colors, plot_labels=plot_labels,
-              plot_titles=plot_titles, plot_linestyles=['-.'],
+              line_colors=line_colors, line_labels=line_labels,
+              plot_titles=plot_titles, line_styles=['-.'],
               opacity=[0.0], plot_groups=[0,0,1,1,2,2])

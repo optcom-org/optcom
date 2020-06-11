@@ -196,8 +196,8 @@ if __name__ == "__main__":
                                "ideal divider (3 ports) \n with ratios {}"
                                .format(str(ratios))])
     plot_groups: List[int] = [0] + [1 for i in range(arms)]
-    plot_labels: List[Optional[str]] = [None]
-    plot_labels.extend(["port {}".format(str(i)) for i in range(arms)])
+    line_labels: List[Optional[str]] = [None]
+    line_labels.extend(["port {}".format(str(i)) for i in range(arms)])
 
     for i in range(1, arms+1):
         y_datas.append(oc.temporal_power(divider[i][0].channels))
@@ -212,8 +212,8 @@ if __name__ == "__main__":
     plot_titles.extend(["Original pulse", "Pulses coming out of the ideal "
                         "divider (3 ports) \n with no division."])
     plot_groups.extend([2] + [3 for i in range(arms)])
-    plot_labels.extend([None])
-    plot_labels.extend(["port {}".format(str(i)) for i in range(arms)])
+    line_labels.extend([None])
+    line_labels.extend(["port {}".format(str(i)) for i in range(arms)])
     y_datas.extend([oc.temporal_power(pulse[0][0].channels)])
     x_datas.extend([pulse[0][0].time])
     for i in range(1, arms+1):
@@ -222,4 +222,4 @@ if __name__ == "__main__":
 
     oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
               plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-              plot_labels=plot_labels, opacity=[0.3])
+              line_labels=line_labels, opacity=[0.3])

@@ -191,5 +191,5 @@ if __name__ == "__main__":
                               r"ratio $\frac{N_1}{N_0} = \frac{11}{10}$."]
 
     oc.plot2d([lambdas], [gains], x_labels=['Lambda'],
-              y_labels=[r'Gain, $\, g\,(km^{-1})$'], plot_colors=['red'],
+              y_labels=[r'Gain, $\, g\,(km^{-1})$'], line_colors=['red'],
               plot_titles=plot_titles, opacity=[0.])

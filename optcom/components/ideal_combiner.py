@@ -207,7 +207,7 @@ if __name__ == "__main__":
     plot_titles: List[str] = (["Original pulses", "Pulses coming out of the "
                                "ideal coupler \n without combination"])
     plot_groups: List[int] = [0,0,0,1]
-    plot_labels: List[Optional[str]] = ['port 0', 'port 1', 'port 2', None]
+    line_labels: List[Optional[str]] = ['port 0', 'port 1', 'port 2', None]
 
     out_channels: np.ndarray = oc.temporal_power(pm[1][0].channels)
     for i in range(len(pm[1])):
@@ -239,7 +239,7 @@ if __name__ == "__main__":
                         "Pulses coming out of the ideal coupler \n with "
                         "combination"])
     plot_groups.extend([2,2,2,3])
-    plot_labels.extend(['port 0', 'port 1', 'port 2', None])
+    line_labels.extend(['port 0', 'port 1', 'port 2', None])
 
     y_datas.extend([oc.temporal_power(pulse_1[0][0].channels),
                     oc.temporal_power(pulse_2[0][0].channels),
@@ -248,6 +248,6 @@ if __name__ == "__main__":
     x_datas.extend([pulse_1[0][0].time, pulse_2[0][0].time, pulse_3[0][0].time,
                     pm[1][0].time])
 
-    oc.plot2d(x_datas, y_datas, plot_labels=plot_labels,
+    oc.plot2d(x_datas, y_datas, line_labels=line_labels,
               plot_groups=plot_groups, plot_titles=plot_titles,
               x_labels=['t'], y_labels=['P_t'], opacity=[0.3])

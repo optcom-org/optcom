@@ -114,36 +114,36 @@ def apply_protocol_decorator(func: Any) -> TypingMethodAttribute:
 
 @apply_protocol_decorator
 def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
-                   y_range, plot_title, plot_label, plot_linestyle,
-                   plot_color, opacity):
+                   y_range, plot_title, line_label, line_style, line_width,
+                   line_color, opacity):
     """Plot a 2D graph."""
     x_data_ = np.array([x_data]) if (x_data.ndim < 2) else x_data
     y_data_ = np.array([y_data]) if (y_data.ndim < 2) else y_data
     x_data_ = util.modify_length_ndarray(x_data_, len(y_data_))
     multi_channel = len(y_data_) > 1
-    labels_on_plot = plot_label is not None
-    colors_on_plot = plot_color is not None
+    labels_on_plot = line_label is not None
+    colors_on_plot = line_color is not None
     if (multi_channel):
-        plot_label = util.make_list(plot_label, len(y_data_))
+        line_label = util.make_list(line_label, len(y_data_))
     for i in range(len(y_data_)):
         if (multi_channel):
             if (labels_on_plot):
-                plot_label_temp = plot_label[i] + " (ch.{})".format(i)
+                line_label_ = line_label[i] + " (ch.{})".format(i)
             else:
-                plot_label_temp = "channel {}".format(i)
+                line_label_ = "channel {}".format(i)
         else:
-            plot_label_temp = plot_label
+            line_label_ = line_label
         if (not colors_on_plot):
-            plot_color = linecolors[add_2D_subplot.counter%len(linecolors)]
+            line_color = linecolors[add_2D_subplot.counter%len(linecolors)]
             add_2D_subplot.counter += 1
         if (labels_on_plot or multi_channel):
-            plt_to_add.plot(x_data_[i] , y_data_[i], ls=plot_linestyle,
-                            c=plot_color, label=plot_label_temp)
+            plt_to_add.plot(x_data_[i] , y_data_[i], ls=line_style,
+                            lw=line_width, c=line_color, label=line_label_)
         else:
-            plt_to_add.plot(x_data_[i] , y_data_[i], ls=plot_linestyle,
-                            c=plot_color)
+            plt_to_add.plot(x_data_[i] , y_data_[i], ls=line_style,
+                            lw=line_width, c=line_color)
         plt_to_add.fill_between(x_data_[i] , y_data_[i], alpha=opacity,
-                                facecolor=plot_color)
+                                facecolor=line_color)
         add_subplot_para(plt_to_add, x_label=x_label, y_label=y_label,
                          x_range=x_range, y_range=y_range,
                          plot_title=plot_title)
@@ -153,7 +153,7 @@ def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
 
 @apply_protocol_decorator
 def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
-                   z_label, x_range, y_range, z_range, plot_title, plot_color,
+                   z_label, x_range, y_range, z_range, plot_title, line_color,
                    opacity, plot_type):
     """Plot a 3D graph."""
     x_data_temp = np.asarray(x_data)
@@ -168,16 +168,16 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
         z_data_temp = np.asarray(z_data)
         z_data = np.array([])
         x_data, z_data = util.auto_pad(x_data_temp, z_data_temp)
-    colors_on_plot = plot_color is not None
+    colors_on_plot = line_color is not None
     for i in range(len(z_data)):
         mesh_x, mesh_y = np.meshgrid(x_data, y_data[0])
         if (not colors_on_plot):
-            plot_color = linecolors[add_3D_subplot.counter]
+            line_color = linecolors[add_3D_subplot.counter]
             add_3D_subplot.counter += 1
         if (plot3d_types[plot_type][0] == 'mesh'):
             if (plot3d_types[plot_type][1] == 'color'):
                 getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data[i],
-                                               color=plot_color,
+                                               color=line_color,
                                                rcount=100, ccount=100,
                                                alpha=opacity)
             else:
@@ -190,8 +190,8 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
             ravel_z = np.ravel(z_data[i])
             if (plot3d_types[plot_type][1] == 'color'):
                 getattr(plt_to_add, plot_type)(ravel_x, ravel_y, ravel_z,
-                                              color=plot_color,
-                                              alpha=opacity)
+                                               color=line_color,
+                                               alpha=opacity)
             else:
                 getattr(plt_to_add, plot_type)(ravel_x, ravel_y, ravel_z,
                                                alpha=opacity)
@@ -254,10 +254,11 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
            y_labels: Optional[List[str]] = None,
            x_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
            y_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
-           plot_linestyles: List[str] = ['-'],
-           plot_labels: Optional[List[Optional[str]]] = None,
+           line_styles: List[str] = ['-'],
+           line_widths: List[float] = [1.],
+           line_labels: Optional[List[Optional[str]]] = None,
+           line_colors: Optional[List[str]] = None,
            plot_titles: Optional[List[str]] = None,
-           plot_colors: Optional[List[str]] = None,
            plot_groups: Optional[List[int]] = None,
            split: bool = False, opacity: List[float] = [0.2],
            fig_title: Optional[str] = None, filename: str = "",
@@ -279,14 +280,16 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
         The ranges for each axis on each plot along the x axis.
     y_range :
         The ranges for each axis on each plot along the y axis.
-    plot_linestyle :
+    line_styles :
         The linestyle of the lines.
-    plot_labels :
-        The labels for each lines on each plot.
+    line_widths :
+        The width of the lines.
+    line_labels :
+        The labels for each line on each plot.
+    line_colors :
+        The color of each line on each plot.
     plot_titles :
         The title of each plot.
-    plot_colors :
-        The color of each line on each plot.
     plot_groups :
         The group of each line. The line having the same number will be
         displayed on the plot.
@@ -325,11 +328,12 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
             "than the number of x data, graph creation aborted.")
 
         return None
-    plot_labels_: List[Optional[str]]
-    plot_labels_ = util.make_list(plot_labels, len(x_datas_))
-    plot_colors_: List[Optional[str]]
-    plot_colors_ = util.make_list(plot_colors, len(x_datas_))
-    plot_linestyles_ = util.make_list(plot_linestyles, len(x_datas_))
+    line_labels_: List[Optional[str]]
+    line_labels_ = util.make_list(line_labels, len(x_datas_))
+    line_colors_: List[Optional[str]]
+    line_colors_ = util.make_list(line_colors, len(x_datas_))
+    line_styles_ = util.make_list(line_styles, len(x_datas_))
+    line_widths_ = util.make_list(line_widths, len(x_datas_))
     opacity_: List[float]
     opacity_ = util.make_list(opacity, len(x_datas_))
     plot_groups_: Optional[List[int]]
@@ -369,12 +373,12 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
             offset += 1
         add_2D_subplot.counter = 0 # For own colors if not specified
         plt_to_add = fig.add_subplot(nbr_row, nbr_col_subplot, index)
-        for plot in graph:
-            add_2D_subplot(plt_to_add, x_datas_[plot], y_datas_[plot],
+        for line in graph:
+            add_2D_subplot(plt_to_add, x_datas_[line], y_datas_[line],
                            x_labels_[i], y_labels_[i], x_ranges_[i],
-                           y_ranges_[i], plot_titles_[i], plot_labels_[plot],
-                           plot_linestyles_[plot], plot_colors_[plot],
-                           opacity_[plot])
+                           y_ranges_[i], plot_titles_[i], line_labels_[line],
+                           line_styles_[line], line_widths_[line],
+                           line_colors_[line], opacity_[line])
     # Plotting / saving ------------------------------------------------
     plot_graph(fig, resolution, fig_title, filename)
 
@@ -387,8 +391,8 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
            x_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
            y_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
            z_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
+           line_colors: Optional[List[str]] = None,
            plot_titles: Optional[List[str]] = None,
-           plot_colors: Optional[List[str]] = None,
            plot_groups: Optional[List[int]] = None,
            split: bool = False, opacity: List[float] = [0.8],
            fig_title: Optional[str] = None, filename: str = "",
@@ -417,14 +421,10 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
         The ranges for each axis on each plot along the y axis.
     z_range :
         The ranges for each axis on each plot along the z axis.
-    plot_linestyle :
-        The linestyle of the lines.
-    plot_labels :
-        The labels for each lines on each plot.
+    line_colors :
+        The color of each line on each plot.
     plot_titles :
         The title of each plot.
-    plot_colors :
-        The color of each line on each plot.
     plot_groups :
         The group of each line. The line having the same number will be
         displayed on the plot.
@@ -479,8 +479,8 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
             "than the number of x data, graph creation aborted.")
 
         return None
-    plot_colors_: List[Optional[str]]
-    plot_colors_ = util.make_list(plot_colors, len(x_datas_))
+    line_colors_: List[Optional[str]]
+    line_colors_ = util.make_list(line_colors, len(x_datas_))
     opacity_: List[float]
     opacity_ = util.make_list(opacity, len(x_datas_))
     plot_types_: List[str]
@@ -533,26 +533,27 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
         add_3D_subplot.counter = 0 # For own colors if not specified
         plt_to_add = fig.add_subplot(nbr_row, nbr_col_subplot, index,
                                      projection='3d')
-        for plot in graph:
-            add_3D_subplot(plt_to_add, x_datas_[plot], y_datas_[plot],
-                           z_datas_[plot], x_labels_[i], y_labels_[i],
+        for line in graph:
+            add_3D_subplot(plt_to_add, x_datas_[line], y_datas_[line],
+                           z_datas_[line], x_labels_[i], y_labels_[i],
                            z_labels_[i], x_ranges_[i], y_ranges_[i],
-                           z_ranges[i], plot_titles_[i], plot_colors_[plot],
-                           opacity_[plot], plot_types_[plot])
+                           z_ranges[i], plot_titles_[i], line_colors_[line],
+                           opacity_[line], plot_types_[line])
     # Plotting / saving ------------------------------------------------
     plot_graph(fig, resolution, fig_title, filename)
 
 
 def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
                 z_datas: Optional[np.ndarray] = None,
-                x_label: Optional[List[str]] = None,
-                y_label: Optional[List[str]] = None,
+                x_label: Optional[str] = None,
+                y_label: Optional[str] = None,
                 x_range: Optional[Tuple[float, float]] = None,
                 y_range: Optional[Tuple[float, float]] = None,
-                plot_linestyle: str = '-', plot_linewidth: float = 1.,
-                plot_labels: Optional[List[Optional[str]]] = None,
-                plot_title: Optional[str] = None,
-                plot_colors: Optional[List[str]] = None, opacity: float = 0.2,
+                line_styles: List[str] = ['-'],
+                line_widths: List[float] = [1.],
+                line_labels: Optional[List[Optional[str]]] = None,
+                line_colors: Optional[List[str]] = None,
+                plot_title: Optional[str] = None, opacity: float = 0.2,
                 fig_title: Optional[str] = None, filename: str = "",
                 resolution: Tuple[float, float] = (1920., 1080.),
                 interval: float = 100., repeat: bool = True,
@@ -566,7 +567,7 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
     y_datas :
         The data on the y axis.
     z_datas :
-        The data on the z axis.
+        The data on the z axis, will be display as text
     x_label :
         The labels for each axis along the x axis.
     y_label :
@@ -575,16 +576,16 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
         The ranges for each axis along the x axis.
     y_range :
         The ranges for each axis along the y axis.
-    plot_linestyle :
+    line_styles :
         The linestyle of the lines.
-    plot_linewidth :
+    line_widths :
         The linewidth of the lines.
-    plot_labels :
+    line_labels :
         The labels for each lines.
+    line_colors :
+        The color of each line.
     plot_title :
         The title of the animation.
-    plot_colors :
-        The color of each line.
     opacity :
         The opacity of the lines.
     fig_title :
@@ -608,9 +609,9 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
     ax = plt.axes()
     # Managing x and y labels ------------------------------------------
     x_label_: Optional[str]
-    x_label_ = check_axis_labels(util.make_list(x_label), axis_labels)[0]
+    x_label_ = check_axis_labels([x_label], axis_labels)[0]
     y_label_: Optional[str]
-    y_label_ = check_axis_labels(util.make_list(y_label), axis_labels)[0]
+    y_label_ = check_axis_labels([y_label], axis_labels)[0]
     if (x_label_ is not None):
         plt.xlabel(x_label_)
     if (y_label_ is not None):
@@ -655,30 +656,33 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
             "shape can be (image, y_data) or (channels, image, y_data)")
 
         return None
+    # Lines charact. management ----------------------------------------
+    line_styles = util.make_list(line_styles, nbr_channels)
+    line_widths = util.make_list(line_widths, nbr_channels)
     # Lables management ------------------------------------------------
-    plot_labels = util.make_list(plot_labels, nbr_channels, '')
-    plot_labels_: List[str] = []
-    if (plot_labels is not None):
+    line_labels = util.make_list(line_labels, nbr_channels, '')
+    line_labels_: List[str] = []
+    if (line_labels is not None):
         for i in range(nbr_channels):
-            crt_plot_label = plot_labels[i]
-            if (crt_plot_label is None or crt_plot_label == ''):
-                plot_labels_.append("channel {}".format(i))
+            crt_line_label = line_labels[i]
+            if (crt_line_label is None or crt_line_label == ''):
+                line_labels_.append("channel {}".format(i))
             else:
-                plot_labels_.append(crt_plot_label + " (ch.{})".format(i))
+                line_labels_.append(crt_line_label + " (ch.{})".format(i))
     # Colors management ------------------------------------------------
-    if (plot_colors is not None):
-        plot_colors_ = plot_colors
+    if (line_colors is not None):
+        line_colors_ = line_colors
     else:
-        plot_colors_ = linecolors
+        line_colors_ = linecolors
     # Line2D creation --------------------------------------------------
     lines = []
     for i in range(nbr_channels):
-        line = ax.plot([],[], c=plot_colors_[i%len(plot_colors_)],
-                       ls=plot_linestyle, label=plot_labels_[i],
-                       lw=plot_linewidth)[0]
+        line = ax.plot([],[], c=line_colors_[i%len(line_colors_)],
+                       ls=line_styles[i], label=line_labels_[i],
+                       lw=line_widths[i])[0]
         lines.append(line)
     plt.ticklabel_format(axis='both', style='sci', scilimits=(-2,2))
-    if (plot_labels is not None):
+    if (line_labels is not None):
         plt.legend(loc = "best")
     min_y = 0.
     max_y = 0.
@@ -700,7 +704,7 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
         for j, line in enumerate(lines):  # Browsing channels -> plots
             fill_lines[j].remove()
             line.set_data(x_datas_[j][i], y_datas_[j][i])
-            facecolor = plot_colors_[j%len(plot_colors_)]
+            facecolor = line_colors_[j%len(line_colors_)]
             fill_lines[j] = ax.fill_between(x_datas_[j][i] , y_datas_[j][i],
                                             alpha=opacity,
                                             facecolor=facecolor)

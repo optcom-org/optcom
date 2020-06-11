@@ -218,7 +218,7 @@ class LoadFieldFromFile(AbstractStartComp):
                                               "can not be loaded."
                                               .format(self.file_name))
 
-                            raise DataTypeError(erro_msg)
+                            raise DataTypeError(error_msg)
 
             util.print_terminal("{} field(s) loaded from file '{}'"
                                 .format(len(output_fields), self.file_name))

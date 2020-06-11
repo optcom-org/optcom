@@ -12,7 +12,7 @@ layout.run_all()
 time = fiber.storage.time
 power = oc.temporal_power(fiber.storage.channels)
 space = fiber.storage.space
-oc.animation2d(time, power, space, x_label=['t'], y_label=['P_t'],
+oc.animation2d(time, power, space, x_label='t', y_label='P_t',
                plot_title='My first Optcom example',
-               plot_labels=['1030. nm channel', '1550. nm channel'])
+               line_labels=['1030. nm channel', '1550. nm channel'])
                #filename='example_anim_readme.mp4')

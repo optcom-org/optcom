@@ -199,25 +199,25 @@ if __name__ == "__main__":
     omegas: np.ndarray = oc.lambda_to_omega(lambdas)
     sellmeier = oc.Sellmeier(medium)
     res: List[np.ndarray] = [sellmeier(omegas)]
-    plot_labels: List[Optional[str]] = ["no dopants"]
+    line_labels: List[Optional[str]] = ["no dopants"]
 
     sellmeier = oc.Sellmeier(medium, cst.FIBER_CORE_DOPANT,
                              cst.CORE_DOPANT_CONCENT)
     res.append(sellmeier(omegas))
-    plot_labels.append("{} mole% of {}"
+    line_labels.append("{} mole% of {}"
                        .format(cst.CORE_DOPANT_CONCENT,
                                cst.FIBER_CORE_DOPANT))
     sellmeier = oc.Sellmeier(medium, cst.FIBER_CLAD_DOPANT,
                              cst.CLAD_DOPANT_CONCENT)
     res.append(sellmeier(omegas))
-    plot_labels.append("{} mole% of {}"
+    line_labels.append("{} mole% of {}"
                        .format(cst.CLAD_DOPANT_CONCENT,
                                cst.FIBER_CLAD_DOPANT))
     x_labels: List[str] = ['Lambda']
     y_labels: List[str] = ['Refractive index']
-    plot_titles: List[str] = ["Refractive index of Silica from Sellmeier0"
-                              "equations."]
+    plot_titles: List[str] = ["Refractive index of Silica from Sellmeier"
+                              " equations."]
 
     oc.plot2d([lambdas], res, x_labels=x_labels, y_labels=y_labels,
-              plot_labels=plot_labels, plot_titles=plot_titles,
+              line_labels=line_labels, plot_titles=plot_titles,
               opacity=[0.0], split=False, y_ranges=[(1.4, 3.)])

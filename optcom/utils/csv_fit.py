@@ -144,4 +144,4 @@ if __name__ == "__main__":
           ' : ', np.amax(res_temp))
 
     plot.plot2d([Lambda], [res_1, res_2], x_labels=['Lambda'],
-                y_labels=['sigma_a'], plot_labels=['absorption', 'emission'])
+                y_labels=['sigma_a'], line_labels=['absorption', 'emission'])
