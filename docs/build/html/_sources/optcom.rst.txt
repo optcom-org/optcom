@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    optcom.components
+   optcom.constraints
    optcom.effects
    optcom.equations
    optcom.parameters

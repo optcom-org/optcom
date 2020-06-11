@@ -2,6 +2,9 @@
 *.py[cod]
 *$py.class
 
+*.pk1
+
+
 # Distribution / packaging
 build/
 develop-eggs/

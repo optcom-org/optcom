@@ -109,14 +109,6 @@ optcom.utils.utilities module
    :undoc-members:
    :show-inheritance:
 
-optcom.utils.utilities\_user module
------------------------------------
-
-.. automodule:: optcom.utils.utilities_user
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 Module contents
 ---------------

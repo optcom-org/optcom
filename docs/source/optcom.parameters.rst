@@ -7,7 +7,9 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   optcom.parameters.dispersion
    optcom.parameters.fiber
+   optcom.parameters.refractive_index
 
 Submodules
 ----------

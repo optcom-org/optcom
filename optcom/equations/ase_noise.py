@@ -37,7 +37,7 @@ class ASENoise(AbstractEquation):
         ----------
         se_power :
             The spontaneous emission power. :math:`[W]`
-        gain_coeff : DopedFiberGain
+        gain_coeff : optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain
             The gain coefficient of the noise.
         absorp_coeff :
             The absorption coefficient of the noise.
