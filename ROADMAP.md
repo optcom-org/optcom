@@ -22,6 +22,9 @@ ready, must only code the effect. (cf. Kerr effect) ([ref](https://www.elsevier.
 - Time dependent population densities in the rate equations of the
 fiber amplifier NLSE. (most of it is ready)
 
-- Extend 2-D fields to 3-D fields and take polarization into account.
+- Extend equations to vector model to take the two polarization
+components into account.
+
+- Extend fiber to birefringent material (need vector model of equations).
 
 - Multi-mode and doping profile in fiber amplifier. ([ref](https://www.researchgate.net/publication/26297737_Numerical_modeling_of_transverse_mode_competition_in_strongly_pumped_multimode_fiber_lasers_and_amplifiers))
