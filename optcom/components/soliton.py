@@ -107,7 +107,7 @@ class Soliton(AbstractStartComp):
                           \bigg]
              \end{split}
 
-    where :math:`t_0` is the half width at :math:`1/e`-intensity.
+    where :math:`T_0` is the half width at :math:`1/e`-intensity.
 
     Component diagram::
 

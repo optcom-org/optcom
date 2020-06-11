@@ -94,7 +94,7 @@ class Sech(AbstractStartComp):
                        \bigg(\frac{t-t_0}{T_0}\bigg)^{2}
                        + i(\phi_0 - 2\pi (\nu_c  + \nu_{offset})t)\bigg]
 
-    where :math:`t_0` is the half width at :math:`1/e`-intensity.
+    where :math:`T_0` is the half width at :math:`1/e`-intensity.
 
     Component diagram::
 

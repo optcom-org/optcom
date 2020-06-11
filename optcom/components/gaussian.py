@@ -97,7 +97,7 @@ class Gaussian(AbstractStartComp):
               \bigg(\frac{t-t_0}{T_0}\bigg)^{2m}
               + i\big(\phi_0 - 2\pi (\nu_c  + \nu_{offset})t\big)\bigg]
 
-    where :math:`t_0` is the half width at :math:`1/e`-intensity.
+    where :math:`T_0` is the half width at :math:`1/e`-intensity.
 
     Component diagram::
 
