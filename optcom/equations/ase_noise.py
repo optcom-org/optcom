@@ -22,7 +22,6 @@ import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.equations.abstract_equation import AbstractEquation
 from optcom.parameters.fiber.doped_fiber_gain import DopedFiberGain
-from optcom.parameters.fiber.se_power import SEPower
 from optcom.field import Field
 
 
@@ -44,10 +43,9 @@ class ASENoise(AbstractEquation):
 
     """
 
-    def __init__(self, se_power: Callable,
-                 gain_coeff: DopedFiberGain,
-                 absorp_coeff: DopedFiberGain,
-                 noise_omega: np.ndarray) -> None:
+    def __init__(self, se_power: Callable, gain_coeff: DopedFiberGain,
+                 absorp_coeff: DopedFiberGain, noise_omega: np.ndarray
+                 ) -> None:
         r"""
         Parameters
         ----------

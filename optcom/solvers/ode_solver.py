@@ -26,6 +26,24 @@ from optcom.solvers.abstract_solver import SOLVER_CALLABLE_TYPE
 
 
 class ODESolver(AbstractSolver):
+    r"""Solve a system of ordinary differential equations.
+
+    Notes
+    -----
+    A system of ordinary differential equations is of the form:
+
+    .. math:: \begin{cases}
+                \frac{dy_0(x)}{dx} = f_0(x, y_0, \ldots, y_n ),
+                \quad &y_0(x_0) = y_{00} \\
+                \ldots \\
+                \frac{dy_i(x)}{dx} = f_i(x, y_0, \ldots, y_i,
+                \ldots, y_n), \quad &y_i(x_0) = y_{i0}  \\
+                \ldots \\
+                \frac{dy_n(x)}{dx} = f_n(x, y_0, \ldots, y_n ),
+                \quad &y_n(x_0) = y_{n0} \\
+              \end{cases}
+
+    """
 
     _default_method = cst.DFT_ODEMETHOD
 
@@ -45,41 +63,39 @@ class ODESolver(AbstractSolver):
     @staticmethod
     def euler(f: SOLVER_CALLABLE_TYPE, vectors: np.ndarray, z: float, h: float
               ) -> np.ndarray:
-        r"""Euler method to solve system of differential equations.
+        r"""Euler method to solve a system of differential equations.
 
         Parameters
         ----------
         f :
             The functions which compute each equation of the system.
         vectors :
-            The value of the unknown (waves) at the considered
-            time/space step.
+            The value of the unknowns at the considered step.
         z :
-            The current value of the space variable.
+            The current value of the variable.
         h :
             The step size.
 
         Returns
         -------
         :
-            The one step euler computation results.
+            The one step Euler method results.
 
         Notes
         -----
-        Having the initial system of differential equations:
+        The Euler method solves the system of differential equations
+        by the following iterative method:
 
-        .. math:: \begin{cases} x'(t) = f(t, x, y, z),
-                  \quad x(t_0) = x_0 \\
-                  y'(t) = f(t, x, y, z), \quad y(t_0) = y_0  \\
-                  z'(t) = f(t, x, y, z), \quad z(t_0) = z_0  \\
-                  \ldots \\ \end{cases}
-
-        The Euler method solves it by the following iterative method:
-
-        .. math:: \begin{cases} x_{k+1} = x_{k} + hf(t_k, x_k, y_k, z_k)\\
-                  y_{k+1} = y_{k} + hf(t_k, x_{k+1}, y_k, z_k)\\
-                  z_{k+1} = z_{k} + hf(t_k, x_{k+1}, y_{k+1}, z_k) \\
-                  \ldots \\ \end{cases}
+        .. math:: \begin{split}
+                    y_{0,k+1} &= y_{0,k} + hf_0(x_k, y_{0,k}, \ldots,
+                    y_{n,k} )\\
+                    \ldots\\
+                    y_{i,k+1} &= y_{i,k} + hf_i(x_k, y_{0,k+1}, \ldots,
+                    y_{i-1,k+1}, y_{i,k}, \ldots, y_{n,k})\\
+                    \ldots\\
+                    y_{n,k+1} &= y_{n,k} + hf_n(x_k, y_{0,k+1}, \ldots,
+                    y_{n-1,k+1}, y_{n,k})
+                   \end{split}
 
         """
         k_0 = np.zeros_like(vectors)
@@ -90,12 +106,73 @@ class ODESolver(AbstractSolver):
     @staticmethod
     def rk1(f: SOLVER_CALLABLE_TYPE, vectors: np.ndarray, z: float, h: float
             ) -> np.ndarray:
+        r"""Runge-Kutta 1st order method to solve a system of
+        differential equations.
+
+        Parameters
+        ----------
+        f :
+            The functions which compute each equation of the system.
+        vectors :
+            The value of the unknowns at the considered step.
+        z :
+            The current value of the variable.
+        h :
+            The step size.
+
+        Returns
+        -------
+        :
+            The one step Runge-Kutta 1st order method results.
+
+        Notes
+        -----
+        The explicit Runge-Kutta 1st order method is equivalent to the
+        explicit forward Euler method.
+
+        """
 
         return ODESolver.euler(f, vectors, z, h)
     # ==================================================================
     @staticmethod
     def rk2(f: SOLVER_CALLABLE_TYPE, vectors: np.ndarray, z: float, h: float
             ) -> np.ndarray:
+        r"""Runge-Kutta 2nd order method to solve a system of
+        differential equations.
+
+        Parameters
+        ----------
+        f :
+            The functions which compute each equation of the system.
+        vectors :
+            The value of the unknowns at the considered step.
+        z :
+            The current value of the variable.
+        h :
+            The step size.
+
+        Returns
+        -------
+        :
+            The one step Runge-Kutta 2nd order method results.
+
+        Notes
+        -----
+        The Runge-Kutta 2nd order method solves the system of
+        differential equations by the following iterative method:
+
+        .. math:: \begin{aligned}
+                    k_{0i} &= hf_i(x_k, y_{0,k}, \ldots, y_{n,k})
+                    \quad \quad && \forall i=1,\ldots,n\\
+                    k_{1i} &= hf_i(x_k + \frac{h}{2}, y_{0,k}
+                    + \frac{k_{00}}{2}, \ldots, y_{n,k}
+                    + \frac{k_{0n}}{2}) \quad \quad
+                    && \forall i=1,\ldots,n\\
+                    y_{i,k+1} &= y_{i,k} + k_{1i} + O(h^3) \quad
+                    \quad && \forall i=1,\ldots,n
+                   \end{aligned}
+
+        """
         h_h = 0.5 * h
         k_0 = np.zeros_like(vectors)
         k_1 = np.zeros_like(vectors)
@@ -108,6 +185,46 @@ class ODESolver(AbstractSolver):
     @staticmethod
     def rk3(f: SOLVER_CALLABLE_TYPE, vectors: np.ndarray, z: float, h: float
             ) -> np.ndarray:
+        r"""Runge-Kutta 3rd order method to solve a system of
+        differential equations.
+
+        Parameters
+        ----------
+        f :
+            The functions which compute each equation of the system.
+        vectors :
+            The value of the unknowns at the considered step.
+        z :
+            The current value of the variable.
+        h :
+            The step size.
+
+        Returns
+        -------
+        :
+            The one step Runge-Kutta 3rd order method results.
+
+        Notes
+        -----
+        The Runge-Kutta 3rd order method solves the system of
+        differential equations by the following iterative method:
+
+        .. math:: \begin{aligned}
+                    k_{0i} &= hf_i(x_k, y_{0,k}, \ldots, y_{n,k})
+                    \quad \quad && \forall i=1,\ldots,n\\
+                    k_{1i} &= hf_i(x_k + \frac{h}{2}, y_{0,k}
+                    + \frac{k_{00}}{2}, \ldots, y_{n,k}
+                    + \frac{k_{0n}}{2}) \quad \quad
+                    && \forall i=1,\ldots,n\\
+                    k_{2i} &= hf_i(x_k + h, y_{0,k} - k_{00} + 2k_{10},
+                    \ldots, y_{n,k} - k_{0n} + 2k_{1n}) \quad \quad
+                    && \forall i=1,\ldots,n\\
+                    y_{i,k+1} &= y_{i,k} + \frac{1}{6} \big[k_{0i}
+                    + 4k_{1i} + k_{2i} \big] + O(h^4) \quad \quad
+                    && \forall i=1,\ldots,n
+                   \end{aligned}
+
+        """
         h_h = 0.5 * h
         k_0 = np.zeros_like(vectors)
         k_1 = np.zeros_like(vectors)
@@ -123,6 +240,50 @@ class ODESolver(AbstractSolver):
     @staticmethod
     def rk4(f: SOLVER_CALLABLE_TYPE, vectors: np.ndarray, z: float, h: float
             ) -> np.ndarray:
+        r"""Runge-Kutta 4th order method to solve a system of
+        differential equations.
+
+        Parameters
+        ----------
+        f :
+            The functions which compute each equation of the system.
+        vectors :
+            The value of the unknowns at the considered step.
+        z :
+            The current value of the variable.
+        h :
+            The step size.
+
+        Returns
+        -------
+        :
+            The one step Runge-Kutta 4th order method results.
+
+        Notes
+        -----
+        The Runge-Kutta 4th order method solves the system of
+        differential equations by the following iterative method:
+
+        .. math:: \begin{aligned}
+                    k_{0i} &= hf_i(x_k, y_{0,k}, \ldots, y_{n,k})
+                    \quad \quad && \forall i=1,\ldots,n\\
+                    k_{1i} &= hf_i(x_k + \frac{h}{2}, y_{0,k}
+                    + \frac{k_{00}}{2}, \ldots, y_{n,k}
+                    + \frac{k_{0n}}{2}) \quad \quad
+                    && \forall i=1,\ldots,n\\
+                    k_{2i} &= hf_i(x_k + \frac{h}{2}, y_{0,k}
+                    + \frac{k_{10}}{2}, \ldots, y_{n,k}
+                    + \frac{k_{1n}}{2}) \quad \quad
+                    && \forall i=1,\ldots,n\\
+                    k_{3i} &= hf_i(x_k + h, y_{0,k} + k_{20},
+                    \ldots, y_{n,k} + k_{2n}) \quad \quad
+                    && \forall i=1,\ldots,n\\
+                    y_{i,k+1} &= y_{i,k} + \frac{1}{6} \big[ k_{0i}
+                    + 2 k_{1i} + 2 k_{2i} + k_{3i} \big] + O(h^5)
+                    \quad \quad && \forall i=1,\ldots,n
+                  \end{aligned}
+
+        """
         h_h = 0.5 * h
         k_0 = np.zeros_like(vectors)
         k_1 = np.zeros_like(vectors)

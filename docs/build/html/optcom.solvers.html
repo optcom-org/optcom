@@ -823,6 +823,19 @@ space step.</p></li>
 <dt id="optcom.solvers.ode_solver.ODESolver">
 <em class="property">class </em><code class="sig-prename descclassname">optcom.solvers.ode_solver.</code><code class="sig-name descname">ODESolver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'euler'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.ode_solver.ODESolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#optcom.solvers.abstract_solver.AbstractSolver" title="optcom.solvers.abstract_solver.AbstractSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.solvers.abstract_solver.AbstractSolver</span></code></a></p>
+<p>Solve a system of ordinary differential equations as:</p>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+  \frac{dy_0(x)}{dx} = f_0(x, y_0, \ldots, y_n ),
+  \quad &amp;y_0(x_0) = y_{00} \\
+  \ldots \\
+  \frac{dy_i(x)}{dx} = f_i(x, y_0, \ldots, y_i,
+  \ldots, y_n), \quad &amp;y_i(x_0) = y_{i0}  \\
+  \ldots \\
+  \frac{dy_n(x)}{dx} = f_n(x, y_0, \ldots, y_n ),
+  \quad &amp;y_n(x_0) = y_{n0} \\
+\end{cases}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -834,56 +847,172 @@ space step.</p></li>
 <dl class="py method">
 <dt id="optcom.solvers.ode_solver.ODESolver.euler">
 <em class="property">static </em><code class="sig-name descname">euler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">vectors</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">h</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.ode_solver.ODESolver.euler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Euler method to solve system of differential equations.</p>
+<dd><p>Euler method to solve a system of differential equations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> -- The functions which compute each equation of the system.</p></li>
-<li><p><strong>vectors</strong> -- The value of the unknown (waves) at the considered
-time/space step.</p></li>
-<li><p><strong>z</strong> -- The current value of the space variable.</p></li>
+<li><p><strong>vectors</strong> -- The value of the unknowns at the considered step.</p></li>
+<li><p><strong>z</strong> -- The current value of the variable.</p></li>
 <li><p><strong>h</strong> -- The step size.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The one step euler computation results.</p>
+<dd class="field-even"><p>The one step Euler method results.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Having the initial system of differential equations:</p>
+<p>The Euler method solves the system of differential equations
+by the following iterative method:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\begin{cases} x'(t) = f(t, x, y, z),
-\quad x(t_0) = x_0 \\
-y'(t) = f(t, x, y, z), \quad y(t_0) = y_0  \\
-z'(t) = f(t, x, y, z), \quad z(t_0) = z_0  \\
-\ldots \\ \end{cases}\end{split}\]</div>
-<p>The Euler method solves it by the following iterative method:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}\begin{cases} x_{k+1} = x_{k} + hf(t_k, x_k, y_k, z_k)\\
-y_{k+1} = y_{k} + hf(t_k, x_{k+1}, y_k, z_k)\\
-z_{k+1} = z_{k} + hf(t_k, x_{k+1}, y_{k+1}, z_k) \\
-\ldots \\ \end{cases}\end{split}\]</div>
+\[\begin{split}\begin{split}
+ y_{0,k+1} &amp;= y_{0,k} + hf_0(x_k, y_{0,k}, \ldots,
+ y_{n,k} )\\
+ \ldots\\
+ y_{i,k+1} &amp;= y_{i,k} + hf_i(x_k, y_{0,k+1}, \ldots,
+ y_{i-1,k+1}, y_{i,k}, \ldots, y_{n,k})\\
+ \ldots\\
+ y_{n,k+1} &amp;= y_{n,k} + hf_n(x_k, y_{0,k+1}, \ldots,
+ y_{n-1,k+1}, y_{n,k})
+\end{split}\end{split}\]</div>
 </dd></dl>
 
 <dl class="py method">
 <dt id="optcom.solvers.ode_solver.ODESolver.rk1">
 <em class="property">static </em><code class="sig-name descname">rk1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">vectors</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">h</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.ode_solver.ODESolver.rk1" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Runge-Kutta 1st order method to solve a system of
+differential equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> -- The functions which compute each equation of the system.</p></li>
+<li><p><strong>vectors</strong> -- The value of the unknowns at the considered step.</p></li>
+<li><p><strong>z</strong> -- The current value of the variable.</p></li>
+<li><p><strong>h</strong> -- The step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The one step Runge-Kutta 1st order method results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The explicit Runge-Kutta 1st order method is equivalent to the
+explicit forward Euler method.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="optcom.solvers.ode_solver.ODESolver.rk2">
 <em class="property">static </em><code class="sig-name descname">rk2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">vectors</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">h</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.ode_solver.ODESolver.rk2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Runge-Kutta 2nd order method to solve a system of
+differential equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> -- The functions which compute each equation of the system.</p></li>
+<li><p><strong>vectors</strong> -- The value of the unknowns at the considered step.</p></li>
+<li><p><strong>z</strong> -- The current value of the variable.</p></li>
+<li><p><strong>h</strong> -- The step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The one step Runge-Kutta 2nd order method results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The Runge-Kutta 2nd order method solves the system of
+differential equations by the following iterative method:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+ k_{0i} &amp;= hf_i(x_k, y_{0,k}, \ldots, y_{n,k})
+ \quad \quad &amp;&amp; \forall i=1,\ldots,n\\
+ k_{1i} &amp;= hf_i(x_k + \frac{h}{2}, y_{0,k}
+ + \frac{k_{00}}{2}, \ldots, y_{n,k}
+ + \frac{k_{0n}}{2}) \quad \quad
+ &amp;&amp; \forall i=1,\ldots,n\\
+ y_{i,k+1} &amp;= y_{i,k} + k_{1i} + O(h^3) \quad
+ \quad &amp;&amp; \forall i=1,\ldots,n
+\end{aligned}\end{split}\]</div>
+</dd></dl>
 
 <dl class="py method">
 <dt id="optcom.solvers.ode_solver.ODESolver.rk3">
 <em class="property">static </em><code class="sig-name descname">rk3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">vectors</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">h</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.ode_solver.ODESolver.rk3" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Runge-Kutta 3rd order method to solve a system of
+differential equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> -- The functions which compute each equation of the system.</p></li>
+<li><p><strong>vectors</strong> -- The value of the unknowns at the considered step.</p></li>
+<li><p><strong>z</strong> -- The current value of the variable.</p></li>
+<li><p><strong>h</strong> -- The step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The one step Runge-Kutta 3rd order method results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The Runge-Kutta 3rd order method solves the system of
+differential equations by the following iterative method:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+ k_{0i} &amp;= hf_i(x_k, y_{0,k}, \ldots, y_{n,k})
+ \quad \quad &amp;&amp; \forall i=1,\ldots,n\\
+ k_{1i} &amp;= hf_i(x_k + \frac{h}{2}, y_{0,k}
+ + \frac{k_{00}}{2}, \ldots, y_{n,k}
+ + \frac{k_{0n}}{2}) \quad \quad
+ &amp;&amp; \forall i=1,\ldots,n\\
+ k_{2i} &amp;= hf_i(x_k + h, y_{0,k} - k_{00} + 2k_{10},
+ \ldots, y_{n,k} - k_{0n} + 2k_{1n}) \quad \quad
+ &amp;&amp; \forall i=1,\ldots,n\\
+ y_{i,k+1} &amp;= y_{i,k} + \frac{1}{6} \big[k_{0i}
+ + 4k_{1i} + k_{2i} \big] + O(h^4) \quad \quad
+ &amp;&amp; \forall i=1,\ldots,n
+\end{aligned}\end{split}\]</div>
+</dd></dl>
 
 <dl class="py method">
 <dt id="optcom.solvers.ode_solver.ODESolver.rk4">
 <em class="property">static </em><code class="sig-name descname">rk4</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">vectors</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">h</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.ode_solver.ODESolver.rk4" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Runge-Kutta 4th order method to solve a system of
+differential equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> -- The functions which compute each equation of the system.</p></li>
+<li><p><strong>vectors</strong> -- The value of the unknowns at the considered step.</p></li>
+<li><p><strong>z</strong> -- The current value of the variable.</p></li>
+<li><p><strong>h</strong> -- The step size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The one step Runge-Kutta 4th order method results.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The Runge-Kutta 4th order method solves the system of
+differential equations by the following iterative method:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+  k_{0i} &amp;= hf_i(x_k, y_{0,k}, \ldots, y_{n,k})
+  \quad \quad &amp;&amp; \forall i=1,\ldots,n\\
+  k_{1i} &amp;= hf_i(x_k + \frac{h}{2}, y_{0,k}
+  + \frac{k_{00}}{2}, \ldots, y_{n,k}
+  + \frac{k_{0n}}{2}) \quad \quad
+  &amp;&amp; \forall i=1,\ldots,n\\
+  k_{2i} &amp;= hf_i(x_k + \frac{h}{2}, y_{0,k}
+  + \frac{k_{10}}{2}, \ldots, y_{n,k}
+  + \frac{k_{1n}}{2}) \quad \quad
+  &amp;&amp; \forall i=1,\ldots,n\\
+  k_{3i} &amp;= hf_i(x_k + h, y_{0,k} + k_{20},
+  \ldots, y_{n,k} + k_{2n}) \quad \quad
+  &amp;&amp; \forall i=1,\ldots,n\\
+  y_{i,k+1} &amp;= y_{i,k} + \frac{1}{6} \big[ k_{0i}
+  + 2 k_{1i} + 2 k_{2i} + k_{3i} \big] + O(h^5)
+  \quad \quad &amp;&amp; \forall i=1,\ldots,n
+\end{aligned}\end{split}\]</div>
+</dd></dl>
 
 </dd></dl>
 

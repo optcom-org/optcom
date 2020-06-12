@@ -1432,7 +1432,7 @@ to all the effects in the equation.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>se_power</strong> -- The spontaneous emission power. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
 <li><p><strong>gain_coeff</strong> (<a class="reference internal" href="optcom.parameters.fiber.html#optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain" title="optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain"><em>optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain</em></a>) -- The gain coefficient of the noise.</p></li>
-<li><p><strong>absorp_coeff</strong> -- The absorption coefficient of the noise.</p></li>
+<li><p><strong>absorp_coeff</strong> (<a class="reference internal" href="optcom.parameters.fiber.html#optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain" title="optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain"><em>optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain</em></a>) -- The absorption coefficient of the noise.</p></li>
 <li><p><strong>noise_omega</strong> -- The angular frequencies composing the noise array.
 <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
 </ul>
@@ -1742,6 +1742,35 @@ difference between channels of all fields of all ports.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.equations.coupler_noise">
+<span id="optcom-equations-coupler-noise-module"></span><h2>optcom.equations.coupler_noise module<a class="headerlink" href="#module-optcom.equations.coupler_noise" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.equations.coupler_noise.CouplerNoise">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.equations.coupler_noise.</code><code class="sig-name descname">CouplerNoise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coupling_coeff</span></em>, <em class="sig-param"><span class="n">asymmetry_coeff</span></em>, <em class="sig-param"><span class="n">noise_omega</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.coupler_noise.CouplerNoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.equations.abstract_equation.AbstractEquation</span></code></a></p>
+<p>Calculate the noise propagation in fiber coupler.</p>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{split}
+   \frac{\partial P_{ljw}}{\partial z} = &amp; -\alpha_{lw}
+   P_{ljw} + 2i \sum_{\substack{m=1 \\ m\neq l}}^{M}
+   \sum_{k=1}^{K_m} \sum_{n=1}^{W_k} \kappa_{lmn} P_{mkn}
+   + 2i \sum_{\substack{m=1 \\ m\neq l}}^{M} \delta_{almw}
+   P_{ljw} \\
+   &amp; \text{for }
+     \begin{cases}
+       l = 1,\ldots,M \text{ with } M
+       \text{ the number of cores}\\
+       j = 1,\ldots,K_l \text{ with } K_l
+       \text{ the number of noise channels in core } l\\
+       w = 1,\ldots,W_j \text{ with } W_j
+       \text{ the number of wavelength constituents }
+       \text{of noise channel j}
+     \end{cases}
+\end{split}\end{split}\]</div>
 </dd></dl>
 
 </div>

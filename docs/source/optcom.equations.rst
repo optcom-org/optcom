@@ -133,6 +133,14 @@ optcom.equations.cnlse module
    :undoc-members:
    :show-inheritance:
 
+optcom.equations.coupler\_noise module
+--------------------------------------
+
+.. automodule:: optcom.equations.coupler_noise
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 optcom.equations.fresnel module
 -------------------------------
 
