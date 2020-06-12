@@ -114,7 +114,7 @@ class DopedFiberGain(AbstractParameter):
     # ------------------------------------------------------------------
     @staticmethod
     def calc_doped_fiber_gain(sigma, overlap, N):
-        r"""Calculate the energy saturation.
+        r"""Calculate the gain of the doped fiber.
 
         Parameters
         ----------

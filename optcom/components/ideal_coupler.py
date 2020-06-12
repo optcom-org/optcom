@@ -61,7 +61,7 @@ class IdealCoupler(AbstractPassComp):
         A string containing code which will be executed posterior to
         the call to the function :func:`__call__`. The two parameters
         `output_ports` and `output_fields` are available.
-    ratios_ports :
+    port_ratios :
         Each element of the list correspond to one input port and
         contain a list composed of the two dividing ratio
         for the two output ports. The ratio represents the
@@ -81,7 +81,7 @@ class IdealCoupler(AbstractPassComp):
     _nbr_instances_with_default_name: int = 0
 
     def __init__(self, name: str = default_name,
-                 ratios_ports: List[List[float]] = [[0.5, 0.5]],
+                 port_ratios: List[List[float]] = [[0.5, 0.5]],
                  save: bool = False, max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
         """
@@ -89,7 +89,7 @@ class IdealCoupler(AbstractPassComp):
         ----------
         name :
             The name of the component.
-        ratios_ports :
+        port_ratios :
             Each element of the list correspond to one input port and
             contain a list composed of the two dividing ratio
             for the two output ports. The ratio represents the
@@ -102,12 +102,12 @@ class IdealCoupler(AbstractPassComp):
             specified maximum number of pass for this port.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -117,44 +117,48 @@ class IdealCoupler(AbstractPassComp):
                          pre_call_code=pre_call_code,
                          post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
-        util.check_attr_type(ratios_ports, 'ratios_ports', list)
+        util.check_attr_type(port_ratios, 'port_ratios', list)
         # Attr ---------------------------------------------------------
-        self._ratios_ports: List[List[float]]
-        self.ratios_ports = ratios_ports
+        self._port_ratios: List[List[float]]
+        self.port_ratios = port_ratios
     # ==================================================================
     @property
-    def ratios_ports(self) -> List[List[float]]:
+    def port_ratios(self) -> List[List[float]]:
 
-        return self._ratios_ports
+        return self._port_ratios
     # ------------------------------------------------------------------
-    @ratios_ports.setter
-    def ratios_ports(self, ratios_ports: List[List[float]]) -> None:
-        ratios_ports = util.make_list(ratios_ports, 4)
+    @port_ratios.setter
+    def port_ratios(self, port_ratios: List[List[float]]) -> None:
+        port_ratios = util.make_list(port_ratios, 4)
         # N.B. name='nocount' to avoid inc. default name counter
         self._divider_0 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=ratios_ports[0])
+                                       ratios=port_ratios[0])
         self._divider_1 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=ratios_ports[1])
+                                       ratios=port_ratios[1])
         self._divider_2 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=ratios_ports[2])
+                                       ratios=port_ratios[2])
         self._divider_3 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=ratios_ports[3])
+                                       ratios=port_ratios[3])
+    # ==================================================================
+    def output_ports(self, input_ports: List[int]) -> List[int]:
+        output_ports: List[int] = []
+        for i in range(len(input_ports)):
+            # 0 -> 2,3 /\ 1 -> 2,3 /\ 2 -> 0,1 /\ 3 -> 0,1
+            output_port = ((input_ports[i] | 1) + 2) % 4
+            output_ports.append(output_port-1)
+            output_ports.append(output_port)
+
+        return output_ports
     # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
-
-        output_ports: List[int] = []
         output_fields: List[Field] = []
-        for i in range(len(fields)):
+        for i in range(len(fields)):    # Call the corresponding divider
             divider = getattr(self, "_divider_{}".format(ports[i]))
             output_fields.extend(divider(domain, [0], [fields[i]])[1])
-            # 0 -> 2,3 /\ 1 -> 2,3 /\ 2 -> 0,1 /\ 3 -> 0,1
-            output_port = ((ports[i] | 1) + 2) % 4
-            output_ports.append(output_port-1)
-            output_ports.append(output_port)
 
-        return output_ports, output_fields
+        return self.output_ports(ports), output_fields
 
 if __name__ == "__main__":
     """Give an example of IdealCoupler usage.
@@ -173,8 +177,8 @@ if __name__ == "__main__":
 
     lt: oc.Layout = oc.Layout()
 
-    ratios_ports: List[List[float]] = [[0.6, 0.4], [0.5, 0.5],
-                                       [0.4, 0.6], [0.0, 1.0]]
+    port_ratios: List[List[float]] = [[0.6, 0.4], [0.5, 0.5],
+                                      [0.4, 0.6], [0.0, 1.0]]
 
     line_labels: List[Optional[str]] = [None]
     plot_groups: List[int] = [0]
@@ -185,7 +189,7 @@ if __name__ == "__main__":
     plot_save: int
     for i in range(4):
         # Propagation
-        coupler = oc.IdealCoupler(ratios_ports=[ratios_ports[i]])
+        coupler = oc.IdealCoupler(port_ratios=[port_ratios[i]])
         lt.add_link(pulse[0], coupler[i])
         lt.run(pulse)
         lt.reset()
@@ -198,7 +202,7 @@ if __name__ == "__main__":
         line_labels += ["port " + str(port_saved-1), "port " + str(port_saved)]
         plot_groups += [i+1, i+1]
         plot_titles += ["Pulses coming out of the ideal coupler from input "
-                        "port {} with ratios {}".format(i, ratios_ports[i])]
+                        "port {} with ratios {}".format(i, port_ratios[i])]
 
     y_datas = [oc.temporal_power(pulse[0][0].channels)] + y_datas
     x_datas = [pulse[0][0].time] + x_datas

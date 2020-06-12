@@ -2611,6 +2611,11 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="id6">
+<em class="property">property </em><code class="sig-name descname">combine</code><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -2618,7 +2623,7 @@ the call to the function <code class="xref py py-func docutils literal notransla
 <span id="optcom-components-ideal-coupler-module"></span><h2>optcom.components.ideal_coupler module<a class="headerlink" href="#module-optcom.components.ideal_coupler" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="optcom.components.ideal_coupler.IdealCoupler">
-<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_coupler.</code><code class="sig-name descname">IdealCoupler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'Ideal Fiber Coupler'</span></em>, <em class="sig-param"><span class="n">ratios_ports</span><span class="o">=</span><span class="default_value">[[0.5, 0.5]]</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_nbr_pass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pre_call_code</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">post_call_code</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_coupler.IdealCoupler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">optcom.components.ideal_coupler.</code><code class="sig-name descname">IdealCoupler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'Ideal Fiber Coupler'</span></em>, <em class="sig-param"><span class="n">port_ratios</span><span class="o">=</span><span class="default_value">[[0.5, 0.5]]</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_nbr_pass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pre_call_code</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">post_call_code</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_coupler.IdealCoupler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#optcom.components.abstract_pass_comp.AbstractPassComp" title="optcom.components.abstract_pass_comp.AbstractPassComp"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.components.abstract_pass_comp.AbstractPassComp</span></code></a></p>
 <p>An ideal fiber coupler</p>
 <dl class="py attribute">
@@ -2694,8 +2699,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="optcom.components.ideal_coupler.IdealCoupler.ratios_ports">
-<code class="sig-name descname">ratios_ports</code><a class="headerlink" href="#optcom.components.ideal_coupler.IdealCoupler.ratios_ports" title="Permalink to this definition">¶</a></dt>
+<dt id="optcom.components.ideal_coupler.IdealCoupler.port_ratios">
+<code class="sig-name descname">port_ratios</code><a class="headerlink" href="#optcom.components.ideal_coupler.IdealCoupler.port_ratios" title="Permalink to this definition">¶</a></dt>
 <dd><p>Each element of the list correspond to one input port and
 contain a list composed of the two dividing ratio
 for the two output ports. The ratio represents the
@@ -2713,7 +2718,7 @@ fraction of the power that will be taken from the field.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> -- The name of the component.</p></li>
-<li><p><strong>ratios_ports</strong> -- Each element of the list correspond to one input port and
+<li><p><strong>port_ratios</strong> -- Each element of the list correspond to one input port and
 contain a list composed of the two dividing ratio
 for the two output ports. The ratio represents the
 fraction of the power that will be taken from the field.</p></li>
@@ -2731,8 +2736,24 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id6">
-<em class="property">property </em><code class="sig-name descname">ratios_ports</code><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dt id="optcom.components.ideal_coupler.IdealCoupler.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_coupler.IdealCoupler.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id7">
+<em class="property">property </em><code class="sig-name descname">port_ratios</code><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2848,7 +2869,8 @@ power depending on provided ratios.</p>
 The length of the list should be equal to the number of
 arms, if not it will be pad to it. The ratio represents the
 fraction of the power that will be taken from the field
-arriving at the corresponding arm.</p>
+arriving at the corresponding arm. If None is provided and
+divide is set to True, dispatch equally among arms.</p>
 </dd></dl>
 
 <p class="rubric">Notes</p>
@@ -2873,20 +2895,37 @@ power depending on provided ratios.</p></li>
 The length of the list should be equal to the number of
 arms, if not it will be pad to it. The ratio represents the
 fraction of the power that will be taken from the field
-arriving at the corresponding arm.</p></li>
+arriving at the corresponding arm. If None is provided and
+divide is set to True, dispatch equally among arms.</p></li>
 <li><p><strong>save</strong> -- If True, the last wave to enter/exit a port will be saved.</p></li>
 <li><p><strong>max_nbr_pass</strong> -- No fields will be propagated if the number of
 fields which passed through a specific port exceed the
 specified maximum number of pass for this port.</p></li>
 <li><p><strong>pre_call_code</strong> -- A string containing code which will be executed prior to
-the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two parameters
-<cite>input_ports</cite> and <cite>input_fields</cite> are available.</p></li>
+the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two
+parameters <cite>input_ports</cite> and <cite>input_fields</cite> are available.</p></li>
 <li><p><strong>post_call_code</strong> -- A string containing code which will be executed posterior to
-the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two parameters
-<cite>output_ports</cite> and <cite>output_fields</cite> are available.</p></li>
+the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two
+parameters <cite>output_ports</cite> and <cite>output_fields</cite> are available.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="optcom.components.ideal_divider.IdealDivider.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.ideal_divider.IdealDivider.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -2989,7 +3028,7 @@ the call to the function <code class="xref py py-func docutils literal notransla
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> -- The name of the component.</p></li>
-<li><p><strong>blocked_port</strong> -- The port id through which fields will not pass.</p></li>
+<li><p><strong>blocked_port</strong> -- The port id through which fields will not pass (0 or 1).</p></li>
 <li><p><strong>save</strong> -- If True, the last wave to enter/exit a port will be saved.</p></li>
 <li><p><strong>max_nbr_pass</strong> -- No fields will be propagated if the number of
 fields which passed through a specific port exceed the
@@ -3003,6 +3042,23 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="id8">
+<em class="property">property </em><code class="sig-name descname">blocked_port</code><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.components.ideal_isolator.IdealIsolatorError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.components.ideal_isolator.</code><code class="sig-name descname">IdealIsolatorError</code><a class="headerlink" href="#optcom.components.ideal_isolator.IdealIsolatorError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="optcom.components.ideal_isolator.WrongPortError">
+<em class="property">exception </em><code class="sig-prename descclassname">optcom.components.ideal_isolator.</code><code class="sig-name descname">WrongPortError</code><a class="headerlink" href="#optcom.components.ideal_isolator.WrongPortError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optcom.components.ideal_isolator.IdealIsolatorError" title="optcom.components.ideal_isolator.IdealIsolatorError"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.components.ideal_isolator.IdealIsolatorError</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -3163,33 +3219,33 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id7">
-<em class="property">property </em><code class="sig-name descname">extinction</code><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="id8">
-<em class="property">property </em><code class="sig-name descname">loss</code><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id9">
-<em class="property">property </em><code class="sig-name descname">phase_shift</code><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">extinction</code><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id10">
-<em class="property">property </em><code class="sig-name descname">v_bias</code><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">loss</code><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id11">
-<em class="property">property </em><code class="sig-name descname">v_mod</code><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">phase_shift</code><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id12">
-<em class="property">property </em><code class="sig-name descname">v_pi</code><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">v_bias</code><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id13">
+<em class="property">property </em><code class="sig-name descname">v_mod</code><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id14">
+<em class="property">property </em><code class="sig-name descname">v_pi</code><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3571,8 +3627,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id13">
-<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<dt id="id15">
+<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -3661,13 +3717,13 @@ used to save fields.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id14">
-<em class="property">property </em><code class="sig-name descname">comp</code><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
+<dt id="id16">
+<em class="property">property </em><code class="sig-name descname">comp</code><a class="headerlink" href="#id16" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id15">
-<em class="property">property </em><code class="sig-name descname">comp_port_id</code><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
+<dt id="id17">
+<em class="property">property </em><code class="sig-name descname">comp_port_id</code><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -3679,6 +3735,12 @@ used to save fields.</p>
 <dt id="optcom.components.port.Port.dec_counter_pass">
 <code class="sig-name descname">dec_counter_pass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.port.Port.dec_counter_pass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.components.port.Port.field">
+<em class="property">property </em><code class="sig-name descname">field</code><a class="headerlink" href="#optcom.components.port.Port.field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the last saved field if exists, otherwise None.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="optcom.components.port.Port.fields">
@@ -3769,13 +3831,13 @@ fields.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id16">
-<em class="property">property </em><code class="sig-name descname">ngbr</code><a class="headerlink" href="#id16" title="Permalink to this definition">¶</a></dt>
+<dt id="id18">
+<em class="property">property </em><code class="sig-name descname">ngbr</code><a class="headerlink" href="#id18" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id17">
-<em class="property">property </em><code class="sig-name descname">ngbr_port_id</code><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
+<dt id="id19">
+<em class="property">property </em><code class="sig-name descname">ngbr_port_id</code><a class="headerlink" href="#id19" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -3808,8 +3870,8 @@ fields.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id18">
-<em class="property">property </em><code class="sig-name descname">type</code><a class="headerlink" href="#id18" title="Permalink to this definition">¶</a></dt>
+<dt id="id20">
+<em class="property">property </em><code class="sig-name descname">type</code><a class="headerlink" href="#id20" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3924,6 +3986,22 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="optcom.components.save_field.SaveField.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.save_field.SaveField.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -4051,9 +4129,25 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id19">
-<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id19" title="Permalink to this definition">¶</a></dt>
+<dt id="id21">
+<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.components.save_field_to_file.SaveFieldToFile.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.components.save_field_to_file.SaveFieldToFile.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="optcom.components.save_field_to_file.SaveFieldToFile.root_dir">
@@ -4304,8 +4398,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id20">
-<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id20" title="Permalink to this definition">¶</a></dt>
+<dt id="id22">
+<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id22" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4587,8 +4681,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id21">
-<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
+<dt id="id23">
+<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id23" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

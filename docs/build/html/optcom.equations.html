@@ -1416,6 +1416,17 @@ to all the effects in the equation.</p>
 <dt id="optcom.equations.ase_noise.ASENoise">
 <em class="property">class </em><code class="sig-prename descclassname">optcom.equations.ase_noise.</code><code class="sig-name descname">ASENoise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">se_power</span></em>, <em class="sig-param"><span class="n">gain_coeff</span></em>, <em class="sig-param"><span class="n">absorp_coeff</span></em>, <em class="sig-param"><span class="n">noise_omega</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.equations.ase_noise.ASENoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#optcom.equations.abstract_equation.AbstractEquation" title="optcom.equations.abstract_equation.AbstractEquation"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.equations.abstract_equation.AbstractEquation</span></code></a></p>
+<p>Calculate the noise propagation in fiber amplifier.</p>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+  \frac{\partial P_{ase}^{\pm}(z)}{\partial z} =
+  &amp;\pm \Big[\Gamma_{s}(\omega)\big[\sigma_{e}(\omega)
+  N_i(z) - \sigma_{a}(\omega)N_j(z)\big]
+  - \eta(\omega)\Big] P_{ase}^\pm (z)
+  &amp; \pm \Gamma_{s}(\omega)\sigma_{e}(\omega) N_i(z)
+  P_{0}^\pm(z)
+\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

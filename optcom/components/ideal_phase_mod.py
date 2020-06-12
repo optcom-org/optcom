@@ -98,12 +98,12 @@ class IdealPhaseMod(AbstractPassComp):
             specified maximum number of pass for this port.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------

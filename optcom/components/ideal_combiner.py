@@ -120,12 +120,12 @@ class IdealCombiner(AbstractPassComp):
             specified maximum number of pass for this port.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -145,29 +145,44 @@ class IdealCombiner(AbstractPassComp):
             self.ratios = [1.0 for i in range(self.arms)]
         else:
             self.ratios = ratios
-        self.combine: bool = combine
+        self._combine: bool
+        self.combine = combine  # also add a part of port policy
         # Policy -------------------------------------------------------
-        for i in range(arms):
-            self.add_port_policy(([i], [arms], False))
-        self.add_port_policy(([i for i in range(arms)], [arms], False))
         self.add_wait_policy([i for i in range(arms)])
+    # ==================================================================
+    @property
+    def combine(self) -> bool:
+
+        return self._combine
+    # ------------------------------------------------------------------
+    @combine.setter
+    def combine(self, combine: bool) -> None:
+        self.reset_port_policy()
+        for i in range(self.arms):   # If not waiting, all fields to last port
+            self.add_port_policy(([i], [self.arms], False))
+        if (combine):  # Only first field goes through
+            self.add_port_policy(([i for i in range(self.arms)],
+                                  [self.arms]+[-1 for i in range(1,self.arms)],
+                                  False))
+        else:               # All fields through last ports
+            self.add_port_policy(([i for i in range(self.arms)],
+                                  [self.arms for i in range(self.arms)],
+                                  False))
+        self._combine = combine
     # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
-        output_ports: List[int] = []
         output_fields: List[Field] = []
         # Combine the wave in list fields ------------------------------
-        if (self.combine):
+        if (self.combine):  # Add all scaled fields to first field
             fields[0] *= math.sqrt(self.ratios[ports[0]])
             for i in range(1, len(fields)):
                 fields[i] *= math.sqrt(self.ratios[ports[i]])
                 fields[0].operator_or_extend('__iadd__', fields[i])
-            for i in range(len(fields)-1, 0, -1):
-                del fields[i]
 
-            return self.output_ports([ports[0]]), [fields[0]]
-        else:
+            output_fields = fields
+        else:               # Propagate all scaled fields
             for i in range(len(fields)):
                 output_fields.append(fields[i]
                                      * math.sqrt(self.ratios[ports[i]]))

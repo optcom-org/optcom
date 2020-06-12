@@ -80,12 +80,12 @@ class SaveField(AbstractPassComp):
             The name of the component.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -96,6 +96,10 @@ class SaveField(AbstractPassComp):
         # Attr ---------------------------------------------------------
         self.fields: List[Field] = []
     # ==================================================================
+    def output_ports(self, input_ports: List[int]) -> List[int]:
+
+        return []
+    # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
@@ -103,7 +107,7 @@ class SaveField(AbstractPassComp):
         for field in fields:
             self.fields.append(field)
 
-        return [], []
+        return self.output_ports(ports), []
 
 
 if __name__ == "__main__":

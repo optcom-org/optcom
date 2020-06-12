@@ -99,12 +99,12 @@ class SaveFieldToFile(AbstractPassComp):
             The root directory where to save the fields.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -123,6 +123,10 @@ class SaveFieldToFile(AbstractPassComp):
         self.file_name = file_name
         self.root_dir = root_dir
         self.add_fields: bool = add_fields
+    # ==================================================================
+    def output_ports(self, input_ports: List[int]) -> List[int]:
+
+        return []
     # ==================================================================
     def _update_path_to_file(self) -> None:
         self._full_path_to_file = os.path.join(self.root_dir, self.file_name)
@@ -164,7 +168,7 @@ class SaveFieldToFile(AbstractPassComp):
                 util.print_terminal("{} field(s) added in new file '{}'."
                                     .format(len(fields), self.file_name))
 
-        return [], []
+        return self.output_ports(ports), []
 
 
 if __name__ == "__main__":

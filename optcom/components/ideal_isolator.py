@@ -25,6 +25,13 @@ from optcom.field import Field
 
 default_name = 'Ideal Isolator'
 
+# Exceptions
+class IdealIsolatorError(Exception):
+    pass
+
+class WrongPortError(IdealIsolatorError):
+    pass
+
 
 class IdealIsolator(AbstractPassComp):
     r"""An ideal Isolator.
@@ -78,7 +85,7 @@ class IdealIsolator(AbstractPassComp):
         name :
             The name of the component.
         blocked_port :
-            The port id through which fields will not pass.
+            The port id through which fields will not pass (0 or 1).
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -87,12 +94,12 @@ class IdealIsolator(AbstractPassComp):
             specified maximum number of pass for this port.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -105,23 +112,31 @@ class IdealIsolator(AbstractPassComp):
         util.check_attr_type(blocked_port, 'blocked_port', int)
         # Attr range check ---------------------------------------------
         util.check_attr_range(blocked_port, 'blocked_port', 0, 1)
-        # Attr ---------------------------------------------------------
-        self.blocked_port: int = blocked_port
-        # Policy -------------------------------------------------------
-        self.add_port_policy(([0],[1],True))
+        # Attr and Policy ----------------------------------------------
+        self._blocked_port: int
+        self.blocked_port = blocked_port
+    # ==================================================================
+    @property
+    def blocked_port(self) -> int:
+
+        return self._blocked_port
+    # ------------------------------------------------------------------
+    @blocked_port.setter
+    def blocked_port(self, blocked_port: int) -> None:
+        if (blocked_port == 1 or blocked_port == 0):
+            self.reset_port_policy()
+            self.add_port_policy(([blocked_port], [-1], False))
+            self.add_port_policy(([blocked_port^1], [blocked_port], False))
+            self._blocked_port = blocked_port
+        else:
+            error_msg: str = ("Ideal isolator has no port number {}."
+                              .format(blocked_port))
     # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
-        output_fields: List[Field] = []
-        output_ports: List[int] = []
-        for i in range(len(ports)):
-            if (ports[i] != self.blocked_port):
-                output_fields.append(fields[i])
-                output_ports.extend(self.output_ports([ports[i]]))
-
-        return output_ports, output_fields
+        return self.output_ports(ports), fields
 
 
 if __name__ == "__main__":

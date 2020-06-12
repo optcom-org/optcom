@@ -70,7 +70,8 @@ class IdealDivider(AbstractPassComp):
         The length of the list should be equal to the number of
         arms, if not it will be pad to it. The ratio represents the
         fraction of the power that will be taken from the field
-        arriving at the corresponding arm.
+        arriving at the corresponding arm. If None is provided and
+        divide is set to True, dispatch equally among arms.
 
     Notes
     -----
@@ -108,7 +109,8 @@ class IdealDivider(AbstractPassComp):
             The length of the list should be equal to the number of
             arms, if not it will be pad to it. The ratio represents the
             fraction of the power that will be taken from the field
-            arriving at the corresponding arm.
+            arriving at the corresponding arm. If None is provided and
+            divide is set to True, dispatch equally among arms.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -117,12 +119,12 @@ class IdealDivider(AbstractPassComp):
             specified maximum number of pass for this port.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -140,30 +142,25 @@ class IdealDivider(AbstractPassComp):
         self.arms: int = arms
         self.ratios: List[float]
         if (not ratios):
-            if (self.divide):
-                self.ratios = [1.0/arms for i in range(self.arms)]
-            else:
-                self.ratios = [1. for i in range(self.arms)]
+            self.ratios = [1.0/arms for i in range(arms)]
         else:
-            self.ratios = ratios
+            self.ratios = util.make_list(ratios, arms)
+    # ==================================================================
+    def output_ports(self, input_ports: List[int]) -> List[int]:
+
+        return [(i+1) for i in range(self.arms)] * len(input_ports)
     # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
-
-        output_ports: List[int] = []
         output_fields: List[Field] = []
         for field in fields:
             for i in range(self.arms):
                 output_fields.append(copy.deepcopy(field))
-                if (self.divide):
-                    ratios = util.make_list(self.ratios, self.arms)
-                else:
-                    ratios = [1.0 for i in range(self.arms)]
-                output_fields[-1] *= math.sqrt(ratios[i])
-                output_ports.append(i+1)
+                if (self.divide):   # Consider ratio if need to divide
+                    output_fields[-1] *= math.sqrt(self.ratios[i])
 
-        return output_ports, output_fields
+        return self.output_ports(ports), output_fields
 
 
 

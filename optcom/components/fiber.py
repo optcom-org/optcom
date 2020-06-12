@@ -235,12 +235,12 @@ class Fiber(AbstractPassComp):
             specified maximum number of pass for this port.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -332,14 +332,12 @@ class Fiber(AbstractPassComp):
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
-        output_ports: List[int] = []
         output_fields: List[Field] = []
         output_fields = self._stepper(domain, fields)
         if (self._stepper.save_all):
             self.storages.append(self._stepper.storage)
-        output_ports = self.output_ports(ports)
 
-        return output_ports, output_fields
+        return self.output_ports(ports), output_fields
 
 
 if __name__ == "__main__":

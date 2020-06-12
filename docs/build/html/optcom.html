@@ -3263,6 +3263,11 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="id17">
+<em class="property">property </em><code class="sig-name descname">combine</code><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -3373,7 +3378,8 @@ power depending on provided ratios.</p>
 The length of the list should be equal to the number of
 arms, if not it will be pad to it. The ratio represents the
 fraction of the power that will be taken from the field
-arriving at the corresponding arm.</p>
+arriving at the corresponding arm. If None is provided and
+divide is set to True, dispatch equally among arms.</p>
 </dd></dl>
 
 <p class="rubric">Notes</p>
@@ -3398,25 +3404,42 @@ power depending on provided ratios.</p></li>
 The length of the list should be equal to the number of
 arms, if not it will be pad to it. The ratio represents the
 fraction of the power that will be taken from the field
-arriving at the corresponding arm.</p></li>
+arriving at the corresponding arm. If None is provided and
+divide is set to True, dispatch equally among arms.</p></li>
 <li><p><strong>save</strong> -- If True, the last wave to enter/exit a port will be saved.</p></li>
 <li><p><strong>max_nbr_pass</strong> -- No fields will be propagated if the number of
 fields which passed through a specific port exceed the
 specified maximum number of pass for this port.</p></li>
 <li><p><strong>pre_call_code</strong> -- A string containing code which will be executed prior to
-the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two parameters
-<cite>input_ports</cite> and <cite>input_fields</cite> are available.</p></li>
+the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two
+parameters <cite>input_ports</cite> and <cite>input_fields</cite> are available.</p></li>
 <li><p><strong>post_call_code</strong> -- A string containing code which will be executed posterior to
-the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two parameters
-<cite>output_ports</cite> and <cite>output_fields</cite> are available.</p></li>
+the call to the function <code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code>. The two
+parameters <cite>output_ports</cite> and <cite>output_fields</cite> are available.</p></li>
 </ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="optcom.IdealDivider.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.IdealDivider.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
 </dd>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
 <dl class="py class">
 <dt id="optcom.IdealCoupler">
-<em class="property">class </em><code class="sig-prename descclassname">optcom.</code><code class="sig-name descname">IdealCoupler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'Ideal Fiber Coupler'</span></em>, <em class="sig-param"><span class="n">ratios_ports</span><span class="o">=</span><span class="default_value">[[0.5, 0.5]]</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_nbr_pass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pre_call_code</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">post_call_code</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.IdealCoupler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">optcom.</code><code class="sig-name descname">IdealCoupler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'Ideal Fiber Coupler'</span></em>, <em class="sig-param"><span class="n">port_ratios</span><span class="o">=</span><span class="default_value">[[0.5, 0.5]]</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_nbr_pass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pre_call_code</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">post_call_code</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.IdealCoupler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="optcom.components.html#optcom.components.abstract_pass_comp.AbstractPassComp" title="optcom.components.abstract_pass_comp.AbstractPassComp"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.components.abstract_pass_comp.AbstractPassComp</span></code></a></p>
 <p>An ideal fiber coupler</p>
 <dl class="py attribute">
@@ -3492,8 +3515,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="optcom.IdealCoupler.ratios_ports">
-<code class="sig-name descname">ratios_ports</code><a class="headerlink" href="#optcom.IdealCoupler.ratios_ports" title="Permalink to this definition">¶</a></dt>
+<dt id="optcom.IdealCoupler.port_ratios">
+<code class="sig-name descname">port_ratios</code><a class="headerlink" href="#optcom.IdealCoupler.port_ratios" title="Permalink to this definition">¶</a></dt>
 <dd><p>Each element of the list correspond to one input port and
 contain a list composed of the two dividing ratio
 for the two output ports. The ratio represents the
@@ -3511,7 +3534,7 @@ fraction of the power that will be taken from the field.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> -- The name of the component.</p></li>
-<li><p><strong>ratios_ports</strong> -- Each element of the list correspond to one input port and
+<li><p><strong>port_ratios</strong> -- Each element of the list correspond to one input port and
 contain a list composed of the two dividing ratio
 for the two output ports. The ratio represents the
 fraction of the power that will be taken from the field.</p></li>
@@ -3529,8 +3552,24 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id17">
-<em class="property">property </em><code class="sig-name descname">ratios_ports</code><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
+<dt id="optcom.IdealCoupler.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.IdealCoupler.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id18">
+<em class="property">property </em><code class="sig-name descname">port_ratios</code><a class="headerlink" href="#id18" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3632,7 +3671,7 @@ the call to the function <code class="xref py py-func docutils literal notransla
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> -- The name of the component.</p></li>
-<li><p><strong>blocked_port</strong> -- The port id through which fields will not pass.</p></li>
+<li><p><strong>blocked_port</strong> -- The port id through which fields will not pass (0 or 1).</p></li>
 <li><p><strong>save</strong> -- If True, the last wave to enter/exit a port will be saved.</p></li>
 <li><p><strong>max_nbr_pass</strong> -- No fields will be propagated if the number of
 fields which passed through a specific port exceed the
@@ -3646,6 +3685,11 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="id19">
+<em class="property">property </em><code class="sig-name descname">blocked_port</code><a class="headerlink" href="#id19" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -3917,33 +3961,33 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id18">
-<em class="property">property </em><code class="sig-name descname">extinction</code><a class="headerlink" href="#id18" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="id19">
-<em class="property">property </em><code class="sig-name descname">loss</code><a class="headerlink" href="#id19" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id20">
-<em class="property">property </em><code class="sig-name descname">phase_shift</code><a class="headerlink" href="#id20" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">extinction</code><a class="headerlink" href="#id20" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id21">
-<em class="property">property </em><code class="sig-name descname">v_bias</code><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">loss</code><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id22">
-<em class="property">property </em><code class="sig-name descname">v_mod</code><a class="headerlink" href="#id22" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">phase_shift</code><a class="headerlink" href="#id22" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id23">
-<em class="property">property </em><code class="sig-name descname">v_pi</code><a class="headerlink" href="#id23" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">v_bias</code><a class="headerlink" href="#id23" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id24">
+<em class="property">property </em><code class="sig-name descname">v_mod</code><a class="headerlink" href="#id24" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id25">
+<em class="property">property </em><code class="sig-name descname">v_pi</code><a class="headerlink" href="#id25" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4081,8 +4125,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id24">
-<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id24" title="Permalink to this definition">¶</a></dt>
+<dt id="id26">
+<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id26" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4323,9 +4367,25 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id25">
-<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id25" title="Permalink to this definition">¶</a></dt>
+<dt id="id27">
+<em class="property">property </em><code class="sig-name descname">file_name</code><a class="headerlink" href="#id27" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.SaveFieldToFile.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.SaveFieldToFile.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="optcom.SaveFieldToFile.root_dir">
@@ -4441,6 +4501,22 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="optcom.SaveField.output_ports">
+<code class="sig-name descname">output_ports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_ports</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.SaveField.output_ports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the corresponding output port(s) to the
+specified input port(s) depending on all ports in the provided
+list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_ports</strong> -- The inputs ports.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output ports.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -4682,8 +4758,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id26">
-<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id26" title="Permalink to this definition">¶</a></dt>
+<dt id="id28">
+<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id28" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4962,8 +5038,8 @@ the call to the function <code class="xref py py-func docutils literal notransla
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id27">
-<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id27" title="Permalink to this definition">¶</a></dt>
+<dt id="id29">
+<em class="property">property </em><code class="sig-name descname">fwhm</code><a class="headerlink" href="#id29" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -5147,23 +5223,23 @@ Will be used if the attribute <code class="xref py py-attr docutils literal notr
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id28">
-<em class="property">property </em><code class="sig-name descname">bits</code><a class="headerlink" href="#id28" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="id29">
-<em class="property">property </em><code class="sig-name descname">dnu</code><a class="headerlink" href="#id29" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id30">
-<em class="property">property </em><code class="sig-name descname">domega</code><a class="headerlink" href="#id30" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">bits</code><a class="headerlink" href="#id30" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id31">
-<em class="property">property </em><code class="sig-name descname">dtime</code><a class="headerlink" href="#id31" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">dnu</code><a class="headerlink" href="#id31" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id32">
+<em class="property">property </em><code class="sig-name descname">domega</code><a class="headerlink" href="#id32" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id33">
+<em class="property">property </em><code class="sig-name descname">dtime</code><a class="headerlink" href="#id33" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -5258,8 +5334,8 @@ bandwidth.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id32">
-<em class="property">property </em><code class="sig-name descname">noise_domega</code><a class="headerlink" href="#id32" title="Permalink to this definition">¶</a></dt>
+<dt id="id34">
+<em class="property">property </em><code class="sig-name descname">noise_domega</code><a class="headerlink" href="#id34" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -5268,23 +5344,23 @@ bandwidth.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id33">
-<em class="property">property </em><code class="sig-name descname">noise_omega</code><a class="headerlink" href="#id33" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="id34">
-<em class="property">property </em><code class="sig-name descname">noise_omega_window</code><a class="headerlink" href="#id34" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id35">
-<em class="property">property </em><code class="sig-name descname">noise_samples</code><a class="headerlink" href="#id35" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">noise_omega</code><a class="headerlink" href="#id35" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id36">
-<em class="property">property </em><code class="sig-name descname">nu</code><a class="headerlink" href="#id36" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">noise_omega_window</code><a class="headerlink" href="#id36" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id37">
+<em class="property">property </em><code class="sig-name descname">noise_samples</code><a class="headerlink" href="#id37" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id38">
+<em class="property">property </em><code class="sig-name descname">nu</code><a class="headerlink" href="#id38" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -5348,13 +5424,13 @@ bandwidth.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id37">
-<em class="property">property </em><code class="sig-name descname">nu_window</code><a class="headerlink" href="#id37" title="Permalink to this definition">¶</a></dt>
+<dt id="id39">
+<em class="property">property </em><code class="sig-name descname">nu_window</code><a class="headerlink" href="#id39" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id38">
-<em class="property">property </em><code class="sig-name descname">omega</code><a class="headerlink" href="#id38" title="Permalink to this definition">¶</a></dt>
+<dt id="id40">
+<em class="property">property </em><code class="sig-name descname">omega</code><a class="headerlink" href="#id40" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -5419,23 +5495,23 @@ bandwidth.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id39">
-<em class="property">property </em><code class="sig-name descname">omega_window</code><a class="headerlink" href="#id39" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="id40">
-<em class="property">property </em><code class="sig-name descname">samples</code><a class="headerlink" href="#id40" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id41">
-<em class="property">property </em><code class="sig-name descname">time</code><a class="headerlink" href="#id41" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">omega_window</code><a class="headerlink" href="#id41" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id42">
-<em class="property">property </em><code class="sig-name descname">time_window</code><a class="headerlink" href="#id42" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">samples</code><a class="headerlink" href="#id42" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id43">
+<em class="property">property </em><code class="sig-name descname">time</code><a class="headerlink" href="#id43" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id44">
+<em class="property">property </em><code class="sig-name descname">time_window</code><a class="headerlink" href="#id44" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -6735,7 +6811,7 @@ use fitting formulas.</p></li>
 <dt id="optcom.AbsorptionSection.calc_sigma">
 <em class="property">static </em><code class="sig-name descname">calc_sigma</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">coefficients</span></em>, <em class="sig-param"><span class="n">lambda_range</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.AbsorptionSection.calc_sigma" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the absorption cross section. Calculate with the
-fitting formula from ref. <a class="footnote-reference brackets" href="#id44" id="id43">1</a> .</p>
+fitting formula from ref. <a class="footnote-reference brackets" href="#id46" id="id45">1</a> .</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -6779,7 +6855,7 @@ in <span class="math notranslate nohighlight">\([nm]\)</span></p>
 \end{split}\end{split}\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id44"><span class="brackets"><a class="fn-backref" href="#id43">1</a></span></dt>
+<dt class="label" id="id46"><span class="brackets"><a class="fn-backref" href="#id45">1</a></span></dt>
 <dd><p>Valley, G.C., 2001. Modeling cladding-pumped Er/Yb fiber
 amplifiers. Optical Fiber Technology, 7(1), pp.21-44.</p>
 </dd>
@@ -6969,7 +7045,7 @@ provided, variable must be angular frequency.
 <dt id="optcom.AsymmetryCoeff.calc_delta">
 <em class="property">static </em><code class="sig-name descname">calc_delta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">beta_1</span></em>, <em class="sig-param"><span class="n">beta_2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.AsymmetryCoeff.calc_delta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the measure of asymmetry for the parameters given
-for two waveguides. <a class="footnote-reference brackets" href="#id46" id="id45">2</a></p>
+for two waveguides. <a class="footnote-reference brackets" href="#id48" id="id47">2</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -6988,7 +7064,7 @@ waveguide. <span class="math notranslate nohighlight">\([km^{-1}]\)</span></p></
 \[\delta_{a12} = \frac{1}{2} (\beta_{01} - \beta_{02})\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id46"><span class="brackets"><a class="fn-backref" href="#id45">2</a></span></dt>
+<dt class="label" id="id48"><span class="brackets"><a class="fn-backref" href="#id47">2</a></span></dt>
 <dd><p>Govind Agrawal, Chapter 2: Fibers Couplers,
 Applications of Nonlinear Fiber Optics (Second Edition),
 Academic Press, 2008, Page 57.</p>
@@ -7021,7 +7097,7 @@ callable is provided, variable must be angular frequency.
 <em class="property">static </em><code class="sig-name descname">calc_kappa</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">v_nbr</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">ref_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.CouplingCoeff.calc_kappa" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the coupling coefficient for the parameters given
 for two waveguides. (assuming the two waveguides are
-symmetric) <a class="footnote-reference brackets" href="#id48" id="id47">3</a></p>
+symmetric) <a class="footnote-reference brackets" href="#id50" id="id49">3</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -7047,7 +7123,7 @@ center-to-center spacing <span class="math notranslate nohighlight">\(\bar{d} = 
 <span class="math notranslate nohighlight">\(2\leq \bar{d}\leq 4.5\)</span> .</p>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id48"><span class="brackets"><a class="fn-backref" href="#id47">3</a></span></dt>
+<dt class="label" id="id50"><span class="brackets"><a class="fn-backref" href="#id49">3</a></span></dt>
 <dd><p>Govind Agrawal, Chapter 2: Fibers Couplers,
 Applications of Nonlinear Fiber Optics (Second Edition),
 Academic Press, 2008, Page 59.</p>
@@ -7120,7 +7196,7 @@ variable must be angular frequency. <span class="math notranslate nohighlight">\
 <dl class="py method">
 <dt id="optcom.EffectiveArea.calc_effective_area">
 <em class="property">static </em><code class="sig-name descname">calc_effective_area</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_nbr</span></em>, <em class="sig-param"><span class="n">core_radius</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.EffectiveArea.calc_effective_area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the effective area. <a class="footnote-reference brackets" href="#id50" id="id49">4</a></p>
+<dd><p>Calculate the effective area. <a class="footnote-reference brackets" href="#id52" id="id51">4</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -7138,7 +7214,7 @@ variable must be angular frequency. <span class="math notranslate nohighlight">\
 + 1.66V^{-\frac{2}{3}} + 0.987V^{-6})\big)^2\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id50"><span class="brackets"><a class="fn-backref" href="#id49">4</a></span></dt>
+<dt class="label" id="id52"><span class="brackets"><a class="fn-backref" href="#id51">4</a></span></dt>
 <dd><p>Govind Agrawal, Chapter 2: Pulse Propagation in Fibers,
 Nonlinear Fiber Optics (Fifth Edition), Academic Press, 2013,
 Page 34.</p>
@@ -7182,7 +7258,7 @@ is provided, will construct a <code class="xref py py-class docutils literal not
 <dd><p>Calculate the emission cross section. There is no analytical
 formula for the emission cross section. Calculate first the
 absorption cross sections with the fitting formula from ref.
-<a class="footnote-reference brackets" href="#id52" id="id51">5</a> and then use the McCumber relations to deduce the emission
+<a class="footnote-reference brackets" href="#id54" id="id53">5</a> and then use the McCumber relations to deduce the emission
 cross sections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -7201,7 +7277,7 @@ cross sections.</p>
 </dl>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id52"><span class="brackets"><a class="fn-backref" href="#id51">5</a></span></dt>
+<dt class="label" id="id54"><span class="brackets"><a class="fn-backref" href="#id53">5</a></span></dt>
 <dd><p>Valley, G.C., 2001. Modeling cladding-pumped Er/Yb fiber
 amplifiers. Optical Fiber Technology, 7(1), pp.21-44.</p>
 </dd>
@@ -7272,7 +7348,7 @@ must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}
 <dl class="py method">
 <dt id="optcom.NLCoefficient.calc_nl_coefficient">
 <em class="property">static </em><code class="sig-name descname">calc_nl_coefficient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">nl_index</span></em>, <em class="sig-param"><span class="n">eff_area</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.NLCoefficient.calc_nl_coefficient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the non linear parameter. <a class="footnote-reference brackets" href="#id54" id="id53">6</a></p>
+<dd><p>Calculate the non linear parameter. <a class="footnote-reference brackets" href="#id56" id="id55">6</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -7291,7 +7367,7 @@ must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}
 \[\gamma(\omega_0) = \frac{\omega_0 n_2}{c A_{eff}}\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id54"><span class="brackets"><a class="fn-backref" href="#id53">6</a></span></dt>
+<dt class="label" id="id56"><span class="brackets"><a class="fn-backref" href="#id55">6</a></span></dt>
 <dd><p>Govind Agrawal, Chapter 2: Pulse Propaga(omega_0)tion in
 Fibers, Nonlinear Fiber Optics (Fifth Edition), Academic
 Press, 2013, Page 38.</p>
@@ -7492,7 +7568,7 @@ anisotropic Raman function.</p></li>
 <em class="property">static </em><code class="sig-name descname">calc_h_R</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">tau_1</span><span class="o">=</span><span class="default_value">0.0122</span></em>, <em class="sig-param"><span class="n">tau_2</span><span class="o">=</span><span class="default_value">0.032</span></em>, <em class="sig-param"><span class="n">tau_b</span><span class="o">=</span><span class="default_value">0.096</span></em>, <em class="sig-param"><span class="n">f_a</span><span class="o">=</span><span class="default_value">0.75</span></em>, <em class="sig-param"><span class="n">f_b</span><span class="o">=</span><span class="default_value">0.21</span></em>, <em class="sig-param"><span class="n">f_c</span><span class="o">=</span><span class="default_value">0.04</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.RamanResponse.calc_h_R" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Raman response function as the sum of the
 isotropic <span class="math notranslate nohighlight">\(R_a(t)\)</span> and anisotropic <span class="math notranslate nohighlight">\(R_b(t)\)</span>
-(Boson peak) Raman response functions. <a class="footnote-reference brackets" href="#id56" id="id55">7</a></p>
+(Boson peak) Raman response functions. <a class="footnote-reference brackets" href="#id58" id="id57">7</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -7523,7 +7599,7 @@ h_R(t) &amp;= R_a(t) + R_b(t)\\
 \end{split}\end{split}\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id56"><span class="brackets"><a class="fn-backref" href="#id55">7</a></span></dt>
+<dt class="label" id="id58"><span class="brackets"><a class="fn-backref" href="#id57">7</a></span></dt>
 <dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
 for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 </dd>
@@ -7534,7 +7610,7 @@ for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 <dt id="optcom.RamanResponse.calc_h_a">
 <em class="property">static </em><code class="sig-name descname">calc_h_a</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">tau_1</span><span class="o">=</span><span class="default_value">0.0122</span></em>, <em class="sig-param"><span class="n">tau_2</span><span class="o">=</span><span class="default_value">0.032</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.RamanResponse.calc_h_a" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the isotropic part of the Raman response function.
-<a class="footnote-reference brackets" href="#id58" id="id57">8</a></p>
+<a class="footnote-reference brackets" href="#id60" id="id59">8</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -7555,7 +7631,7 @@ at the time given as parameter. <span class="math notranslate nohighlight">\([ps
 e^{\frac{-t}{\tau_2}} \sin\big(\frac{t}{\tau_1}\big)\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id58"><span class="brackets"><a class="fn-backref" href="#id57">8</a></span></dt>
+<dt class="label" id="id60"><span class="brackets"><a class="fn-backref" href="#id59">8</a></span></dt>
 <dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
 for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 </dd>
@@ -7566,7 +7642,7 @@ for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 <dt id="optcom.RamanResponse.calc_h_b">
 <em class="property">static </em><code class="sig-name descname">calc_h_b</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">tau_b</span><span class="o">=</span><span class="default_value">0.096</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.RamanResponse.calc_h_b" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the anisotropic part (boson peak) of the Raman
-response function. <a class="footnote-reference brackets" href="#id60" id="id59">9</a></p>
+response function. <a class="footnote-reference brackets" href="#id62" id="id61">9</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -7585,7 +7661,7 @@ at the time given as parameter. <span class="math notranslate nohighlight">\([ps
 e^{\frac{-t}{\tau_b}}\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id60"><span class="brackets"><a class="fn-backref" href="#id59">9</a></span></dt>
+<dt class="label" id="id62"><span class="brackets"><a class="fn-backref" href="#id61">9</a></span></dt>
 <dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
 for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 </dd>
@@ -7716,7 +7792,7 @@ variable must be angular frequency. <span class="math notranslate nohighlight">\
 <em class="property">static </em><code class="sig-name descname">calc_nl_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">factor</span></em>, <em class="sig-param"><span class="n">coefficients</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.NLIndex.calc_nl_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the non linear index by help of fitting formula.
 The non linear is assumed to be the sum of the electronic and
-Raman contributions at zero frequency shift. <a class="footnote-reference brackets" href="#id62" id="id61">10</a></p>
+Raman contributions at zero frequency shift. <a class="footnote-reference brackets" href="#id64" id="id63">10</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -7740,7 +7816,7 @@ Raman contributions at zero frequency shift. <a class="footnote-reference bracke
 <span class="math notranslate nohighlight">\(10^{-20}\)</span></p>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id62"><span class="brackets"><a class="fn-backref" href="#id61">10</a></span></dt>
+<dt class="label" id="id64"><span class="brackets"><a class="fn-backref" href="#id63">10</a></span></dt>
 <dd><p>Salceda-Delgado, G., Martinez-Rios, A., Ilan, B. and
 Monzon-Hernandez, D., 2012. Raman response function an
 Raman fraction of phosphosilicate fibers. Optical and
@@ -7755,10 +7831,10 @@ Quantum Electronics, 44(14), pp.657-671.</p>
 <dt id="optcom.ResonantIndex">
 <em class="property">class </em><code class="sig-prename descclassname">optcom.</code><code class="sig-name descname">ResonantIndex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">medium</span></em>, <em class="sig-param"><span class="n">n_0</span></em>, <em class="sig-param"><span class="n">N</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.ResonantIndex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="optcom.parameters.html#optcom.parameters.abstract_parameter.AbstractParameter" title="optcom.parameters.abstract_parameter.AbstractParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.parameters.abstract_parameter.AbstractParameter</span></code></a></p>
-<p>Compute the resonant index change. <a class="footnote-reference brackets" href="#id64" id="id63">11</a></p>
+<p>Compute the resonant index change. <a class="footnote-reference brackets" href="#id66" id="id65">11</a></p>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id64"><span class="brackets"><a class="fn-backref" href="#id63">11</a></span></dt>
+<dt class="label" id="id66"><span class="brackets"><a class="fn-backref" href="#id65">11</a></span></dt>
 <dd><p>Digonnet, M.J., Sadowski, R.W., Shaw, H.J. and Pantell, R.H.,
 1997. Experimental evidence for strong UV transition
 contribution in the resonant nonlinearity of doped fibers.
@@ -7874,10 +7950,10 @@ relevant UV levels. <span class="math notranslate nohighlight">\([nm]\)</span>
 <dd><p>Bases: <a class="reference internal" href="optcom.parameters.html#optcom.parameters.abstract_parameter.AbstractParameter" title="optcom.parameters.abstract_parameter.AbstractParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.parameters.abstract_parameter.AbstractParameter</span></code></a></p>
 <p>Sellmeier equations.</p>
 <p>Represent the Sellmeier equations which are empirical relationship
-between refractive index and wavelength for a specific medium. <a class="footnote-reference brackets" href="#id66" id="id65">12</a></p>
+between refractive index and wavelength for a specific medium. <a class="footnote-reference brackets" href="#id68" id="id67">12</a></p>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id66"><span class="brackets"><a class="fn-backref" href="#id65">12</a></span></dt>
+<dt class="label" id="id68"><span class="brackets"><a class="fn-backref" href="#id67">12</a></span></dt>
 <dd><p>Malitson, I.H., 1965. Interspecimen comparison of the
 refractive index of fused silica. Josa, 55(10), pp.1205-1209.</p>
 </dd>

@@ -27,6 +27,22 @@ from optcom.field import Field
 
 
 class ASENoise(AbstractEquation):
+    r"""Calculate the noise propagation in fiber amplifier.
+
+
+    Notes
+    -----
+
+    .. math:: \begin{split}
+                 \frac{\partial P_{ase}^{\pm}(z)}{\partial z} =
+                 &\pm \Big[\Gamma_{s}(\omega)\big[\sigma_{e}(\omega)
+                 N_i(z) - \sigma_{a}(\omega)N_j(z)\big]
+                 - \eta(\omega)\Big] P_{ase}^\pm (z)
+                 & \pm \Gamma_{s}(\omega)\sigma_{e}(\omega) N_i(z)
+                 P_{0}^\pm(z)
+               \end{split}
+
+    """
 
     def __init__(self, se_power: Callable,
                  gain_coeff: DopedFiberGain,
@@ -39,7 +55,7 @@ class ASENoise(AbstractEquation):
             The spontaneous emission power. :math:`[W]`
         gain_coeff : optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain
             The gain coefficient of the noise.
-        absorp_coeff :
+        absorp_coeff : optcom.parameters.fiber.doped_fiber_gain.DopedFiberGain
             The absorption coefficient of the noise.
         noise_omega :
             The angular frequencies composing the noise array.

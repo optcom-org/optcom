@@ -274,12 +274,12 @@ class FiberCoupler(AbstractPassComp):
             specified maximum number of pass for this port.
         pre_call_code :
             A string containing code which will be executed prior to
-            the call to the function :func:`__call__`. The two parameters
-            `input_ports` and `input_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `input_ports` and `input_fields` are available.
         post_call_code :
             A string containing code which will be executed posterior to
-            the call to the function :func:`__call__`. The two parameters
-            `output_ports` and `output_fields` are available.
+            the call to the function :func:`__call__`. The two
+            parameters `output_ports` and `output_fields` are available.
 
         """
         # Parent constructor -------------------------------------------
@@ -384,42 +384,53 @@ class FiberCoupler(AbstractPassComp):
         self.add_port_policy(([0, 1], [2, 3], True))
         self.add_wait_policy([0, 1], [2, 3])
     # ==================================================================
+    def output_ports(self, input_ports: List[int]) -> List[int]:
+        # 1 input ------------------------------------------------------
+        uni_ports = util.unique(input_ports)
+        if (len(uni_ports) == 1):
+            # 0 -> 1 /\ 1 -> 0 /\ 2 -> 3 /\ 3 -> 2
+            analog_port = uni_ports[0] ^ 1
+            input_ports.append(analog_port)
+
+        return super().output_ports(input_ports)
+    # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
 
         output_fields: List[Field] = []
-        # 1 input ------------------------------------------------------
+        null_fields: List[Field] = []
         uni_ports = util.unique(ports)
-        if (len(uni_ports) == 1):
-            # 0 -> 1 /\ 1 -> 0 /\ 2 -> 3 /\ 3 -> 2
-            analog_port = uni_ports[0] ^ 1
-            ports.append(analog_port)
+        one_port_input = (len(uni_ports) == 1)
+        # 1 input port - len(uni_ports) == 1 ---------------------------
+        if (one_port_input):
             new_name: str = fields[0].name + "_copy_from_" + self.name
             null_field = fields[0].get_copy(new_name, True, True, False)
-            fields.append(null_field)
-        # 2 inputs -----------------------------------------------------
-        uni_ports = util.unique(ports)
-        if (len(uni_ports) == 2):
-            fields_1 = []
-            fields_2 = []
+            null_fields.append(null_field)
+        # 2 input ports - len(uni_ports) == 2 --------------------------
+        fields_port_0: List[Field] = []
+        fields_port_1: List[Field] = []
+        if (one_port_input):    # Add corresponding null_fields in corr. port
+            fields_port_0 = fields
+            fields_port_1 = null_fields
+        else:                   # Distribute each field depending on port
             for i in range(len(ports)):
                 if (ports[i] == uni_ports[0]):
-                    fields_1.append(fields[i])
+                    fields_port_0.append(fields[i])
                 else:
-                    fields_2.append(fields[i])
-            output_fields = self._stepper(domain, fields_1, fields_2)
-            # Noise management - splitting assumption
-            if (self._NOISE):
-                noise = np.zeros(domain.noise_samples)
-                for i in range(len(ports)):
-                    noise += fields[i].noise
-                noise /= len(ports)
-                for i in range(len(ports)):
-                    fields[i].noise = noise
-            # Get storage
-            if (self._stepper.save_all):
-                self.storages.append(self._stepper.storage)
+                    fields_port_1.append(fields[i])
+        output_fields = self._stepper(domain, fields_port_0, fields_port_1)
+        # Noise management - splitting assumption
+        #if (self._NOISE):
+        #    noise = np.zeros(domain.noise_samples)
+        #    for i in range(len(ports)):
+        #        noise += fields[i].noise
+        #    noise /= len(ports)
+        #    for i in range(len(ports)):
+        #        fields[i].noise = noise
+        # Get storage
+        if (self._stepper.save_all):
+            self.storages.append(self._stepper.storage)
 
         return self.output_ports(ports), output_fields
 
@@ -445,7 +456,7 @@ if __name__ == "__main__":
     pulse_2: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[23.5, 0.3],
                                        fwhm=[1.], center_lambda=[1050.0])
 
-    steps: int = int(500)
+    steps: int = int(100)
     alpha: List[Union[List[float], Callable, None]] = [[0.046], [0.046]]
     beta_01: float = 1e5
     beta_02: float = 1e5
