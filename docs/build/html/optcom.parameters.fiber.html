@@ -587,6 +587,75 @@ must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}
 </dd></dl>
 
 </div>
+<div class="section" id="module-optcom.parameters.fiber.fiber_recovery_time">
+<span id="optcom-parameters-fiber-fiber-recovery-time-module"></span><h2>optcom.parameters.fiber.fiber_recovery_time module<a class="headerlink" href="#module-optcom.parameters.fiber.fiber_recovery_time" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.parameters.fiber.fiber_recovery_time.FiberRecoveryTime">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.parameters.fiber.fiber_recovery_time.</code><code class="sig-name descname">FiberRecoveryTime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">core_area</span></em>, <em class="sig-param"><span class="n">sigma_a</span></em>, <em class="sig-param"><span class="n">sigma_e</span></em>, <em class="sig-param"><span class="n">overlap</span></em>, <em class="sig-param"><span class="n">power</span></em>, <em class="sig-param"><span class="n">tau</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.fiber_recovery_time.FiberRecoveryTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="optcom.parameters.html#optcom.parameters.abstract_parameter.AbstractParameter" title="optcom.parameters.abstract_parameter.AbstractParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.parameters.abstract_parameter.AbstractParameter</span></code></a></p>
+<p>Compute the recovery time of a doped fiber at steday
+state. <a class="footnote-reference brackets" href="#id12" id="id11">13</a></p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id11">13</a></span></dt>
+<dd><p>Lindberg, R., Zeil, P., Malmström, M., Laurell, F. and
+Pasiskevicius, V., 2016. Accurate modeling of
+high-repetition rate ultrashort pulse amplification in
+optical fibers. Scientific reports, 6, p.34742.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>core_area</strong> -- The fiber core area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p></li>
+<li><p><strong>sigma_a</strong> -- The absorption cross sections. <span class="math notranslate nohighlight">\([nm^2]\)</span>  If a
+callable is provided, the variable must be angular
+frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>sigma_e</strong> -- The emission cross sections. <span class="math notranslate nohighlight">\([nm^2]\)</span>  If a callable
+is provided, the variable must be angular frequency.
+<span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>overlap</strong> -- The overlap factors. If a callable is provided, the variable
+must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>power</strong> -- The pump powers. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
+<li><p><strong>tau</strong> -- The lifetime of the metastable level. <span class="math notranslate nohighlight">\([\mu s]\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="optcom.parameters.fiber.fiber_recovery_time.FiberRecoveryTime.calc_recovery_time">
+<em class="property">static </em><code class="sig-name descname">calc_recovery_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">core_area</span></em>, <em class="sig-param"><span class="n">sigma_a</span></em>, <em class="sig-param"><span class="n">sigma_e</span></em>, <em class="sig-param"><span class="n">overlap</span></em>, <em class="sig-param"><span class="n">power</span></em>, <em class="sig-param"><span class="n">tau</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.fiber_recovery_time.FiberRecoveryTime.calc_recovery_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the recovery time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>core_area</strong> -- The area of the core. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p></li>
+<li><p><strong>sigma_a</strong> -- The absorption cross sections. <span class="math notranslate nohighlight">\([nm^2]\)</span></p></li>
+<li><p><strong>sigma_e</strong> -- The emission cross sections. <span class="math notranslate nohighlight">\([nm^2]\)</span></p></li>
+<li><p><strong>overlap</strong> -- The overlap factors.</p></li>
+<li><p><strong>power</strong> -- The pump powers. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
+<li><p><strong>tau</strong> -- The lifetime of the metastable level. <span class="math notranslate nohighlight">\([\mu s]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the recovery time. <span class="math notranslate nohighlight">\([\mu s]\)</span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[t_c = \frac{1}{\frac{2\pi\Gamma}{h \omega A_c}
+\Big(\sigma_a(\omega)+\sigma_e(\omega)\Big)
+P_p + \frac{1}{z}}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.parameters.fiber.fiber_recovery_time.FiberRecoveryTime.power">
+<em class="property">property </em><code class="sig-name descname">power</code><a class="headerlink" href="#optcom.parameters.fiber.fiber_recovery_time.FiberRecoveryTime.power" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-optcom.parameters.fiber.nl_coefficient">
 <span id="optcom-parameters-fiber-nl-coefficient-module"></span><h2>optcom.parameters.fiber.nl_coefficient module<a class="headerlink" href="#module-optcom.parameters.fiber.nl_coefficient" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -596,15 +665,19 @@ must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nl_index</strong> -- The non linear index. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
-<li><p><strong>eff_erea</strong> -- The effective area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p></li>
+<li><p><strong>nl_index</strong> -- The non linear index. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span>  If a
+callable is provided, the variable must be angular
+frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>eff_area</strong> -- The effective area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span>  If a
+callable is provided, the variable must be angular
+frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="optcom.parameters.fiber.nl_coefficient.NLCoefficient.calc_nl_coefficient">
 <em class="property">static </em><code class="sig-name descname">calc_nl_coefficient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">nl_index</span></em>, <em class="sig-param"><span class="n">eff_area</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.nl_coefficient.NLCoefficient.calc_nl_coefficient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the non linear parameter. <a class="footnote-reference brackets" href="#id12" id="id11">6</a></p>
+<dd><p>Calculate the non linear parameter. <a class="footnote-reference brackets" href="#id14" id="id13">6</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -623,7 +696,7 @@ must be angular frequency. <span class="math notranslate nohighlight">\([ps^{-1}
 \[\gamma(\omega_0) = \frac{\omega_0 n_2}{c A_{eff}}\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id11">6</a></span></dt>
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id13">6</a></span></dt>
 <dd><p>Govind Agrawal, Chapter 2: Pulse Propaga(omega_0)tion in
 Fibers, Nonlinear Fiber Optics (Fifth Edition), Academic
 Press, 2013, Page 38.</p>
@@ -660,6 +733,84 @@ Press, 2013, Page 38.</p>
 <dl class="py method">
 <dt id="optcom.parameters.fiber.nl_coefficient.NLCoefficient.nl_index">
 <em class="property">property </em><code class="sig-name descname">nl_index</code><a class="headerlink" href="#optcom.parameters.fiber.nl_coefficient.NLCoefficient.nl_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-optcom.parameters.fiber.nl_phase_shift">
+<span id="optcom-parameters-fiber-nl-phase-shift-module"></span><h2>optcom.parameters.fiber.nl_phase_shift module<a class="headerlink" href="#module-optcom.parameters.fiber.nl_phase_shift" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="optcom.parameters.fiber.nl_phase_shift.NLPhaseShift">
+<em class="property">class </em><code class="sig-prename descclassname">optcom.parameters.fiber.nl_phase_shift.</code><code class="sig-name descname">NLPhaseShift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nl_index</span></em>, <em class="sig-param"><span class="n">eff_area</span></em>, <em class="sig-param"><span class="n">power</span></em>, <em class="sig-param"><span class="n">dz</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.nl_phase_shift.NLPhaseShift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="optcom.parameters.html#optcom.parameters.abstract_parameter.AbstractParameter" title="optcom.parameters.abstract_parameter.AbstractParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.parameters.abstract_parameter.AbstractParameter</span></code></a></p>
+<p>Compute the non-linear phase shift. <a class="footnote-reference brackets" href="#id16" id="id15">14</a></p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id16"><span class="brackets"><a class="fn-backref" href="#id15">14</a></span></dt>
+<dd><p>Wise, F.W., Chong, A. and Renninger, W.H., 2008. High‐energy
+femtosecond fiber lasers based on pulse propagation at
+normal dispersion. Laser &amp; Photonics Reviews, 2(1‐2),
+pp.58-73.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nl_index</strong> -- The non linear index. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span>  If a
+callable is provided, the variable must be angular
+frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>eff_area</strong> -- The effective area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span>  If a
+callable is provided, the variable must be angular
+frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>power</strong> -- The powers. <span class="math notranslate nohighlight">\([W]\)</span>  If a
+callable is provided, the variable must be angular
+frequency. <span class="math notranslate nohighlight">\([ps^{-1}]\)</span></p></li>
+<li><p><strong>dz</strong> -- The distance of propagation. <span class="math notranslate nohighlight">\([km]\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.calc_nl_phase_shift">
+<em class="property">static </em><code class="sig-name descname">calc_nl_phase_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">omega</span></em>, <em class="sig-param"><span class="n">nl_index</span></em>, <em class="sig-param"><span class="n">eff_area</span></em>, <em class="sig-param"><span class="n">power</span></em>, <em class="sig-param"><span class="n">dz</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.calc_nl_phase_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the non-linear phase shift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> -- The angular frequency. <span class="math notranslate nohighlight">\([rad\cdot ps^{-1}]\)</span></p></li>
+<li><p><strong>nl_index</strong> -- The non linear index. <span class="math notranslate nohighlight">\([m^2\cdot W^{-1}]\)</span></p></li>
+<li><p><strong>eff_area</strong> -- The effective area. <span class="math notranslate nohighlight">\([\mu m^2]\)</span></p></li>
+<li><p><strong>power</strong> -- The powers. <span class="math notranslate nohighlight">\([W]\)</span></p></li>
+<li><p><strong>dz</strong> -- The distance of propagation. <span class="math notranslate nohighlight">\([km]\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value of the non-linear phase shift.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="math notranslate nohighlight">
+\[\Phi^{NL} = \frac{\omega}{c} n_2 \frac{P}{A_eff} dz\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.dz">
+<em class="property">property </em><code class="sig-name descname">dz</code><a class="headerlink" href="#optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.dz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.eff_area">
+<em class="property">property </em><code class="sig-name descname">eff_area</code><a class="headerlink" href="#optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.eff_area" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.nl_index">
+<em class="property">property </em><code class="sig-name descname">nl_index</code><a class="headerlink" href="#optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.nl_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.power">
+<em class="property">property </em><code class="sig-name descname">power</code><a class="headerlink" href="#optcom.parameters.fiber.nl_phase_shift.NLPhaseShift.power" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -833,7 +984,7 @@ anisotropic Raman function.</p></li>
 <em class="property">static </em><code class="sig-name descname">calc_h_R</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">tau_1</span><span class="o">=</span><span class="default_value">0.0122</span></em>, <em class="sig-param"><span class="n">tau_2</span><span class="o">=</span><span class="default_value">0.032</span></em>, <em class="sig-param"><span class="n">tau_b</span><span class="o">=</span><span class="default_value">0.096</span></em>, <em class="sig-param"><span class="n">f_a</span><span class="o">=</span><span class="default_value">0.75</span></em>, <em class="sig-param"><span class="n">f_b</span><span class="o">=</span><span class="default_value">0.21</span></em>, <em class="sig-param"><span class="n">f_c</span><span class="o">=</span><span class="default_value">0.04</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.raman_response.RamanResponse.calc_h_R" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Raman response function as the sum of the
 isotropic <span class="math notranslate nohighlight">\(R_a(t)\)</span> and anisotropic <span class="math notranslate nohighlight">\(R_b(t)\)</span>
-(Boson peak) Raman response functions. <a class="footnote-reference brackets" href="#id14" id="id13">7</a></p>
+(Boson peak) Raman response functions. <a class="footnote-reference brackets" href="#id18" id="id17">7</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -864,7 +1015,7 @@ h_R(t) &amp;= R_a(t) + R_b(t)\\
 \end{split}\end{split}\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id13">7</a></span></dt>
+<dt class="label" id="id18"><span class="brackets"><a class="fn-backref" href="#id17">7</a></span></dt>
 <dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
 for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 </dd>
@@ -875,7 +1026,7 @@ for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 <dt id="optcom.parameters.fiber.raman_response.RamanResponse.calc_h_a">
 <em class="property">static </em><code class="sig-name descname">calc_h_a</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">tau_1</span><span class="o">=</span><span class="default_value">0.0122</span></em>, <em class="sig-param"><span class="n">tau_2</span><span class="o">=</span><span class="default_value">0.032</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.raman_response.RamanResponse.calc_h_a" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the isotropic part of the Raman response function.
-<a class="footnote-reference brackets" href="#id16" id="id15">8</a></p>
+<a class="footnote-reference brackets" href="#id20" id="id19">8</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -896,7 +1047,7 @@ at the time given as parameter. <span class="math notranslate nohighlight">\([ps
 e^{\frac{-t}{\tau_2}} \sin\big(\frac{t}{\tau_1}\big)\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id16"><span class="brackets"><a class="fn-backref" href="#id15">8</a></span></dt>
+<dt class="label" id="id20"><span class="brackets"><a class="fn-backref" href="#id19">8</a></span></dt>
 <dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
 for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 </dd>
@@ -907,7 +1058,7 @@ for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 <dt id="optcom.parameters.fiber.raman_response.RamanResponse.calc_h_b">
 <em class="property">static </em><code class="sig-name descname">calc_h_b</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">tau_b</span><span class="o">=</span><span class="default_value">0.096</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.parameters.fiber.raman_response.RamanResponse.calc_h_b" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the anisotropic part (boson peak) of the Raman
-response function. <a class="footnote-reference brackets" href="#id18" id="id17">9</a></p>
+response function. <a class="footnote-reference brackets" href="#id22" id="id21">9</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -926,7 +1077,7 @@ at the time given as parameter. <span class="math notranslate nohighlight">\([ps
 e^{\frac{-t}{\tau_b}}\]</div>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id18"><span class="brackets"><a class="fn-backref" href="#id17">9</a></span></dt>
+<dt class="label" id="id22"><span class="brackets"><a class="fn-backref" href="#id21">9</a></span></dt>
 <dd><p>Lin, Q. and Agrawal, G.P., 2006. Raman response function
 for silica fibers. Optics letters, 31(21), pp.3086-3088.</p>
 </dd>

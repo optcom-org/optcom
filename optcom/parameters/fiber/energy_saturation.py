@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     medium: str = "sio2"
     dopant: str = "yb"
-    A_doped: float = 4*oc.PI*25.0
+    A_doped: float = oc.PI*25.0
     # With float
     omega: float = oc.lambda_to_omega(1000)
     core_radius: float = 5.0

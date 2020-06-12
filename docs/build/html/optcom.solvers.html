@@ -823,8 +823,9 @@ space step.</p></li>
 <dt id="optcom.solvers.ode_solver.ODESolver">
 <em class="property">class </em><code class="sig-prename descclassname">optcom.solvers.ode_solver.</code><code class="sig-name descname">ODESolver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'euler'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#optcom.solvers.ode_solver.ODESolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#optcom.solvers.abstract_solver.AbstractSolver" title="optcom.solvers.abstract_solver.AbstractSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">optcom.solvers.abstract_solver.AbstractSolver</span></code></a></p>
-<p>Solve a system of ordinary differential equations as:</p>
+<p>Solve a system of ordinary differential equations.</p>
 <p class="rubric">Notes</p>
+<p>A system of ordinary differential equations is of the form:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{cases}
   \frac{dy_0(x)}{dx} = f_0(x, y_0, \ldots, y_n ),

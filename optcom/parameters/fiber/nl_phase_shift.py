@@ -14,7 +14,8 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
-from typing import Callable, List, overload, Union
+import math
+from typing import Callable, List, Optional, overload, Union
 
 import numpy as np
 
@@ -24,10 +25,21 @@ from optcom.parameters.abstract_parameter import AbstractParameter
 from optcom.utils.callable_container import CallableContainer
 
 
-class NLCoefficient(AbstractParameter):
+class NLPhaseShift(AbstractParameter):
+    r"""Compute the non-linear phase shift. [14]_
 
-    def __init__(self, nl_index: Union[float, Callable],
-                 eff_area: Union[float, Callable]) -> None:
+    References
+    ----------
+    .. [14] Wise, F.W., Chong, A. and Renninger, W.H., 2008. High‐energy
+            femtosecond fiber lasers based on pulse propagation at
+            normal dispersion. Laser & Photonics Reviews, 2(1‐2),
+            pp.58-73.
+
+    """
+
+    def __init__(self, nl_index: Union[float, np.ndarray, Callable],
+                 eff_area: Union[float, np.ndarray, Callable],
+                 power: Union[float, np.ndarray, Callable], dz: float) -> None:
         r"""
         Parameters
         ----------
@@ -39,30 +51,58 @@ class NLCoefficient(AbstractParameter):
             The effective area. :math:`[\mu m^2]`  If a
             callable is provided, the variable must be angular
             frequency. :math:`[ps^{-1}]`
+        power :
+            The powers. :math:`[W]`  If a
+            callable is provided, the variable must be angular
+            frequency. :math:`[ps^{-1}]`
+        dz :
+            The distance of propagation. :math:`[km]`
 
         """
-        self._nl_index: Union[float, Callable] = nl_index
-        self._eff_area: Union[float, Callable] = eff_area
+        self._nl_index: Union[float, np.ndarray, Callable] = nl_index
+        self._eff_area: Union[float, np.ndarray, Callable] = eff_area
+        self._power: Union[float, np.ndarray, Callable] = power
+        self._dz: float = dz
     # ==================================================================
     @property
-    def nl_index(self) -> Union[float, Callable]:
+    def nl_index(self) -> Union[float, np.ndarray, Callable]:
 
         return self._nl_index
     # ------------------------------------------------------------------
     @nl_index.setter
-    def nl_index(self, nl_index: Union[float, Callable]) -> None:
+    def nl_index(self, nl_index: Union[float, np.ndarray, Callable]) -> None:
 
         self._nl_index = nl_index
     # ==================================================================
     @property
-    def eff_area(self) -> Union[float, Callable]:
+    def eff_area(self) -> Union[float, np.ndarray, Callable]:
 
         return self._eff_area
     # ------------------------------------------------------------------
     @eff_area.setter
-    def eff_area(self, eff_area: Union[float, Callable]) -> None:
+    def eff_area(self, eff_area: Union[float, np.ndarray, Callable]) -> None:
 
         self._eff_area = eff_area
+    # ==================================================================
+    @property
+    def power(self) -> Union[float, np.ndarray, Callable]:
+
+        return self._power
+    # ------------------------------------------------------------------
+    @power.setter
+    def power(self, power: Union[float, np.ndarray, Callable]) -> None:
+
+        self._power = power
+    # ==================================================================
+    @property
+    def dz(self) -> float:
+
+        return self._dz
+    # ------------------------------------------------------------------
+    @dz.setter
+    def dz(self, dz: float) -> None:
+
+        self._dz = dz
     # ==================================================================
     @overload
     def __call__(self, omega: float) -> float: ...
@@ -71,114 +111,73 @@ class NLCoefficient(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        r"""Calculate the non linear parameter.
+        r"""Compute the non-linear phase shift.
 
         Parameters
         ----------
         omega :
-            The angular frequency.  :math:`[rad\cdot ps^{-1}]`
-
+            The angular frequency. :math:`[rad\cdot ps^{-1}]`
 
         Returns
         -------
         :
-            Value of the non linear parameter.
-            :math:`[rad\cdot W^{-1}\cdot km^{-1}]`
+            The value of the non-linear phase shift.
 
         """
-        fct = CallableContainer(NLCoefficient.calc_nl_coefficient,
-                                [omega, self._nl_index, self._eff_area])
+        fct = CallableContainer(NLPhaseShift.calc_nl_phase_shift,
+                                [omega, self._nl_index, self._eff_area,
+                                 self._power, self._dz])
 
         return fct(omega)
     # ==================================================================
-    # Static methods ===================================================
-    # ==================================================================
     @overload
     @staticmethod
-    def calc_nl_coefficient(omega: float, nl_index: float, eff_area: float,
-                            ) -> float: ...
+    def calc_nl_phase_shift(omega: float, nl_index: float, eff_area: float,
+                            power: float, dz: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_nl_coefficient(omega: np.ndarray, nl_index: np.ndarray,
-                            eff_area: np.ndarray) -> np.ndarray: ...
+    def calc_nl_phase_shift(omega: np.ndarray, nl_index: np.ndarray,
+                            eff_area: np.ndarray, power: np.ndarray,
+                            dz: float) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
-    def calc_nl_coefficient(omega, nl_index, eff_area):
-        r"""Calculate the non linear parameter. [6]_
+    def calc_nl_phase_shift(omega, nl_index, eff_area, power, dz):
+        r"""Calculate the non-linear phase shift.
 
         Parameters
         ----------
         omega :
-            The center angular frequency.  :math:`[ps^{-1}]`
+            The angular frequency. :math:`[rad\cdot ps^{-1}]`
         nl_index :
-            The non linear refractive index. :math:`[m^{2}\cdot W^{-1}]`
-        eff_area :
-            The effective mode area.  :math:`[\mu m^{2}]`
+            The non linear index. :math:`[m^2\cdot W^{-1}]`
+        eff_area:
+            The effective area. :math:`[\mu m^2]`
+        power :
+            The powers. :math:`[W]`
+        dz :
+            The distance of propagation. :math:`[km]`
 
         Returns
         -------
         :
-            Value of the non linear parameter.
-            :math:`[rad\cdot W^{-1}\cdot km^{-1}]`
+            Value of the non-linear phase shift.
 
         Notes
         -----
 
-        .. math::  \gamma(\omega_0) = \frac{\omega_0 n_2}{c A_{eff}}
-
-        References
-        ----------
-        .. [6] Govind Agrawal, Chapter 2: Pulse Propaga(\omega_0)tion in
-           Fibers, Nonlinear Fiber Optics (Fifth Edition), Academic
-           Press, 2013, Page 38.
+        .. math:: \Phi^{NL} = \frac{\omega}{c} n_2 \frac{P}{A_{eff}} dz
 
         """
-        # Unit conversion
         nl_index *=  1e-6  # m^2 W^{-1} -> km^2 W^{-1}
         eff_area *= 1e-18    # um^2 -> km^2
         c = cst.C * 1e-12    # ps/nm -> ps/km
 
-        return (nl_index*omega) / (eff_area*c)
-    # ==================================================================
-    @overload
-    @staticmethod
-    def calc_nl_length(power: float, nl_coeff: float) -> float: ...
-    # ------------------------------------------------------------------
-    @overload
-    @staticmethod
-    def calc_nl_length(power: np.ndarray, nl_coeff: np.ndarray
-                       ) -> np.ndarray: ...
-    # ------------------------------------------------------------------
-    @staticmethod
-    def calc_nl_length(power, nl_coeff):
-        r"""Calculate the non linear length.
-
-        Parameters
-        ----------
-        power :
-            The power. :math:`[W]`
-        nl_coeff :
-            The non linear coefficient.
-            :math:`[rad\cdot W^{-1}\cdot km^{-1}]`
-
-        Returns
-        -------
-        :
-            The non-linear length :math:`[km]`
-
-        Notes
-        -----
-
-        .. math::  L_{NL} = \frac{1}{\gamma P_0}
-
-        """
-
-        return 1.0 / (power * nl_coeff)
+        return (omega/c) * nl_index * (power/eff_area) * dz
 
 
 if __name__ == "__main__":
-    """Plot the non linear coefficient as a function of the wavelength.
+    """Plot the non linear phase shift as a function of the wavelength.
     This piece of code is standalone, i.e. can be used in a separate
     file as an example.
     """
@@ -190,6 +189,8 @@ if __name__ == "__main__":
     import optcom as oc
 
     medium: str = "SiO2"
+    power: float = 0.01 # W
+    dz: float = 1e-5    # km
     # With float
     omega: float = oc.lambda_to_omega(1552.0)
     core_radius: float = 5.0
@@ -199,21 +200,22 @@ if __name__ == "__main__":
     v_nbr_inst: oc.VNumber = oc.VNumber(NA_inst, core_radius)
     eff_area_inst: oc.EffectiveArea = oc.EffectiveArea(v_nbr_inst, core_radius)
     nl_ind_inst: oc.NLIndex = oc.NLIndex(medium)
-    nl_coeff: oc.NLCoefficient = oc.NLCoefficient(nl_ind_inst, eff_area_inst)
-    print(nl_coeff(omega))
+    nl_phase: oc.NLPhaseShift = oc.NLPhaseShift(nl_ind_inst, eff_area_inst,
+                                                power, dz)
+    print(nl_phase(omega))
     nl_ind: float = nl_ind_inst(omega)
     eff_area: float = eff_area_inst(omega)
-    print(oc.NLCoefficient.calc_nl_coefficient(omega, nl_ind, eff_area))
+    print(oc.NLPhaseShift.calc_nl_phase_shift(omega, nl_ind, eff_area, power,
+                                              dz))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(900., 1550., 1000)
     omegas: np.ndarray = oc.lambda_to_omega(lambdas)
-    res: np.ndarray = nl_coeff(omegas)
+    res: np.ndarray = nl_phase(omegas)
     x_labels: List[str] = ['Lambda']
-    y_labels: List[str] = ['Non-linear coefficient, '
-                           '$\,\gamma\,(rad\cdot W^{-1}\cdot km^{-1})$']
-    plot_titles: List[str] = ["Non linear coefficient as a function of the "
+    y_labels: List[str] = ['Non-linear phase shift']
+    plot_titles: List[str] = ["Non linear phase shift as a function of the "
                               "wavelength \n for Silica core with constant "
                               "cladding refractive index."]
 
     oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(1., 5.)])
+              plot_titles=plot_titles, opacity=[0.0])

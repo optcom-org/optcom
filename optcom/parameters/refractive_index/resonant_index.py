@@ -67,9 +67,13 @@ class ResonantIndex(AbstractParameter):
         medium :
             The medium in which the wave propagates.
         n_0 :
-            The raw refratvie index of the medium.
+            The raw refratvie index of the medium.  If a
+            callable is provided, the variable must be angular
+            frequency. :math:`[ps^{-1}]`
         N :
             The population of the metastable level. :math:`[nm^{-3}]`
+            If a callable is provided, the variable must be angular
+            frequency. :math:`[ps^{-1}]`
 
         """
         self._medium: str = util.check_attr_value(medium.lower(), MEDIA,

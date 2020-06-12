@@ -118,9 +118,9 @@ class FiberRecoveryTime(AbstractParameter):
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_recovery_time(omega: np.ndarray, sigma_a: np.ndarray,
-                           sigma_e: np.ndarray, overlap: np.ndarray,
-                           power: np.ndarray, tau: float
+    def calc_recovery_time(omega: np.ndarray, core_area: float,
+                           sigma_a: np.ndarray, sigma_e: np.ndarray,
+                           overlap: np.ndarray, power: np.ndarray, tau: float
                            ) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
@@ -180,7 +180,7 @@ if __name__ == "__main__":
 
     medium: str = "sio2"
     dopant: str = "yb"
-    A_doped: float = 4*oc.PI*25.0   # um^2
+    A_doped: float = oc.PI*25.0   # um^2
     A_core: float = A_doped         # um^2
     P_pump: float = 0.001 # W
     tau: float = 840.0  # us

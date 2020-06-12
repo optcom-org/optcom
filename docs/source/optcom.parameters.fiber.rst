@@ -60,10 +60,26 @@ optcom.parameters.fiber.energy\_saturation module
    :undoc-members:
    :show-inheritance:
 
+optcom.parameters.fiber.fiber\_recovery\_time module
+----------------------------------------------------
+
+.. automodule:: optcom.parameters.fiber.fiber_recovery_time
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 optcom.parameters.fiber.nl\_coefficient module
 ----------------------------------------------
 
 .. automodule:: optcom.parameters.fiber.nl_coefficient
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+optcom.parameters.fiber.nl\_phase\_shift module
+-----------------------------------------------
+
+.. automodule:: optcom.parameters.fiber.nl_phase_shift
    :members:
    :undoc-members:
    :show-inheritance:

@@ -91,6 +91,7 @@ from optcom.parameters.fiber.emission_section import EmissionSection
 from optcom.parameters.fiber.energy_saturation import EnergySaturation
 from optcom.parameters.fiber.fiber_recovery_time import FiberRecoveryTime
 from optcom.parameters.fiber.nl_coefficient import NLCoefficient
+from optcom.parameters.fiber.nl_phase_shift import NLPhaseShift
 from optcom.parameters.fiber.numerical_aperture import NumericalAperture
 from optcom.parameters.fiber.overlap_factor import OverlapFactor
 from optcom.parameters.fiber.raman_response import RamanResponse
@@ -104,9 +105,9 @@ from optcom.parameters.refractive_index.sellmeier import Sellmeier
 mod_para = ['AbsorptionSection', 'ChromaticDisp', 'AsymmetryCoeff',
             'CouplingCoeff', 'DopedFiberGain', 'EffectiveArea',
             'EmissionSection', 'EnergySaturation', 'FiberRecoveryTime',
-            'NLCoefficient', 'NumericalAperture', 'OverlapFactor',
-            'RamanResponse', 'SEPower', 'VNumber', 'NLIndex', 'ResonantIndex',
-            'Sellmeier']
+            'NLCoefficient', 'NLPhaseShift', 'NumericalAperture',
+            'OverlapFactor', 'RamanResponse', 'SEPower', 'VNumber', 'NLIndex',
+            'ResonantIndex', 'Sellmeier']
 
 
 
