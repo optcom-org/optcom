@@ -47,10 +47,8 @@ class FiberRecoveryTime(AbstractParameter):
         r"""
         Parameters
         ----------
-        eff_area :
-            The effective area. :math:`[\mu m^2]`  If a callable is
-            provided, the variable must be angular frequency.
-            :math:`[ps^{-1}]`
+        core_area :
+            The fiber core area. :math:`[\mu m^2]`
         sigma_a :
             The absorption cross sections. :math:`[nm^2]`  If a
             callable is provided, the variable must be angular
@@ -62,6 +60,10 @@ class FiberRecoveryTime(AbstractParameter):
         overlap :
             The overlap factors. If a callable is provided, the variable
             must be angular frequency. :math:`[ps^{-1}]`
+        power :
+            The pump powers. :math:`[W]`
+        tau :
+            The lifetime of the metastable level. :math:`[\mu s]`
 
         """
         self._core_area: float = core_area
@@ -178,7 +180,7 @@ if __name__ == "__main__":
 
     medium: str = "sio2"
     dopant: str = "yb"
-    A_doped: float = 2*oc.PI*25.0   # um^2
+    A_doped: float = 4*oc.PI*25.0   # um^2
     A_core: float = A_doped         # um^2
     P_pump: float = 0.001 # W
     tau: float = 840.0  # us
