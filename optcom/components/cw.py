@@ -242,4 +242,4 @@ if __name__ == "__main__":
 
     oc.plot2d(x_datas, y_datas, x_labels=["t","nu","t","nu"],
               y_labels=["P_t", "P_nu", "phi_t", "phi_nu"],
-              plot_titles=plot_titles, split=True, opacity=[0.2])
+              plot_titles=plot_titles, split=True, line_opacities=[0.2])

@@ -388,4 +388,4 @@ if __name__ == "__main__":
     plot_titles.extend(plot_titles)
 
     oc.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, split=True, opacity=[0.3])
+              plot_titles=plot_titles, split=True, line_opacities=[0.3])

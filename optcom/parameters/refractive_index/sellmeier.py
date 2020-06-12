@@ -220,4 +220,4 @@ if __name__ == "__main__":
 
     oc.plot2d([lambdas], res, x_labels=x_labels, y_labels=y_labels,
               line_labels=line_labels, plot_titles=plot_titles,
-              opacity=[0.0], split=False, y_ranges=[(1.4, 3.)])
+              line_opacities=[0.0], split=False, y_ranges=[(1.4, 3.)])

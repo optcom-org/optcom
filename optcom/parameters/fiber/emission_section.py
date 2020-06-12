@@ -238,4 +238,4 @@ if __name__ == "__main__":
               y_labels=[r'Emission cross section, $\,\sigma_e\,(nm^2)$'],
               line_colors=line_colors, line_labels=line_labels,
               plot_titles=plot_titles, line_styles=['-.'],
-              opacity=[0.0], plot_groups=[0,0,1,1,2,2])
+              line_opacities=[0.0], plot_groups=[0,0,1,1,2,2])

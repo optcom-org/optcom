@@ -268,4 +268,5 @@ if __name__ == "__main__":
                               "cladding refractive index."]
 
     oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(0.1, 0.2)])
+              plot_titles=plot_titles, line_opacities=[0.0],
+              y_ranges=[(0.1, 0.2)])

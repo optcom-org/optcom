@@ -265,4 +265,4 @@ if __name__ == "__main__":
 
     oc.plot2d(x_datas, y_datas, line_labels=line_labels,
               plot_groups=plot_groups, plot_titles=plot_titles,
-              x_labels=['t'], y_labels=['P_t'], opacity=[0.3])
+              x_labels=['t'], y_labels=['P_t'], line_opacities=[0.3])

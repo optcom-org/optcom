@@ -124,4 +124,4 @@ if __name__ == "__main__":
                               "the wavelength."]
 
     oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, opacity=[0.0])
+              plot_titles=plot_titles, line_opacities=[0.0])

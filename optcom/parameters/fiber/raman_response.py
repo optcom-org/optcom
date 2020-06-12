@@ -311,5 +311,5 @@ if __name__ == "__main__":
     plot_titles: List[str] = ['Raman response function', 'Raman gain']
 
     oc.plot2d(x_data, y_data, x_labels=['t'], y_labels=['h_R'],
-              plot_groups=[0,0,0], plot_titles=plot_titles, opacity=[0.0],
-              line_labels=line_labels)
+              plot_groups=[0,0,0], plot_titles=plot_titles,
+              line_opacities=[0.0], line_labels=line_labels)

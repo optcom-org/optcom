@@ -175,4 +175,4 @@ if __name__ == "__main__":
     y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu']
 
     oc.plot2d(x_datas, y_datas, plot_titles=plot_titles, x_labels=x_labels,
-              y_labels=y_labels, split=True, opacity=[0.3])
+              y_labels=y_labels, split=True, line_opacities=[0.3])

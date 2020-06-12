@@ -346,4 +346,4 @@ if __name__ == "__main__":
 
     oc.plot2d([lambdas, lambdas], delta_n_data, x_labels=x_labels,
               y_labels=y_labels, plot_titles=plot_titles, split=True,
-              opacity=[0.0])
+              line_opacities=[0.0])

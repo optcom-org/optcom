@@ -296,4 +296,4 @@ if __name__ == "__main__":
     oc.plot2d(x_data, y_data, x_labels=['Lambda'],
               y_labels=[r'Absorption cross section, $\,\sigma_a\,(nm^2)$'],
               split=True, line_colors=['red'], plot_titles=plot_titles,
-              line_styles=['-.'], opacity=[0.0])
+              line_styles=['-.'], line_opacities=[0.0])

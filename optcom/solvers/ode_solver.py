@@ -372,4 +372,4 @@ if __name__ == "__main__":
     # -------------------- Plotting results ------------------------
     plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
                 plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                line_labels=line_labels, opacity=[0.1])
+                line_labels=line_labels, line_opacities=[0.1])

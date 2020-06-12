@@ -391,4 +391,4 @@ if __name__ == "__main__":
     plot_titles.append('Dispersion slope of Silica')
 
     oc.plot2d(x_data, y_data, x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, split=True, opacity=[0.0])
+              plot_titles=plot_titles, split=True, line_opacities=[0.0])

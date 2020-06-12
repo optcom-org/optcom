@@ -196,4 +196,4 @@ if __name__ == "__main__":
 
     oc.plot2d(np.array([Lambdas]), np.array([kappas]), x_labels=['Lambda'],
               y_labels=[r'Kappa $km^{-1}$'], plot_titles=plot_titles,
-              split=True, opacity=[0.0], y_ranges=[(200000., 420000.)])
+              split=True, line_opacities=[0.0], y_ranges=[(200000., 420000.)])

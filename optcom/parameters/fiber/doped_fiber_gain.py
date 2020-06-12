@@ -192,4 +192,4 @@ if __name__ == "__main__":
 
     oc.plot2d([lambdas], [gains], x_labels=['Lambda'],
               y_labels=[r'Gain, $\, g\,(km^{-1})$'], line_colors=['red'],
-              plot_titles=plot_titles, opacity=[0.])
+              plot_titles=plot_titles, line_opacities=[0.])

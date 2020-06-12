@@ -192,10 +192,10 @@ if __name__ == "__main__":
 
     oc.plot2d(x_datas_t, y_datas_t, plot_groups=plot_groups,
               plot_titles=plot_titles, line_labels=line_labels,
-              x_labels=['t'], y_labels=['phi_t'], opacity=[0.3])
+              x_labels=['t'], y_labels=['phi_t'], line_opacities=[0.3])
 
     x_datas_nu: List[np.ndarray] = [pulse[0][0].nu, mod[1][0].nu]
 
     oc.plot2d(x_datas_nu, y_datas_nu, plot_groups=plot_groups,
               plot_titles=plot_titles, line_labels=line_labels,
-              x_labels=['nu'], y_labels=['phi_nu'], opacity=[0.3])
+              x_labels=['nu'], y_labels=['phi_nu'], line_opacities=[0.3])

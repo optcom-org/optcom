@@ -115,7 +115,7 @@ def apply_protocol_decorator(func: Any) -> TypingMethodAttribute:
 @apply_protocol_decorator
 def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
                    y_range, plot_title, line_label, line_style, line_width,
-                   line_color, opacity):
+                   line_color, line_opacity):
     """Plot a 2D graph."""
     x_data_ = np.array([x_data]) if (x_data.ndim < 2) else x_data
     y_data_ = np.array([y_data]) if (y_data.ndim < 2) else y_data
@@ -142,7 +142,7 @@ def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
         else:
             plt_to_add.plot(x_data_[i] , y_data_[i], ls=line_style,
                             lw=line_width, c=line_color)
-        plt_to_add.fill_between(x_data_[i] , y_data_[i], alpha=opacity,
+        plt_to_add.fill_between(x_data_[i] , y_data_[i], alpha=line_opacity,
                                 facecolor=line_color)
         add_subplot_para(plt_to_add, x_label=x_label, y_label=y_label,
                          x_range=x_range, y_range=y_range,
@@ -154,7 +154,7 @@ def add_2D_subplot(plt_to_add, x_data, y_data, x_label, y_label, x_range,
 @apply_protocol_decorator
 def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
                    z_label, x_range, y_range, z_range, plot_title, line_color,
-                   opacity, plot_type):
+                   line_opacity, plot_type):
     """Plot a 3D graph."""
     x_data_temp = np.asarray(x_data)
     if (x_data_temp.ndim > 1):  # Else single time array, nothing to pad
@@ -179,11 +179,11 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
                 getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data[i],
                                                color=line_color,
                                                rcount=100, ccount=100,
-                                               alpha=opacity)
+                                               alpha=line_opacity)
             else:
                 getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data[i],
                                                rcount=100, ccount=100,
-                                               alpha=opacity)
+                                               alpha=line_opacity)
         else:
             ravel_x = np.ravel(mesh_x)
             ravel_y = np.ravel(mesh_y)
@@ -191,10 +191,10 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
             if (plot3d_types[plot_type][1] == 'color'):
                 getattr(plt_to_add, plot_type)(ravel_x, ravel_y, ravel_z,
                                                color=line_color,
-                                               alpha=opacity)
+                                               alpha=line_opacity)
             else:
                 getattr(plt_to_add, plot_type)(ravel_x, ravel_y, ravel_z,
-                                               alpha=opacity)
+                                               alpha=line_opacity)
 
         add_subplot_para(plt_to_add, x_label=x_label, y_label=y_label,
                          z_label=z_label, x_range=x_range, y_range=y_range,
@@ -258,9 +258,9 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
            line_widths: List[float] = [1.],
            line_labels: Optional[List[Optional[str]]] = None,
            line_colors: Optional[List[str]] = None,
+           line_opacities: List[float] = [0.2],
            plot_titles: Optional[List[str]] = None,
-           plot_groups: Optional[List[int]] = None,
-           split: bool = False, opacity: List[float] = [0.2],
+           plot_groups: Optional[List[int]] = None, split: bool = False,
            fig_title: Optional[str] = None, filename: str = "",
            resolution: Tuple[float, float] = (1920., 1080.),
            triangle_layout: bool = False) -> None:
@@ -288,6 +288,8 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
         The labels for each line on each plot.
     line_colors :
         The color of each line on each plot.
+    line_opacities :
+        The opacity of the lines.
     plot_titles :
         The title of each plot.
     plot_groups :
@@ -296,8 +298,6 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
     split :
         If True, split all the lines in one plote. If False, group all
         the lines in one plot. Only considered if plot_groups is None.
-    opacity :
-        The opacity of the lines.
     fig_title :
         The figure title.
     filename :
@@ -334,8 +334,8 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
     line_colors_ = util.make_list(line_colors, len(x_datas_))
     line_styles_ = util.make_list(line_styles, len(x_datas_))
     line_widths_ = util.make_list(line_widths, len(x_datas_))
-    opacity_: List[float]
-    opacity_ = util.make_list(opacity, len(x_datas_))
+    line_opacities_: List[float]
+    line_opacities_ = util.make_list(line_opacities, len(x_datas_))
     plot_groups_: Optional[List[int]]
     if (plot_groups is not None):
         plot_groups_ = util.make_list(plot_groups, len(x_datas_))
@@ -378,7 +378,7 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
                            x_labels_[i], y_labels_[i], x_ranges_[i],
                            y_ranges_[i], plot_titles_[i], line_labels_[line],
                            line_styles_[line], line_widths_[line],
-                           line_colors_[line], opacity_[line])
+                           line_colors_[line], line_opacities_[line])
     # Plotting / saving ------------------------------------------------
     plot_graph(fig, resolution, fig_title, filename)
 
@@ -392,9 +392,9 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
            y_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
            z_ranges: Optional[List[Optional[Tuple[float, float]]]] = None,
            line_colors: Optional[List[str]] = None,
+           line_opacities: List[float] = [0.8],
            plot_titles: Optional[List[str]] = None,
-           plot_groups: Optional[List[int]] = None,
-           split: bool = False, opacity: List[float] = [0.8],
+           plot_groups: Optional[List[int]] = None, split: bool = False,
            fig_title: Optional[str] = None, filename: str = "",
            resolution: Tuple[float, float] = (1920., 1080.),
            plot_types: List[str] = [cst.DEF_3D_PLOT],
@@ -423,6 +423,8 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
         The ranges for each axis on each plot along the z axis.
     line_colors :
         The color of each line on each plot.
+    line_opacities :
+        The opacity of the lines.
     plot_titles :
         The title of each plot.
     plot_groups :
@@ -431,8 +433,6 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
     split :
         If True, split all the lines in one plote. If False, group all
         the lines in one plot. Only considered if plot_groups is None.
-    opacity :
-        The opacity of the lines.
     fig_title :
         The figure title.
     filename :
@@ -481,14 +481,14 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
         return None
     line_colors_: List[Optional[str]]
     line_colors_ = util.make_list(line_colors, len(x_datas_))
-    opacity_: List[float]
-    opacity_ = util.make_list(opacity, len(x_datas_))
+    line_opacities_: List[float]
+    line_opacities_ = util.make_list(line_opacities, len(x_datas_))
     plot_types_: List[str]
     plot_types_ = util.make_list(plot_types, len(x_datas_))
     for i in range(len(plot_types_)):
         if (plot3d_types.get(plot_types_[i]) is None):
-            util.warning_terminal("3D plot type '{}' does not exist, replace by "
-                "'{}'.".format(plot_types_[i], cst.DEF_3D_PLOT))
+            util.warning_terminal("3D plot type '{}' does not exist, replace "
+                "by '{}'.".format(plot_types_[i], cst.DEF_3D_PLOT))
             plot_types_[i] = cst.DEF_3D_PLOT
     plot_groups_: Optional[List[int]]
     if (plot_groups is not None):
@@ -538,7 +538,7 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
                            z_datas_[line], x_labels_[i], y_labels_[i],
                            z_labels_[i], x_ranges_[i], y_ranges_[i],
                            z_ranges[i], plot_titles_[i], line_colors_[line],
-                           opacity_[line], plot_types_[line])
+                           line_opacities_[line], plot_types_[line])
     # Plotting / saving ------------------------------------------------
     plot_graph(fig, resolution, fig_title, filename)
 
@@ -553,7 +553,8 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
                 line_widths: List[float] = [1.],
                 line_labels: Optional[List[Optional[str]]] = None,
                 line_colors: Optional[List[str]] = None,
-                plot_title: Optional[str] = None, opacity: float = 0.2,
+                line_opacities: List[float] = [0.2],
+                plot_title: Optional[str] = None,
                 fig_title: Optional[str] = None, filename: str = "",
                 resolution: Tuple[float, float] = (1920., 1080.),
                 interval: float = 100., repeat: bool = True,
@@ -577,17 +578,17 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
     y_range :
         The ranges for each axis along the y axis.
     line_styles :
-        The linestyle of the lines.
+        The linestyle of the line.
     line_widths :
-        The linewidth of the lines.
+        The linewidth of the line.
     line_labels :
-        The labels for each lines.
+        The labels for each line.
     line_colors :
         The color of each line.
+    line_opacities :
+        The opacity of each line.
     plot_title :
         The title of the animation.
-    opacity :
-        The opacity of the lines.
     fig_title :
         The figure title.
     filename :
@@ -659,6 +660,7 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
     # Lines charact. management ----------------------------------------
     line_styles = util.make_list(line_styles, nbr_channels)
     line_widths = util.make_list(line_widths, nbr_channels)
+    line_opacities = util.make_list(line_opacities, nbr_channels)
     # Lables management ------------------------------------------------
     line_labels = util.make_list(line_labels, nbr_channels, '')
     line_labels_: List[str] = []
@@ -706,7 +708,7 @@ def animation2d(x_datas: np.ndarray, y_datas: np.ndarray,
             line.set_data(x_datas_[j][i], y_datas_[j][i])
             facecolor = line_colors_[j%len(line_colors_)]
             fill_lines[j] = ax.fill_between(x_datas_[j][i] , y_datas_[j][i],
-                                            alpha=opacity,
+                                            alpha=line_opacities[j],
                                             facecolor=facecolor)
             mins.append(x_datas_[j][i][0])
             maxs.append(x_datas_[j][i][-1])

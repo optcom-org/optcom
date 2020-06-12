@@ -188,4 +188,4 @@ if __name__ == "__main__":
     oc.plot2d([lambdas], [ens_sat], x_labels=['Lambda'],
               y_labels=[r'Energy saturation, $\,E_{sat}\,(J)$'],
               split=True, line_colors=['red'], plot_titles=plot_titles,
-              line_styles=['-.'], opacity=[0.0])
+              line_styles=['-.'], line_opacities=[0.0])

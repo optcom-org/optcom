@@ -168,4 +168,5 @@ if __name__ == "__main__":
                               "refractive index."]
 
     oc.plot2d([lambdas], [res], x_labels=x_labels, y_labels=y_labels,
-              plot_titles=plot_titles, opacity=[0.0], y_ranges=[(0.75, 1.)])
+              plot_titles=plot_titles, line_opacities=[0.0],
+              y_ranges=[(0.75, 1.)])

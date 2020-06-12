@@ -506,7 +506,7 @@ if __name__ == "__main__":
                     'Pulse after amplifier']
 
     oc.plot2d(x_datas, y_datas, x_labels=x_labels, y_labels=y_labels,
-              plot_groups=[0,0,1,1,2,3], opacity=[0.3],
+              plot_groups=[0,0,1,1,2,3], line_opacities=[0.3],
               plot_titles=plot_titles)
 
     # Power vs space plotting -------------------------------------------
