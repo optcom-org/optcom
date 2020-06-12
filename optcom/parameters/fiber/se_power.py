@@ -43,7 +43,7 @@ class SEPower(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the energy saturation.
+        r"""Compute the energy saturation.
 
         Parameters
         ----------

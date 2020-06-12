@@ -36,7 +36,7 @@ class EffectiveArea(AbstractParameter):
 
     def __init__(self, v_nbr: Union[float, Callable], core_radius: float
                  ) -> None:
-        """Effective area, currently only for single mode.
+        r"""Effective area, currently only for single mode.
 
         Parameters
         ----------
@@ -77,7 +77,7 @@ class EffectiveArea(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the effective area.
+        r"""Compute the effective area.
 
         Parameters
         ----------

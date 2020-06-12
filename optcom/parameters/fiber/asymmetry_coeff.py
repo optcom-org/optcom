@@ -54,7 +54,7 @@ class AsymmetryCoeff(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the asymmetry coefficient.
+        r"""Compute the asymmetry coefficient.
 
         Parameters
         ----------

@@ -38,7 +38,7 @@ class EmissionSection(AbstractParameter):
                  medium: str = cst.DEF_FIBER_MEDIUM,
                  T: float = cst.TEMPERATURE,
                  sigma_a: Optional[Union[float, Callable]] = None) -> None:
-        """
+        r"""
         Parameters
         ----------
         dopant :
@@ -74,7 +74,7 @@ class EmissionSection(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the derivatives of the emission cross sections.
+        r"""Compute the derivatives of the emission cross sections.
 
         Parameters
         ----------

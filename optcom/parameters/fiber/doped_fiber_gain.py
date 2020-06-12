@@ -72,7 +72,7 @@ class DopedFiberGain(AbstractParameter):
     def __call__(self, omega: np.ndarray, order: int) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, *args):
-        """Compute the gain coefficient.
+        r"""Compute the gain coefficient.
 
         Parameters
         ----------

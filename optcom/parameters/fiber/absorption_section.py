@@ -49,7 +49,7 @@ class AbsorptionSection(AbstractParameter):
                  medium: str = cst.DEF_FIBER_MEDIUM,
                  T: float = cst.TEMPERATURE,
                  sigma_e: Optional[Union[float, Callable]] = None) -> None:
-        """
+        r"""
         Parameters
         ----------
         dopant :
@@ -81,7 +81,7 @@ class AbsorptionSection(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the derivatives of the absorption cross sections.
+        r"""Compute the derivatives of the absorption cross sections.
 
         Parameters
         ----------

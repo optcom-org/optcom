@@ -29,7 +29,7 @@ class VNumber(AbstractParameter):
 
     def __init__(self, NA: Union[float, Callable], core_radius: float
                  ) -> None:
-        """
+        r"""
         Parameters
         ----------
         NA :
@@ -59,7 +59,7 @@ class VNumber(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the V number.
+        r"""Compute the V number.
 
         Parameters
         ----------

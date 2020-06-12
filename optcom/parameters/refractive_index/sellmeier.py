@@ -83,7 +83,7 @@ class Sellmeier(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> float: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the refractive index from the Sellmeier equations.
+        r"""Compute the refractive index from the Sellmeier equations.
 
         Parameters
         ----------

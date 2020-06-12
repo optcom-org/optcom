@@ -58,7 +58,7 @@ class ChromaticDisp(AbstractParameter):
     def __call__(self, omega: np.ndarray, order: int) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega, order=0):
-        """Compute the derivatives of the chromatic dispersion
+        r"""Compute the derivatives of the chromatic dispersion
         propagation constant.
 
         Parameters

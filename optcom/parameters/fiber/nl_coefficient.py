@@ -28,7 +28,7 @@ class NLCoefficient(AbstractParameter):
 
     def __init__(self, nl_index: Union[float, Callable],
                  eff_area: Union[float, Callable]) -> None:
-        """
+        r"""
         Parameters
         ----------
         nl_index :

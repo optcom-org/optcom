@@ -44,7 +44,7 @@ class NLIndex(AbstractParameter):
                  factor: Optional[float] = None,
                  coefficients: Optional[List[Tuple[float, float]]] = None
                  ) -> None:
-        """The non linear index.
+        r"""The non linear index.
 
         Parameters
         ----------
@@ -74,7 +74,7 @@ class NLIndex(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the non linear index.
+        r"""Compute the non linear index.
 
         Parameters
         ----------

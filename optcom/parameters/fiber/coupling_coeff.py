@@ -59,7 +59,7 @@ class CouplingCoeff(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the coupling coefficient.
+        r"""Compute the coupling coefficient.
 
         Parameters
         ----------

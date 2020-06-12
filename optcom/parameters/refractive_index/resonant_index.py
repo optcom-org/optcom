@@ -52,10 +52,10 @@ class ResonantIndex(AbstractParameter):
 
     References
     ----------
-    .. [11] Digonnet, M.J., Sadowski, R.W., Shaw, H.J. and Pantell, R.H.,
-           1997. Experimental evidence for strong UV transition
-           contribution in the resonant nonlinearity of doped fibers.
-           Journal of lightwave technology, 15(2), pp.299-303.
+    .. [11] Digonnet, M.J., Sadowski, R.W., Shaw, H.J. and Pantell,
+            R.H., 1997. Experimental evidence for strong UV transition
+            contribution in the resonant nonlinearity of doped fibers.
+            Journal of lightwave technology, 15(2), pp.299-303.
 
     """
 
@@ -107,7 +107,7 @@ class ResonantIndex(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        """Compute the resonant index.
+        r"""Compute the resonant index.
 
         Parameters
         ----------

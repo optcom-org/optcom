@@ -25,12 +25,25 @@ from optcom.parameters.abstract_parameter import AbstractParameter
 from optcom.utils.callable_container import CallableContainer
 
 
-class EnergySaturation(AbstractParameter):
+class FiberRecoveryTime(AbstractParameter):
+    r"""Compute the recovery time of a doped fiber at steday
+    state. [13]_
 
-    def __init__(self, eff_area: Union[float, np.ndarray, Callable],
+    References
+    ----------
+    .. [13] Lindberg, R., Zeil, P., Malmström, M., Laurell, F. and
+            Pasiskevicius, V., 2016. Accurate modeling of
+            high-repetition rate ultrashort pulse amplification in
+            optical fibers. Scientific reports, 6, p.34742.
+
+    """
+
+    def __init__(self, core_area: float,
                  sigma_a: Union[float, np.ndarray, Callable],
                  sigma_e: Union[float, np.ndarray, Callable],
-                 overlap: Union[float, np.ndarray, Callable]) -> None:
+                 overlap: Union[float, np.ndarray, Callable],
+                 power: Union[float, np.ndarray, Callable], tau: float
+                 ) -> None:
         r"""
         Parameters
         ----------
@@ -51,10 +64,22 @@ class EnergySaturation(AbstractParameter):
             must be angular frequency. :math:`[ps^{-1}]`
 
         """
-        self._eff_area: Union[float, np.ndarray, Callable] = eff_area
+        self._core_area: float = core_area
         self._sigma_a: Union[float, np.ndarray, Callable] = sigma_a
         self._sigma_e: Union[float, np.ndarray, Callable] = sigma_e
         self._overlap: Union[float, np.ndarray, Callable] = overlap
+        self._power: Union[float, np.ndarray, Callable] = power
+        self._tau: float = tau
+    # ==================================================================
+    @property
+    def power(self) -> Union[float, np.ndarray, Callable]:
+
+        return self._power
+    # ------------------------------------------------------------------
+    @power.setter
+    def power(self, power: Union[float, np.ndarray, Callable]) -> None:
+
+        self._power = power
     # ==================================================================
     @overload
     def __call__(self, omega: float) -> float: ...
@@ -63,7 +88,7 @@ class EnergySaturation(AbstractParameter):
     def __call__(self, omega: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, omega):
-        r"""Compute the energy saturation.
+        r"""Compute the recovery time.
 
         Parameters
         ----------
@@ -73,74 +98,74 @@ class EnergySaturation(AbstractParameter):
         Returns
         -------
         :
-            The value of the energy saturation. :math:`[J]`
+            The value of the recovery time. :math:`[\mu s]`
 
         """
-        fct = CallableContainer(EnergySaturation.calc_energy_saturation,
-                                [omega, self._eff_area, self._sigma_a,
-                                 self._sigma_e, self._overlap])
+        fct = CallableContainer(FiberRecoveryTime.calc_recovery_time,
+                                [omega, self._core_area, self._sigma_a,
+                                 self._sigma_e, self._overlap, self._power,
+                                 self._tau])
 
         return fct(omega)
     # ==================================================================
     @overload
     @staticmethod
-    def calc_energy_saturation(omega: float, eff_area: float, sigma_a: float,
-                               sigma_e: float, overlap: float) -> float: ...
+    def calc_recovery_time(omega: float, core_area: float, sigma_a: float,
+                           sigma_e: float, overlap: float, power: float,
+                           tau: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_energy_saturation(omega: np.ndarray, eff_area: np.ndarray,
-                               sigma_a: np.ndarray, sigma_e: np.ndarray,
-                               overlap: np.ndarray) -> np.ndarray: ...
+    def calc_recovery_time(omega: np.ndarray, sigma_a: np.ndarray,
+                           sigma_e: np.ndarray, overlap: np.ndarray,
+                           power: np.ndarray, tau: float
+                           ) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
-    def calc_energy_saturation(omega, eff_area, sigma_a, sigma_e, overlap):
-        r"""Calculate the energy saturation.
+    def calc_recovery_time(omega, core_area, sigma_a, sigma_e, overlap,
+                           power, tau):
+        r"""Calculate the recovery time.
 
         Parameters
         ----------
         omega :
             The angular frequency. :math:`[rad\cdot ps^{-1}]`
-        eff_area :
-            The effective area. :math:`[\mu m^2]`
+        core_area :
+            The area of the core. :math:`[\mu m^2]`
         sigma_a :
             The absorption cross sections. :math:`[nm^2]`
         sigma_e :
             The emission cross sections. :math:`[nm^2]`
         overlap :
             The overlap factors.
+        power :
+            The pump powers. :math:`[W]`
+        tau :
+            The lifetime of the metastable level. :math:`[\mu s]`
 
         Returns
         -------
         :
-            Value of the energy saturation. :math:`[J]`
+            Value of the recovery time. :math:`[\mu s]`
 
         Notes
         -----
 
-        .. math:: E_{sat} = \frac{A_{eff}h\omega_0}{2\pi\Gamma
-                  \big(\sigma_e(\lambda_0)+\sigma_a(\lambda_0)\big)}
+        .. math:: t_c = \frac{1}{\frac{2\pi\Gamma}{h \omega A_c}
+                         \Big(\sigma_a(\omega)+\sigma_e(\omega)\Big)
+                         P_p + \frac{1}{z}}
 
         """
-        eff_area *= 1e6 # um^2 -> nm^2
-        num = eff_area * cst.HBAR * omega
-        den = overlap * (sigma_a+sigma_e)
-        if (isinstance(den, float)):
-            if (den):
-                res = num / den
-            else:
-                res = math.inf
-        else:
-            res = np.divide(num, den, where=den!=0)
-            res[den==0] = np.inf
-            res *= 1e6 # nm^2 kg ps^{-2} -> m^2 kg s^{-2} = J
+        factor = (2*cst.PI*overlap) / (cst.H * omega)
+        first_term = factor * (sigma_a + sigma_e) * power
+        first_term *= 1e-18 # ps^2 m^2 um^{-2} s^{-3} -> us^{-1}
+        second_term = 1.0 / tau
 
-        return res
-
+        return 1.0 / (first_term + second_term)
 
 
 if __name__ == "__main__":
-    """Plot energy saturation as a function of the wavelength.
+    """Plot recovery time as a function of the wavelength.
     This piece of code is standalone, i.e. can be used in a separate
     file as an example.
     """
@@ -153,10 +178,13 @@ if __name__ == "__main__":
 
     medium: str = "sio2"
     dopant: str = "yb"
-    A_doped: float = 2*oc.PI*25.0
+    A_doped: float = 2*oc.PI*25.0   # um^2
+    A_core: float = A_doped         # um^2
+    P_pump: float = 0.001 # W
+    tau: float = 840.0  # us
     # With float
     omega: float = oc.lambda_to_omega(1000)
-    core_radius: float = 5.0
+    core_radius: float = 5.0    # um
     n_core: oc.Sellmeier = oc.Sellmeier(medium)
     n_clad: float = 1.44
     NA_inst: oc.NumericalAperture = oc.NumericalAperture(n_core, n_clad)
@@ -165,27 +193,28 @@ if __name__ == "__main__":
     of_inst: oc.OverlapFactor = oc.OverlapFactor(A_eff_inst, A_doped)
     sigma_a_inst: oc.AbsorptionSection = oc.AbsorptionSection(dopant=dopant,
                                                               medium=medium)
-    T: float = 293.1
+    T: float = 293.1   # K
     sigma_e_inst: oc.EmissionSection = oc.EmissionSection(dopant=dopant,
                                                           medium=medium, T=T,
                                                           sigma_a=sigma_a_inst)
-    en_sat: oc.EnergySaturation = oc.EnergySaturation(A_eff_inst, sigma_a_inst,
-                                                      sigma_e_inst, of_inst)
-    print(en_sat(omega))
+    recov_t: oc.FiberRecoveryTime = oc.FiberRecoveryTime(A_core, sigma_a_inst,
+                                                         sigma_e_inst, of_inst,
+                                                         P_pump, tau)
+    print(recov_t(omega))
     A_eff: float = A_eff_inst(omega)
     sigma_a: float = sigma_a_inst(omega)
     sigma_e: float = sigma_e_inst(omega)
     of: float = of_inst(omega)
-    print(oc.EnergySaturation.calc_energy_saturation(omega, A_eff, sigma_a,
-                                                    sigma_e, of))
+    print(oc.FiberRecoveryTime.calc_recovery_time(omega, A_core, sigma_a,
+                                                  sigma_e, of, P_pump, tau))
     # With np.ndarray
     lambdas: np.ndarray = np.linspace(900, 1050, 1000)
     omegas: np.ndarray = oc.lambda_to_omega(lambdas)
-    ens_sat: np.ndarray = en_sat(omegas)
-    plot_titles: List[str] = ["Energy saturation as a function of the "
+    ens_sat: np.ndarray = recov_t(omegas)
+    plot_titles: List[str] = ["Recovery time as a function of the "
                               "wavelenght for Ytterbium doped fiber."]
 
     oc.plot2d([lambdas], [ens_sat], x_labels=['Lambda'],
-              y_labels=[r'Energy saturation, $\,E_{sat}\,(J)$'],
+              y_labels=[r'Recovery time, $\,t_c\,(\mu s)$'],
               split=True, line_colors=['red'], plot_titles=plot_titles,
               line_styles=['-.'], opacity=[0.0])

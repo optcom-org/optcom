@@ -66,7 +66,7 @@ class RamanResponse(AbstractParameter):
     def __call__(self, time: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     def __call__(self, time):
-        """Compute the Raman response function.
+        r"""Compute the Raman response function.
 
         Parameters
         ----------
