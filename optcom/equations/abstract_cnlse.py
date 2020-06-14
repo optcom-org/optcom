@@ -230,6 +230,7 @@ class AbstractCNLSE(AbstractFieldEquation):
     # ==================================================================
     def get_kappa_for_noise(self):
         # temp harcoding for noise manangement
+        # + will fail if COUP is False
         return self._coup_coeff[0]  # sym assumption, both are equal anyway
     # ==================================================================
     def close(self, domain: Domain, *fields: List[Field]) -> None:

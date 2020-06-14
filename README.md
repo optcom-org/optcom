@@ -129,6 +129,8 @@ make clean && make html
   * 0.2.1 : Bug fix of v0.2.0
   * 0.2.2 : Clear user interface
 * 0.3.0 : Change of License + all OS support
+  * 0.3.1 : New parameters + additional doc
+
 
 ## Hosting
 
