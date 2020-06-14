@@ -61,6 +61,12 @@ class IdTracker(object):
         self._field_ids: List[int] = []    # Contain index of last field per eq
     # ==================================================================
     @property
+    def nbr_eqs(self) -> int:
+        """Return the total number of equations."""
+
+        return self._nbr_eqs
+    # ==================================================================
+    @property
     def nbr_waves(self) -> int:
         """Return the total number of waves."""
 

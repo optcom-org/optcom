@@ -473,7 +473,6 @@ class FieldStepper(object):
             noise_solver = noise_solvers[id]
             if (noise_solver is not None):
                 noises = noise_solver(noises, z, h)
-                #noises = eq.calc_noise(noises, z, h)
             if (call_eq_update_method[id]
                     and isinstance(eq, AbstractFieldEquation)):
                 eq.update(waves, noises, z, h)

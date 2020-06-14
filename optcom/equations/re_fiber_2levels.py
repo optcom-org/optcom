@@ -180,7 +180,15 @@ class REFiber2Levels(AbstractREFiber):
         self._pop: np.ndarray = np.array([])
         self._noises_back_up: np.ndarray = np.array([])
     # ==================================================================
-    def __call__(self, waves: np.ndarray, z: float, h: float) -> np.ndarray:
+    @overload
+    def __call__(self, waves: np.ndarray, z: float, h: float
+                 )-> np.ndarray: ...
+    # ------------------------------------------------------------------
+    @overload
+    def __call__(self, waves: np.ndarray, z: float, h: float, ind: int
+                 ) -> np.ndarray: ...
+    # ------------------------------------------------------------------
+    def __call__(self, *args):
         r"""Calculate the upper level population density.
 
         Parameters
@@ -216,43 +224,48 @@ class REFiber2Levels(AbstractREFiber):
             P_{p,l}^{\pm}(z)\bigg] + \gamma_{10}}
 
         """
-        packet_s = []
-        packet_p = []
-        fst_ind = 0
-        while (len(waves) > fst_ind):   # add counterprop waves
-            packet_s.append(np.vstack((
-                self.id_tracker.waves_in_eq_id(waves[fst_ind:], 0),
-                self.id_tracker.waves_in_eq_id(waves[fst_ind:], 1))))
-            packet_p.append(np.vstack((
-                self.id_tracker.waves_in_eq_id(waves[fst_ind:], 2),
-                self.id_tracker.waves_in_eq_id(waves[fst_ind:], 3))))
-            fst_ind += len(packet_s[-1]) + len(packet_p[-1])
-        # Emission and absorption of the seed and pump
-        num = 0.0
-        den = 0.0
-        for waves_s in packet_s:
-            for i in range(len(waves_s)):
-                num += self._absorption_s.term(waves_s, i)
-                den += self._emission_s.term(waves_s, i)
-        for waves_p in packet_p:
-            for i in range(len(waves_p)):
-                num += self._absorption_p.term(waves_p, i)
-                den += self._emission_p.term(waves_p, i)
-        # Amplified spontaneous emission
-        if (self._NOISE):
-            num += np.real(np.sum(self._absorption_n.op(np.array([]), 0)
-                                  * self._back_up_noise))
-            den += np.real(np.sum(self._emission_n.op(np.array([]), 0)
-                                  * self._back_up_noise))
-        # Bringing all together
-        den += num
-        den += self._relaxation.term(waves, 0)
-        N_1 = (num / den) * self._N_T
-        if (N_1 < 0): # If pump power not enough to trigger inversion of pop.
-            N_1 = 0.0
-        self._pop[-1] = np.array([self._N_T - N_1, N_1])
+        if (len(args) == 3):
+            waves, z, h = args
+            packet_s = []
+            packet_p = []
+            fst_ind = 0
+            while (len(waves) > fst_ind):   # add counterprop waves
+                packet_s.append(np.vstack((
+                    self.id_tracker.waves_in_eq_id(waves[fst_ind:], 0),
+                    self.id_tracker.waves_in_eq_id(waves[fst_ind:], 1))))
+                packet_p.append(np.vstack((
+                    self.id_tracker.waves_in_eq_id(waves[fst_ind:], 2),
+                    self.id_tracker.waves_in_eq_id(waves[fst_ind:], 3))))
+                fst_ind += len(packet_s[-1]) + len(packet_p[-1])
+            # Emission and absorption of the seed and pump
+            num = 0.0
+            den = 0.0
+            for waves_s in packet_s:
+                for i in range(len(waves_s)):
+                    num += self._absorption_s.term(waves_s, i)
+                    den += self._emission_s.term(waves_s, i)
+            for waves_p in packet_p:
+                for i in range(len(waves_p)):
+                    num += self._absorption_p.term(waves_p, i)
+                    den += self._emission_p.term(waves_p, i)
+            # Amplified spontaneous emission
+            if (self._NOISE):
+                num += np.real(np.sum(self._absorption_n.op(np.array([]), 0)
+                                      * self._back_up_noise))
+                den += np.real(np.sum(self._emission_n.op(np.array([]), 0)
+                                      * self._back_up_noise))
+            # Bringing all together
+            den += num
+            den += self._relaxation.term(waves, 0)
+            N_1 = (num / den) * self._N_T
+            if (N_1 < 0): # If pump power not enough to trigger inversion of pop.
+                N_1 = 0.0
+            self._pop[-1] = np.array([self._N_T - N_1, N_1])
 
-        return waves
+            return waves
+        else: # Can implemented time dependent equations here (len(args) == 4)
+
+            raise NotImplementedError()
     # ==================================================================
     def set(self, waves: np.ndarray, noises: np.ndarray, z: float, h: float
             ) -> None:

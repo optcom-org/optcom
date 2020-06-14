@@ -70,13 +70,18 @@ class Coupling(AbstractEffect):
         # The coupling coefficient -------------------------------------
         self._op: np.ndarray = np.array([])
         self._kappa_op: np.ndarray = np.array([])
-        self._kappa: Union[np.ndarray, Callable]
+        self._kappa: Callable
         if (callable(kappa)):
             self._kappa = kappa
         else:
             kappa_ = np.asarray(util.make_list(kappa))
             self._kappa = lambda omega: util.hstack_like(kappa_, omega)
             self._order_taylor = len(kappa_) - 1
+    # ==================================================================
+    @property
+    def kappa(self) -> Callable:
+
+        return self._kappa            
     # ==================================================================
     @property
     def order_taylor(self) -> int:

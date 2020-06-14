@@ -127,7 +127,7 @@ class AbstractAmpNLSE(AbstractFieldEquation):
         self._gain_coeff: List[DopedFiberGain] = []
         self._absorp_coeff: List[DopedFiberGain] = []
         k: int = 0  # counter
-        for i in range(4):
+        for i in range(self._nbr_eqs):
             k = i//2
             self._gain_coeff.append(DopedFiberGain(self._sigma_e[k],
                                                    self._overlap[k], 0.))
@@ -135,7 +135,7 @@ class AbstractAmpNLSE(AbstractFieldEquation):
                                                      self._overlap[k], 0.))
         self._gains: List[Gain] = []
         self._absorps: List[Attenuation] = []
-        for i in range(4):
+        for i in range(self._nbr_eqs):
             k = i//2
             self._gains.append(Gain(self._gain_coeff[i], gain_order,
                                     start_taylor=start_taylor_gain,
@@ -152,7 +152,7 @@ class AbstractAmpNLSE(AbstractFieldEquation):
             self._sat_gains = []
             start_taylor_gain = 1
             en_sat_: Union[float, Callable]
-            for i in range(4):
+            for i in range(self._nbr_eqs):
                 k = i//2
                 crt_en_sat = en_sat[k]
                 if (crt_en_sat is None):

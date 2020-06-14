@@ -99,7 +99,8 @@ class ODESolver(AbstractSolver):
 
         """
         k_0 = np.zeros_like(vectors)
-        k_0 = h * f(vectors, z, h)
+        for i in range(len(vectors)):
+            k_0[i] = h * f(vectors, z, h, i)
 
         return vectors + k_0
     # ==================================================================
@@ -176,9 +177,11 @@ class ODESolver(AbstractSolver):
         h_h = 0.5 * h
         k_0 = np.zeros_like(vectors)
         k_1 = np.zeros_like(vectors)
-        k_0 = h * f(vectors, z, 0.0)
+        for i in range(len(vectors)):
+            k_0[i] = h * f(vectors, z, 0.0, i)
         vectors_ = vectors + (0.5*k_0)
-        k_1 = h * f(vectors_, z+h_h, h_h)
+        for i in range(len(vectors)):
+            k_1[i] = h * f(vectors_, z+h_h, h_h, i)
 
         return vectors + k_1
     # ==================================================================
@@ -229,11 +232,14 @@ class ODESolver(AbstractSolver):
         k_0 = np.zeros_like(vectors)
         k_1 = np.zeros_like(vectors)
         k_2 = np.zeros_like(vectors)
-        k_0 = h * f(vectors, z, 0.0)
+        for i in range(len(vectors)):
+            k_0[i] = h * f(vectors, z, 0.0, i)
         vectors_ = vectors + (0.5*k_0)
-        k_1 = h * f(vectors_, z+h_h, h_h)
+        for i in range(len(vectors)):
+            k_1[i] = h * f(vectors_, z+h_h, h_h, i)
         vectors_ = vectors - k_0 + 2*k_1
-        k_2 = h * f(vectors_, z+h, h)
+        for i in range(len(vectors)):
+            k_2[i] = h * f(vectors_, z+h, h, i)
 
         return vectors + ((1/6)*k_0) + ((2/3)*k_1) + ((1/6)*k_2)
     # ==================================================================
@@ -289,13 +295,17 @@ class ODESolver(AbstractSolver):
         k_1 = np.zeros_like(vectors)
         k_2 = np.zeros_like(vectors)
         k_3 = np.zeros_like(vectors)
-        k_0 = h * f(vectors, z, 0.0)
+        for i in range(len(vectors)):
+            k_0[i] = h * f(vectors, z, 0.0, i)
         vectors_ = vectors + (0.5*k_0)
-        k_1 = h * f(vectors_, z+h_h, h_h)
+        for i in range(len(vectors)):
+            k_1[i] = h * f(vectors_, z+h_h, h_h, i)
         vectors_ = vectors + (0.5*k_1)
-        k_2 = h * f(vectors_, z+h_h, h_h)
+        for i in range(len(vectors)):
+            k_2[i] = h * f(vectors_, z+h_h, h_h, i)
         vectors_ = vectors + k_2
-        k_3 = h * f(vectors_, z+h, h)
+        for i in range(len(vectors)):
+            k_3[i] = h * f(vectors_, z+h, h, i)
 
         return vectors + ((1/6)*k_0) + ((1/3)*k_1) + ((1/3)*k_2) + ((1/6)*k_3)
 
@@ -358,7 +368,7 @@ if __name__ == "__main__":
                                nl_approx=False, SPM=False, SS=False, RS=False,
                                XPM=False, ASYM=True, COUP=True, approx_type=1,
                                nlse_method='ssfm_super_sym', steps=steps,
-                               ode_method=method, save=True, wait=False)
+                               ode_method=method, save=True, wait=False, NOISE=True)
         lt.add_link(pulse[0], coupler[0])
         lt.run(pulse)
         lt.reset()

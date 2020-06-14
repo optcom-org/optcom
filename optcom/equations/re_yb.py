@@ -14,7 +14,7 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, overload, Union
 
 import numpy as np
 
@@ -163,8 +163,15 @@ class RE2Levels(AbstractEquation):
             else:
                 self._absorption = lambda vec_t: np.ones_like(vec_t) * W_A01
     # ==================================================================
-    def __call__(self, pop: np.ndarray, t: float, h: float) -> np.ndarray:
-
+    @overload
+    def __call__(self, vectors: np.ndarray, z: float, h: float
+                 )-> np.ndarray: ...
+    # ------------------------------------------------------------------
+    @overload
+    def __call__(self, vectors: np.ndarray, z: float, h: float, ind: int
+                 ) -> np.ndarray: ...
+    # ------------------------------------------------------------------
+    def __call__(self, *args):
         pop_ = np.zeros_like(pop)
         pop_[0] = ((self._gamma(t)*pop[1]) - self._pump(t)
                    + (self._emission(t)*pop[1]) - (self._absorption(t)*pop[0]))

@@ -383,6 +383,8 @@ class FiberCoupler(AbstractPassComp):
         # Policy -------------------------------------------------------
         self.add_port_policy(([0, 1], [2, 3], True))
         self.add_wait_policy([0, 1], [2, 3])
+        # temp
+        self._get_kappa_for_noise = cnlse.get_kappa_for_noise
     # ==================================================================
     def output_ports(self, input_ports: List[int]) -> List[int]:
         # 1 input ------------------------------------------------------
@@ -420,14 +422,38 @@ class FiberCoupler(AbstractPassComp):
                 else:
                     fields_port_1.append(fields[i])
         output_fields = self._stepper(domain, fields_port_0, fields_port_1)
-        # Noise management - splitting assumption
-        #if (self._NOISE):
-        #    noise = np.zeros(domain.noise_samples)
-        #    for i in range(len(ports)):
-        #        noise += fields[i].noise
-        #    noise /= len(ports)
-        #    for i in range(len(ports)):
-        #        fields[i].noise = noise
+        # Noise management
+        if (self._NOISE):
+            # 1. splitting assumption
+            #noise = np.zeros(domain.noise_samples)
+            #for i in range(len(ports)):
+            #    noise += fields[i].noise
+            #noise /= len(ports)
+            #for i in range(len(ports)):
+            #    fields[i].noise = noise
+            # 2. Anal sol, only bi-fiber coupler config supported for now
+            # and make assumptions of a symmetric coupler
+            # k_{12} = k_{21}.  See Agrawal applications top page 61 for
+            # analytical solution
+            length = self._stepper._length
+            kappa = self._get_kappa_for_noise()
+            factor = np.power(np.cos(kappa*length), 2)
+            factor_ = np.power(np.sin(kappa*length), 2)
+            accu_noise_port_0 = np.zeros(domain.noise_samples)
+            accu_noise_port_1 = np.zeros(domain.noise_samples)
+            # Solution of for ecah considered alone
+            for i, field in enumerate(fields_port_0):   # len == 2
+                accu_noise_port_0 += factor_ * field.noise
+                field.noise *= factor
+            for i, field in enumerate(fields_port_1):   # len == 2
+                accu_noise_port_1 += factor_ * field.noise
+                field.noise *= factor
+            # Redistributing the noise that switched in the other fiber
+            for field in fields_port_0:
+                field.noise += accu_noise_port_1 / len(fields_port_0)
+            for field in fields_port_1:
+                field.noise += accu_noise_port_0 / len(fields_port_1)
+
         # Get storage
         if (self._stepper.save_all):
             self.storages.append(self._stepper.storage)
@@ -448,13 +474,17 @@ if __name__ == "__main__":
 
     import optcom as oc
 
-    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=20.0, samples_per_bit=1024))
+    noise_samples: int = 100
+    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=20.0, samples_per_bit=1024,
+                                        noise_samples=noise_samples))
 
     Lambda: float = 1030.0
     pulse_1: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[38.5, 0.5],
-                                       fwhm=[1.], center_lambda=[Lambda])
+                                       fwhm=[1.], center_lambda=[Lambda],
+                                       noise=np.ones(noise_samples)*12)
     pulse_2: oc.Gaussian = oc.Gaussian(channels=1, peak_power=[23.5, 0.3],
-                                       fwhm=[1.], center_lambda=[1050.0])
+                                       fwhm=[1.], center_lambda=[1050.0],
+                                       noise=np.ones(noise_samples)*5)
 
     steps: int = int(100)
     alpha: List[Union[List[float], Callable, None]] = [[0.046], [0.046]]
@@ -513,17 +543,27 @@ if __name__ == "__main__":
     y_datas: List[np.ndarray] = [oc.temporal_power(pulse_1[0][0].channels),
                                  oc.temporal_power(pulse_2[0][0].channels),
                                  oc.temporal_power(coupler[2][0].channels),
-                                 oc.temporal_power(coupler[3][0].channels)]
+                                 oc.temporal_power(coupler[3][0].channels),
+                                 pulse_1[0][0].noise, coupler[2][0].noise,
+                                 pulse_2[0][0].noise, coupler[3][0].noise]
     x_datas: List[np.ndarray] = [pulse_1[0][0].time, pulse_2[0][0].time,
-                                 coupler[2][0].time, coupler[3][0].time]
-    plot_groups: List[int] = [0, 1, 2, 3]
-    plot_titles: List[str] = ["Original pulse", "Original pulse bis",
+                                 coupler[2][0].time, coupler[3][0].time,
+                                 pulse_1[0][0].domain.noise_omega,
+                                 coupler[2][0].domain.noise_omega,
+                                 pulse_2[0][0].domain.noise_omega,
+                                 coupler[3][0].domain.noise_omega]
+    plot_groups: List[int] = [0, 1, 2, 3, 4, 4, 5, 5]
+    plot_titles: List[str] = ["Original pulse", "Original pulse",
                               "Pulse coming out of the "
                               "coupler with Lk = {}"
                               .format(str(round(length*kappa_,2)))]
     plot_titles.append(plot_titles[-1])
 
-    line_labels: List[Optional[str]] = ["port 0", "port 1", "port 2", "port 3"]
+    line_labels: List[Optional[str]] = ["port 0", "port 1", "port 2", "port 3",
+                                        "init noise port 0",
+                                        "final noise port 2",
+                                        "init noise port 1",
+                                        "final noise port 3"]
 
     oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
               plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],

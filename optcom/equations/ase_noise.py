@@ -14,15 +14,15 @@
 
 """.. moduleauthor:: Sacha Medaer"""
 
-from typing import Callable, Optional
+from typing import Callable, Optional, overload
 
 import numpy as np
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
+from optcom.field import Field
 from optcom.equations.abstract_equation import AbstractEquation
 from optcom.parameters.fiber.doped_fiber_gain import DopedFiberGain
-from optcom.field import Field
 
 
 class ASENoise(AbstractEquation):
@@ -65,12 +65,25 @@ class ASENoise(AbstractEquation):
         self._gain_coeff: DopedFiberGain = gain_coeff
         self._absorp_coeff: DopedFiberGain = absorp_coeff
     # ==================================================================
-    def __call__(self, noises: np.ndarray, z: float, h: float):
-        arg = np.zeros_like(self._noise_omega)
-        gain_ase = np.zeros_like(self._noise_omega)
-        absorp_ase = np.zeros_like(self._noise_omega)
-        gain_ase = self._gain_coeff(self._noise_omega)
-        absorp_ase = self._absorp_coeff(self._noise_omega)
-        arg = gain_ase - absorp_ase
+    @overload
+    def __call__(self, noises: np.ndarray, z: float, h: float
+                 )-> np.ndarray: ...
+    # ------------------------------------------------------------------
+    @overload
+    def __call__(self, noises: np.ndarray, z: float, h: float, ind: int
+                 ) -> np.ndarray: ...
+    # ------------------------------------------------------------------
+    def __call__(self, *args):
+        if (len(args) == 4):
+            noises, z, h, ind = args
+            arg = np.zeros_like(self._noise_omega)
+            gain_ase = np.zeros_like(self._noise_omega)
+            absorp_ase = np.zeros_like(self._noise_omega)
+            gain_ase = self._gain_coeff(self._noise_omega)
+            absorp_ase = self._absorp_coeff(self._noise_omega)
+            arg = gain_ase - absorp_ase
 
-        return (noises*arg) + (self._se_power*gain_ase)
+            return (noises[ind]*arg) + (self._se_power*gain_ase)
+        else:
+
+            raise NotImplementedError()

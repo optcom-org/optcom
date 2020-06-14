@@ -15,7 +15,7 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import copy
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, overload, Union
 
 import numpy as np
 
@@ -140,11 +140,11 @@ class AbstractCNLSE(AbstractFieldEquation):
                          INTER_PORT_DELAY=INTER_PORT_DELAY)
         kerr_effects_ = util.make_list(kerr_effects, nbr_fibers)
         raman_effects_ = util.make_list(raman_effects, nbr_fibers)
-        self._asym: List[List[AbstractEffect]] =\
+        self._asym: List[List[Asymmetry]] =\
             [[] for i in range(nbr_fibers)]
-        self._coup: List[List[AbstractEffect]] =\
+        self._coup: List[List[Coupling]] =\
             [[] for i in range(nbr_fibers)]
-        self._raman: List[List[AbstractEffect]] =\
+        self._raman: List[List[Union[Raman, RamanApprox]]] =\
             [[] for i in range(nbr_fibers)]
         kappa_: List[List[Union[List[float], Callable]]] =\
             [[[] for i in range(nbr_fibers)] for i in range(nbr_fibers)]
@@ -197,12 +197,24 @@ class AbstractCNLSE(AbstractFieldEquation):
                         self._coup[i].append(Coupling(kappa_[i][j]))
                         self._add_ind_effect(self._coup[i][-1], i, j)
     # ==================================================================
-    def __call__(self, waves: np.ndarray, z: float, h: float) -> np.ndarray:
-        res = np.zeros_like(waves, dtype=cst.NPFT)
-        for i in range(len(waves)):
-            res[i] = self.term_ind(waves, i, z)
+    @overload
+    def __call__(self, waves: np.ndarray, z: float, h: float
+                 )-> np.ndarray: ...
+    # ------------------------------------------------------------------
+    @overload
+    def __call__(self, waves: np.ndarray, z: float, h: float, ind: int
+                 ) -> np.ndarray: ...
+    # ------------------------------------------------------------------
+    def __call__(self, *args):
+        if (len(args) == 4):
+            waves, z, h, ind = args
+            res = np.zeros_like(waves[ind], dtype=cst.NPFT)
+            res = self.term_ind(waves, ind, z)
 
-        return res
+            return res
+        else:
+
+            raise NotImplementedError()
     # ==================================================================
     def open(self, domain: Domain, *fields: List[Field]) -> None:
         super().open(domain, *fields)
@@ -215,6 +227,20 @@ class AbstractCNLSE(AbstractFieldEquation):
         for i in range(len(self._raman)):
             for raman in self._raman[i]:
                 raman.set()
+    # ==================================================================
+    def get_kappa_for_noise(self):
+        # temp harcoding for noise manangement
+        return self._coup_coeff[0]  # sym assumption, both are equal anyway
+    # ==================================================================
+    def close(self, domain: Domain, *fields: List[Field]) -> None:
+        # tem hardcoding -> must change
+        self._coup_coeff: List[Callable] = [] # len == 2
+        if (self._nbr_eqs == 2):    # hardcoding for 2 -> need to generalize
+            for i in range(len(self._coup)): # len == 2
+                for coup in self._coup[i]:  # len == 1
+                    self._coup_coeff.append(coup.kappa(self._noise_omega)[0])
+        # Call to part
+        super().close(domain, *fields)
     # ==================================================================
     @sync_waves_decorator
     def op_non_lin(self, waves: np.ndarray, id: int,

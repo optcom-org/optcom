@@ -268,6 +268,6 @@ class AbstractNLSE(AbstractFieldEquation):
         # Noise --------------------------------------------------------
         if (self._att is not None):
             att_coeff: np.ndarray = self._att.coeff(self._noise_omega, 0)
-            noise_fct = lambda noise, z, h: (-1*noise*att_coeff)
+            noise_fct = lambda noises, z, h, ind: (-1*noises[ind]*att_coeff)
             for i in range(self._nbr_eqs):
                 self._add_noise_effect(noise_fct, i)

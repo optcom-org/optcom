@@ -15,7 +15,7 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 from abc import ABCMeta
-from typing import List, Optional, Tuple
+from typing import List, Optional, overload, Tuple
 
 import numpy as np
 
@@ -29,5 +29,27 @@ class AbstractEquation(metaclass=ABCMeta):
 
         return None
     # ==================================================================
+    @overload
     def __call__(self, vectors: np.ndarray, z: float, h: float
+                 )-> np.ndarray: ...
+    # ------------------------------------------------------------------
+    @overload
+    def __call__(self, vectors: np.ndarray, z: float, h: float, ind: int
                  ) -> np.ndarray: ...
+    # ------------------------------------------------------------------
+    def __call__(self, *args):
+        """
+        Parameters
+        ----------
+        vectors :
+            The value of the unknowns at the current step.
+        z :
+            The current value of the variable.
+        h :
+            The step size.
+        ind :
+            The index of the considered vector.
+
+        """
+
+        raise NotImplementedError()

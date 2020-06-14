@@ -24,7 +24,11 @@ import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 
 # Typing variables
-SOLVER_CALLABLE_TYPE = Callable[[np.ndarray, float, float], np.ndarray]
+#SOLVER_CALLABLE_TYPE = \
+#    Union[Callable[[np.ndarray, float, float], np.ndarray],
+#          Callable[[np.ndarray, float, float, int], np.ndarray]]
+
+SOLVER_CALLABLE_TYPE = Callable
 METHOD_SOLVER_CALLABLE_TYPE = Callable[[SOLVER_CALLABLE_TYPE, np.ndarray,
                                         float, float], np.ndarray]
 

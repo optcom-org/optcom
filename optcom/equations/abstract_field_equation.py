@@ -16,7 +16,8 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Callable, List, Optional, overload, Tuple, TYPE_CHECKING,\
+                   Union
 
 import numpy as np
 
@@ -520,19 +521,40 @@ class AbstractFieldEquation(AbstractEquation):
 
         return None
     # ==================================================================
+    @overload
     def calc_noise(self, noises: np.ndarray, z: float, h: float
-                   ) -> np.ndarray:
+                 )-> np.ndarray: ...
+    # ------------------------------------------------------------------
+    @overload
+    def calc_noise(self, noises: np.ndarray, z: float, h: float, ind: int
+                 ) -> np.ndarray: ...
+    # ------------------------------------------------------------------
+    def calc_noise(self, *args):
         """Compute noise."""
-        if (self._NOISE):
+        if (len(args) == 4):
+            noises, z, h, ind = args
+            if (self._NOISE):
+                noises_ = np.zeros_like(noises[ind])
+                eq_id = self.id_tracker.eq_id_of_field_id(ind)
+                noises_ = self._noise_func_per_field[eq_id](noises, z, h, ind)
+
+                return noises_
+            else:
+
+                return noises[ind]
+        elif (len(args) == 3):
+            # For now, dummy identity function for equations that do not
+            # implement any noise, might want to find another solution
+            noises, z, h = args
             noises_ = np.zeros_like(noises)
-            nbr_noises = self.id_tracker.nbr_fields
-            for i in range(nbr_noises):
+            for i in range(len(noises)):
                 eq_id = self.id_tracker.eq_id_of_field_id(i)
-                noises_[i] = self._noise_func_per_field[eq_id](noises[i], z, h)
+                noises_[i] = self._noise_func_per_field[eq_id](noises, z, h, i)
 
             return noises_
+        else:
 
-        return noises
+            raise NotImplementedError()
     # ==================================================================
     def _initiate_noise_managament(self) -> None:
         """Initiate noise manangement. Link each noise array to the
@@ -557,7 +579,8 @@ class AbstractFieldEquation(AbstractEquation):
                 crt_ops = ['+' for _ in range(len(crt_noise_effects)-1)]
                 noise_fct = CallableLittExpr(effects_to_add, crt_ops)
             else:
-                noise_fct = CallableLittExpr([lambda identity, z, h: identity])
+                noise_fct = CallableLittExpr([lambda noises, z, h, ind:
+                                              noises[ind]])
             self._noise_func_per_field.append(noise_fct)
     # ==================================================================
     def clear(self) -> None:

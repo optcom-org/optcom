@@ -54,11 +54,16 @@ class Asymmetry(AbstractEffect):
         super().__init__()
         # The asymmetry coefficient ------------------------------------
         self._delta_op: np.ndarray = np.array([])
-        self._delta: Union[np.ndarray, Callable]
+        self._delta: Callable
         if (callable(delta)):
             self._delta = delta
         else:
             self._delta = lambda omega: np.ones_like(omega) * delta
+    # ==================================================================
+    @property
+    def delta(self) -> Callable:
+
+        return self._delta
     # ==================================================================
     def set(self, center_omega: np.ndarray = np.array([]),
             abs_omega: np.ndarray = np.array([])) -> None:
