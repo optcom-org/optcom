@@ -80,13 +80,13 @@ class CouplingCoeff(AbstractParameter):
     # ==================================================================
     @overload
     @staticmethod
-    def calc_kappa(omega: float, v_nbr: float, a: float, d: float, ref_index: float
-                   ) -> float: ...
+    def calc_kappa(omega: float, v_nbr: float, a: float, d: float,
+                   ref_index: float) -> float: ...
     # ------------------------------------------------------------------
     @overload
     @staticmethod
-    def calc_kappa(omega: np.ndarray, v_nbr: float, a: float, d: float,
-                   ref_index: float) -> np.ndarray: ...
+    def calc_kappa(omega: np.ndarray, v_nbr: np.ndarray, a: float, d: float,
+                   ref_index: np.ndarray) -> np.ndarray: ...
     # ------------------------------------------------------------------
     @staticmethod
     def calc_kappa(omega, v_nbr, a, d, ref_index):
@@ -141,10 +141,10 @@ class CouplingCoeff(AbstractParameter):
         c_1 = -0.7769 + 1.2252*v_nbr - 0.0152*v_nbr**2
         c_2 = -0.0175 - 0.0064*v_nbr - 0.0009*v_nbr**2
         # Check validity of formula paramater --------------------------
-        if (v_nbr < 1.5 or v_nbr > 2.5):
+        if (np.mean(v_nbr) < 1.5 or np.mean(v_nbr) > 2.5):
             util.warning_terminal("Value of the fiber parameter is V = {}, "
                 "kappa fitting formula is valid only for : 1.5 <= V <= 2.5, "
-                "might lead to unrealistic results.".format(v_nbr))
+                "might lead to unrealistic results.".format(np.mean(v_nbr)))
         if (norm_d < 2.0 or norm_d > 4.5):
             util.warning_terminal("Value of the normalized spacing is d = {}, "
                 "kappa fitting formula is valid only for : 2.0 <= d <= 4.5, "
