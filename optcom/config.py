@@ -142,3 +142,17 @@ def set_field_op_matching_rep_freq(flag: bool):
 def get_field_op_matching_rep_freq() -> bool:
 
     return FIELD_OP_MATCHING_REP_FREQ
+
+
+MULTIPROCESSING: bool = True
+def set_multiprocessing(flag: bool):
+    if (isinstance(flag, bool)):
+        global MULTIPROCESSING
+        MULTIPROCESSING = flag
+    else:
+
+        raise TypeError('set_multiprocessing argument must be a bool.')
+
+def get_multiprocessing() -> bool:
+
+    return MULTIPROCESSING

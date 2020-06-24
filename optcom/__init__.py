@@ -136,7 +136,8 @@ from optcom.config import set_log_filename, get_log_filename,\
                           set_field_op_matching_omega,\
                           get_field_op_matching_omega,\
                           set_field_op_matching_rep_freq,\
-                          get_field_op_matching_rep_freq
+                          get_field_op_matching_rep_freq,\
+                          set_multiprocessing, get_multiprocessing
 
 mod_config = ['set_separator_terminal', 'get_separator_terminal',
               'set_rk4ip_opti_gnlse', 'get_rk4ip_opti_gnlse',
@@ -145,7 +146,8 @@ mod_config = ['set_separator_terminal', 'get_separator_terminal',
               'set_max_nbr_pass', 'get_max_nbr_pass',
               'set_field_op_matching_omega', 'get_field_op_matching_omega',
               'set_field_op_matching_rep_freq',
-              'get_field_op_matching_rep_freq']
+              'get_field_op_matching_rep_freq',
+              'set_multiprocessing', 'get_multiprocessing']
 
 
 __all__ = (mod_comps + mod_root + mod_utils + mod_plot

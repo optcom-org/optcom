@@ -20,6 +20,7 @@ from typing import Callable, List, Optional, overload, Union
 
 import numpy as np
 
+import optcom.config as cfg
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
 from optcom.effects.abstract_effect import AbstractEffect
@@ -139,12 +140,10 @@ class AbstractEffectTaylor(AbstractEffect):
     # ==================================================================
     def set(self, center_omega: np.ndarray = np.array([]),
             abs_omega: np.ndarray = np.array([])) -> None:
-
         if (self._UNI_OMEGA):
             self._coeff_op = np.zeros((len(center_omega), self._order_taylor))
             self._op = np.zeros((len(center_omega), len(self._omega)),
                                 dtype=complex)
-            #print('orrrrrrrrrrrrrr', center_omega, self._order_taylor)
             self._coeff_op = self._coeff(center_omega, self._order_taylor).T
             for i in range(len(center_omega)):
                 self._op[i] = Taylor.series(self._coeff_op[i], self._omega,
@@ -155,24 +154,24 @@ class AbstractEffectTaylor(AbstractEffect):
                      abs_omega.shape[1])
             self._op = np.zeros(abs_omega.shape, dtype=complex)
             self._coeff_op = np.zeros(shape)
-            args = [(abs_omega[i], self._order_taylor)
-                    for i in range(len(center_omega))]
-            pool = mp.Pool(processes=mp.cpu_count())  # use all available cores
-            res_pool = pool.starmap(self._coeff, args)
-            pool.close()
-            for i in range(len(center_omega)):
-                self._coeff_op[i] = res_pool[i]
-                self._op[i] = Taylor.series(self._coeff_op[i],
-                                            self._omega, self._start_taylor,
-                                            skip=self._skip_taylor)
-            '''
-            for i in range(len(center_omega)):
-                self._coeff_op[i] = self._coeff(abs_omega[i],
-                                                self._order_taylor)
-                self._op[i] = Taylor.series(self._coeff_op[i],
-                                            self._omega, self._start_taylor,
-                                            skip=self._skip_taylor)
-            '''
+            if (cfg.MULTIPROCESSING):
+                args = [(abs_omega[i], self._order_taylor)
+                        for i in range(len(center_omega))]
+                pool = mp.Pool(processes=mp.cpu_count())  # use all avail cores
+                res_pool = pool.starmap(self._coeff, args)
+                pool.close()
+                for i in range(len(center_omega)):
+                    self._coeff_op[i] = res_pool[i]
+                    self._op[i] = Taylor.series(self._coeff_op[i], self._omega,
+                                                self._start_taylor,
+                                                skip=self._skip_taylor)
+            else:
+                for i in range(len(center_omega)):
+                    self._coeff_op[i] = self._coeff(abs_omega[i],
+                                                    self._order_taylor)
+                    self._op[i] = Taylor.series(self._coeff_op[i], self._omega,
+                                                self._start_taylor,
+                                                skip=self._skip_taylor)
     # ==================================================================
     def term(self, waves: np.ndarray, id: int,
              corr_wave: Optional[np.ndarray] = None) -> np.ndarray:
