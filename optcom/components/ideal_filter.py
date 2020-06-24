@@ -178,7 +178,7 @@ if __name__ == "__main__":
     filter: oc.IdealFilter = oc.IdealFilter(nu_bw=nu_bw, nu_offset=0.)
     lt.add_link(pulse[0], filter[0])
     lt.run(pulse)
-    plot_titles: List[str] = ["Original pulse", r"After Gaussian filter with "
+    plot_titles: List[str] = ["Original pulse", r"After filter with "
                               "frequency bandwidth {} THz.".format(nu_bw)]
     plot_titles += plot_titles
     y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
