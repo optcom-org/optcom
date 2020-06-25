@@ -130,6 +130,7 @@ make clean && make html
   * 0.2.2 : Clear user interface
 * 0.3.0 : Change of License + all OS support
   * 0.3.1 : New parameters + additional doc
+  * 0.3.2 : New components + multi-processing for Taylor series
 
 
 ## Hosting
