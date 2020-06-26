@@ -87,6 +87,7 @@ from optcom.parameters.fiber.absorption_section import AbsorptionSection
 from optcom.parameters.fiber.asymmetry_coeff import AsymmetryCoeff
 from optcom.parameters.fiber.coupling_coeff import CouplingCoeff
 from optcom.parameters.fiber.doped_fiber_gain import DopedFiberGain
+from optcom.parameters.fiber.doping_concentration import DopingConcentration
 from optcom.parameters.fiber.effective_area import EffectiveArea
 from optcom.parameters.fiber.emission_section import EmissionSection
 from optcom.parameters.fiber.energy_saturation import EnergySaturation
@@ -104,11 +105,11 @@ from optcom.parameters.refractive_index.sellmeier import Sellmeier
 
 
 mod_para = ['AbsorptionSection', 'ChromaticDisp', 'AsymmetryCoeff',
-            'CouplingCoeff', 'DopedFiberGain', 'EffectiveArea',
-            'EmissionSection', 'EnergySaturation', 'FiberRecoveryTime',
-            'NLCoefficient', 'NLPhaseShift', 'NumericalAperture',
-            'OverlapFactor', 'RamanResponse', 'SEPower', 'VNumber', 'NLIndex',
-            'ResonantIndex', 'Sellmeier']
+            'CouplingCoeff', 'DopedFiberGain', 'DopingConcentration',
+            'EffectiveArea', 'EmissionSection', 'EnergySaturation',
+            'FiberRecoveryTime', 'NLCoefficient', 'NLPhaseShift',
+            'NumericalAperture', 'OverlapFactor', 'RamanResponse', 'SEPower',
+            'VNumber', 'NLIndex', 'ResonantIndex', 'Sellmeier']
 
 
 
