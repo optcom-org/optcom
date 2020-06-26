@@ -133,7 +133,7 @@ class EnergySaturation(AbstractParameter):
         else:
             res = np.divide(num, den, where=den!=0)
             res[den==0] = np.inf
-            res *= 1e6 # nm^2 kg ps^{-2} -> m^2 kg s^{-2} = J
+        res *= 1e6 # nm^2 kg ps^{-2} -> m^2 kg s^{-2} = J
 
         return res
 
