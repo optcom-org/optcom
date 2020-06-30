@@ -124,6 +124,26 @@ class GaussianFilter(AbstractPassComp):
         # Policy -------------------------------------------------------
         self.add_port_policy(([0],[1],True))
     # ==================================================================
+    @staticmethod
+    def transfer_function(nu: np.ndarray, center_nu: float, nu_bw: float,
+                          offset_nu: float = .0, order: int = 1):
+        """The transfer function of the flat top window.
+
+        Parameters
+        ----------
+        nu :
+            The frequency components.
+        center_nu :
+            The center frequency.
+
+        """
+        delta_nu = nu - offset_nu - center_nu
+        window = np.zeros(delta_nu.shape, dtype=complex)
+        arg = np.power(delta_nu/nu_bw, 2*order)
+        window = np.exp(-0.5*arg)
+
+        return Field.temporal_power(window)
+    # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
                  ) -> Tuple[List[int], List[Field]]:
@@ -133,9 +153,10 @@ class GaussianFilter(AbstractPassComp):
         for field in fields:
             nu = domain.nu - self.nu_offset
             for i in range(len(field)):
-                arg = np.zeros(nu.shape, dtype=complex)
+                window = np.zeros(nu.shape, dtype=complex)
                 arg = FFT.ifftshift(np.power(nu/self.nu_bw, 2*self.order))
-                field[i] = FFT.ifft(np.exp(-0.5*arg) * FFT.fft(field[i]))
+                window = np.exp(-0.5*arg)
+                field[i] = FFT.ifft(window * FFT.fft(field[i]))
             output_fields.append(field)
 
         return self.output_ports(ports), output_fields
@@ -153,11 +174,18 @@ if __name__ == "__main__":
 
     import optcom as oc
 
+    # Plot transfer function
+    domain = Domain(samples_per_bit = 2**12)
+    center_nu = oc.lambda_to_nu(1030.)
+    nu = domain.nu + center_nu
+    tf = oc.GaussianFilter.transfer_function(nu, center_nu, 1., 1.5)
+    oc.plot2d(nu, tf)
+    # Apply on pulse and plot
     lt: oc.Layout = oc.Layout(oc.Domain(bit_width=600.))
 
     nu_bw: float = 0.01
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
-                                     width=[10., 6.])
+                                     width=[10., 6.], center_lambda=[1030.])
     filter: oc.GaussianFilter = oc.GaussianFilter(nu_bw=nu_bw, nu_offset=0.,
                                                   order=1)
     lt.add_link(pulse[0], filter[0])
