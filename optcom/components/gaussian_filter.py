@@ -183,7 +183,8 @@ if __name__ == "__main__":
     # Apply on pulse and plot
     lt: oc.Layout = oc.Layout(oc.Domain(bit_width=600.))
 
-    nu_bw: float = 0.01
+    lambda_bw = 0.5  # nm
+    nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, 1030.)
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
                                      width=[10., 6.], center_lambda=[1030.])
     filter: oc.GaussianFilter = oc.GaussianFilter(nu_bw=nu_bw, nu_offset=0.,
@@ -191,7 +192,8 @@ if __name__ == "__main__":
     lt.add_link(pulse[0], filter[0])
     lt.run(pulse)
     plot_titles: List[str] = ["Original pulse", r"After Gaussian filter with "
-                              "frequency bandwidth {} THz.".format(nu_bw)]
+                              "frequency bandwidth {} THz."
+                              .format(round(nu_bw, 2))]
     plot_titles += plot_titles
     y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
                                  oc.temporal_power(filter[1][0].channels),

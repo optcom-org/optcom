@@ -9,6 +9,7 @@ from optcom.components.fiber_yb import FiberYb
 from optcom.components.fiber_coupler import FiberCoupler
 from optcom.components.gaussian import Gaussian
 from optcom.components.gaussian_filter import GaussianFilter
+from optcom.components.flat_top_filter import FlatTopFilter
 from optcom.components.ideal_amplifier import IdealAmplifier
 from optcom.components.ideal_combiner import IdealCombiner
 from optcom.components.ideal_coupler import IdealCoupler
@@ -25,10 +26,10 @@ from optcom.components.sech import Sech
 from optcom.components.soliton import Soliton
 
 mod_comps = ['CW', 'Fiber', 'FiberYb', 'FiberCoupler', 'Gaussian',
-             'GaussianFilter', 'IdealAmplifier', 'IdealCombiner',
-             'IdealCoupler', 'IdealDivider', 'IdealFilter', 'IdealIsolator',
-             'IdealPhaseMod', 'IdealMZM', 'LoadFieldFromFile', 'LoadField',
-             'SaveFieldToFile', 'SaveField', 'Sech', 'Soliton']
+             'GaussianFilter', 'FlatTopFilter', 'IdealAmplifier',
+             'IdealCombiner', 'IdealCoupler', 'IdealDivider', 'IdealFilter',
+             'IdealIsolator', 'IdealPhaseMod', 'IdealMZM', 'LoadFieldFromFile',
+             'LoadField', 'SaveFieldToFile', 'SaveField', 'Sech', 'Soliton']
 
 
 # from root
