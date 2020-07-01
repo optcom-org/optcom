@@ -29,6 +29,7 @@ from optcom.utils.fft import FFT
 # https://www.mathworks.com/help/signal/ref/flattopwin.html
 FLAT_TOP_COEFF: List[float] = [0.21557895, 0.41663158, 0.277263158,
                                0.083578947, 0.006947368]
+MUL: float = 5.947739
 
 default_name = 'Flat Top Filter'
 
@@ -88,7 +89,8 @@ class FlatTopFilter(AbstractPassComp):
         name :
             The name of the component.
         nu_bw :
-            The frequency spectral bandwidth. :math:`[ps^{-1}]`
+            The spectral bandwidth. :math:`[ps^{-1}]`  Correspond to
+            the FWHM of the Flat Top window.
         nu_offset :
             The offset frequency. :math:`[ps^{-1}]`
         save :
@@ -135,16 +137,18 @@ class FlatTopFilter(AbstractPassComp):
             The center frequency.
 
         """
-        delta_nu = nu - center_nu - nu_offset - nu_bw/2.
+        period = MUL*nu_bw
+        delta_nu = nu - center_nu - nu_offset - (period/2.)
+        print(delta_nu)
         window = np.zeros(delta_nu.shape, dtype=complex)
         window = (FLAT_TOP_COEFF[0]
-                  - (FLAT_TOP_COEFF[1]*np.cos(2*np.pi*delta_nu/nu_bw))
-                  + (FLAT_TOP_COEFF[2]*np.cos(4*np.pi*delta_nu/nu_bw))
-                  - (FLAT_TOP_COEFF[3]*np.cos(6*np.pi*delta_nu/nu_bw))
-                  + (FLAT_TOP_COEFF[4]*np.cos(8*np.pi*delta_nu/nu_bw)))
-        delta_nu += nu_bw/2.
-        window = np.where((delta_nu < (-nu_offset - nu_bw/2.))
-                          | (delta_nu > (-nu_offset + nu_bw/2.)), .0, window)
+                  - (FLAT_TOP_COEFF[1]*np.cos(2*np.pi*delta_nu/(MUL*nu_bw)))
+                  + (FLAT_TOP_COEFF[2]*np.cos(4*np.pi*delta_nu/(MUL*nu_bw)))
+                  - (FLAT_TOP_COEFF[3]*np.cos(6*np.pi*delta_nu/(MUL*nu_bw)))
+                  + (FLAT_TOP_COEFF[4]*np.cos(8*np.pi*delta_nu/(MUL*nu_bw))))
+        delta_nu += period/2.
+        window = np.where((delta_nu < (-nu_offset - period/2.))
+                          | (delta_nu > (-nu_offset + period/2.)), .0, window)
 
         return Field.temporal_power(window)
     # ==================================================================
@@ -155,17 +159,18 @@ class FlatTopFilter(AbstractPassComp):
         output_fields: List[Field] = []
 
         for field in fields:
-            nu = domain.nu - self.nu_offset - self.nu_bw/2.
+            period = MUL*self.nu_bw
+            nu = domain.nu - self.nu_offset - (period/2.)
             for i in range(len(field)):
                 window = np.zeros(nu.shape, dtype=complex)
                 window = (FLAT_TOP_COEFF[0]
-                          - (FLAT_TOP_COEFF[1]*np.cos(2*np.pi*nu/self.nu_bw))
-                          + (FLAT_TOP_COEFF[2]*np.cos(4*np.pi*nu/self.nu_bw))
-                          - (FLAT_TOP_COEFF[3]*np.cos(6*np.pi*nu/self.nu_bw))
-                          + (FLAT_TOP_COEFF[4]*np.cos(8*np.pi*nu/self.nu_bw)))
+                  - (FLAT_TOP_COEFF[1]*np.cos(2*np.pi*nu/(MUL*self.nu_bw)))
+                  + (FLAT_TOP_COEFF[2]*np.cos(4*np.pi*nu/(MUL*self.nu_bw)))
+                  - (FLAT_TOP_COEFF[3]*np.cos(6*np.pi*nu/(MUL*self.nu_bw)))
+                  + (FLAT_TOP_COEFF[4]*np.cos(8*np.pi*nu/(MUL*self.nu_bw))))
                 delta_nu = domain.nu - self.nu_offset
-                window = np.where((delta_nu < (-self.nu_offset-self.nu_bw/2.))
-                            | (delta_nu > (-self.nu_offset + self.nu_bw/2.)),
+                window = np.where((delta_nu < (-self.nu_offset - (period/2.)))
+                            | (delta_nu > (-self.nu_offset + (period/2.))),
                             0.0, window)
                 window_shift = FFT.ifftshift(window)
                 field[i] = FFT.ifft(window_shift * FFT.fft(field[i]))
@@ -189,17 +194,26 @@ if __name__ == "__main__":
 
     # Plot transfer function
     domain = Domain(samples_per_bit = 2**12)
-    center_nu = oc.lambda_to_nu(1030.)
+    center_lambda = 1030.
+    center_nu = oc.lambda_to_nu(center_lambda)
     nu = domain.nu + center_nu
-    tf = oc.FlatTopFilter.transfer_function(nu, center_nu, 10.)
-    oc.plot2d(nu, tf)
+    lambda_bw = 2.0
+    nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, center_lambda)
+    tf = oc.FlatTopFilter.transfer_function(nu, center_nu, nu_bw)
+    lambdas = oc.nu_to_lambda(nu)
+    oc.plot2d(lambdas, tf, x_labels=['nu'], y_labels=['Amplitude (a.u.)'],
+              plot_titles=["Transfer function centered at "
+                           "{} nm with bandwidth {} nm"
+                           .format(round(center_lambda, 2), round(lambda_bw))])
     # Apply on pulse and plot
-    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=600.))
-
-    lambda_bw = 0.5  # nm
-    nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, 1030.)
+    bit_width = 1000.
+    lt: oc.Layout = oc.Layout(oc.Domain(samples_per_bit=2**13,
+                                        bit_width=bit_width))
+    lambda_bw = 0.05 # nm
+    nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, center_lambda)
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
-                                     width=[10., 6.], center_lambda=[1030.])
+                                     width=[10., 6.],
+                                     center_lambda=[center_lambda])
     filter: oc.FlatTopFilter = oc.FlatTopFilter(nu_bw=nu_bw, nu_offset=0.)
     lt.add_link(pulse[0], filter[0])
     lt.run(pulse)
@@ -215,6 +229,10 @@ if __name__ == "__main__":
                                  pulse[0][0].nu, filter[1][0].nu]
     x_labels: List[str] = ['t', 't', 'nu', 'nu']
     y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu']
+    nu_range = (center_nu-.1, center_nu+.1)
+    time_range = (bit_width/2.+75., bit_width/2.-75.)
+    x_ranges = [time_range, time_range, nu_range, nu_range]
 
     oc.plot2d(x_datas, y_datas, plot_titles=plot_titles, x_labels=x_labels,
-              y_labels=y_labels, split=True, line_opacities=[0.3])
+              y_labels=y_labels, split=True, line_opacities=[0.3],
+              x_ranges=x_ranges)

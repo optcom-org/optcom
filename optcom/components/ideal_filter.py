@@ -93,7 +93,7 @@ class IdealFilter(AbstractPassComp):
         name :
             The name of the component.
         nu_bw :
-            The frequency spectral bandwidth. :math:`[ps^{-1}]`
+            The spectral bandwidth. :math:`[ps^{-1}]`
         nu_offset :
             The offset frequency. :math:`[ps^{-1}]`
         gain_in_bw :

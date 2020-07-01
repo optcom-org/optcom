@@ -26,6 +26,8 @@ from optcom.field import Field
 from optcom.utils.fft import FFT
 
 
+from optcom.components.gaussian import Gaussian
+
 default_name = 'Gaussian Filter'
 
 
@@ -86,7 +88,8 @@ class GaussianFilter(AbstractPassComp):
         name :
             The name of the component.
         nu_bw :
-            The frequency spectral bandwidth. :math:`[ps^{-1}]`
+            The spectral bandwidth. :math:`[ps^{-1}]`  Correspond to
+            the FWHM of the Gaussian window.
         nu_offset :
             The offset frequency. :math:`[ps^{-1}]`
         order :
@@ -119,6 +122,7 @@ class GaussianFilter(AbstractPassComp):
         util.check_attr_type(order, 'order', int)
         # Attr ---------------------------------------------------------
         self.nu_bw = nu_bw
+        self.nu_bw =  Gaussian.fwhm_to_width(nu_bw, order)
         self.nu_offset = nu_offset
         self.order = order
         # Policy -------------------------------------------------------
@@ -137,6 +141,7 @@ class GaussianFilter(AbstractPassComp):
             The center frequency.
 
         """
+        nu_bw = Gaussian.fwhm_to_width(nu_bw, order)
         delta_nu = nu - offset_nu - center_nu
         window = np.zeros(delta_nu.shape, dtype=complex)
         arg = np.power(delta_nu/nu_bw, 2*order)
@@ -176,17 +181,27 @@ if __name__ == "__main__":
 
     # Plot transfer function
     domain = Domain(samples_per_bit = 2**12)
-    center_nu = oc.lambda_to_nu(1030.)
+    center_lambda = 1030.
+    center_nu = oc.lambda_to_nu(center_lambda)
     nu = domain.nu + center_nu
-    tf = oc.GaussianFilter.transfer_function(nu, center_nu, 1., 1.5)
-    oc.plot2d(nu, tf)
+    lambda_bw = 2.
+    nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, center_lambda)
+    tf = oc.GaussianFilter.transfer_function(nu, center_nu, nu_bw, 0.0)#1.5)
+    lambdas = oc.nu_to_lambda(nu)
+    oc.plot2d(lambdas, tf, x_labels=['nu'], y_labels=['Amplitude (a.u.)'],
+              plot_titles=["Transfer function centered at "
+                           "{} nm with bandwidth {} nm"
+                           .format(round(center_lambda, 2), round(lambda_bw))])
     # Apply on pulse and plot
-    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=600.))
+    bit_width = 1000.
+    lt: oc.Layout = oc.Layout(oc.Domain(samples_per_bit=2**13,
+                                        bit_width=bit_width))
 
-    lambda_bw = 0.5  # nm
-    nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, 1030.)
+    lambda_bw = 0.05 # nm
+    nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, center_lambda)
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
-                                     width=[10., 6.], center_lambda=[1030.])
+                                     width=[10., 6.],
+                                     center_lambda=[center_lambda])
     filter: oc.GaussianFilter = oc.GaussianFilter(nu_bw=nu_bw, nu_offset=0.,
                                                   order=1)
     lt.add_link(pulse[0], filter[0])
@@ -203,6 +218,10 @@ if __name__ == "__main__":
                                  pulse[0][0].nu, filter[1][0].nu]
     x_labels: List[str] = ['t', 't', 'nu', 'nu']
     y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu']
+    nu_range = (center_nu-.1, center_nu+.1)
+    time_range = (bit_width/2.+75., bit_width/2.-75.)
+    x_ranges = [time_range, time_range, nu_range, nu_range]
 
     oc.plot2d(x_datas, y_datas, plot_titles=plot_titles, x_labels=x_labels,
-              y_labels=y_labels, split=True, line_opacities=[0.3])
+              y_labels=y_labels, split=True, line_opacities=[0.3],
+              x_ranges=x_ranges)
