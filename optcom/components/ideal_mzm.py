@@ -15,8 +15,9 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 import math
-
 from typing import Callable, List, Optional, Sequence, Tuple, Union
+
+import numpy as np
 
 import optcom.utils.constants as cst
 import optcom.utils.utilities as util
@@ -255,6 +256,27 @@ class IdealMZM(AbstractPassComp):
         # N.B. name='nocount' to avoid inc. default name counter
         self._combiner = IdealCombiner(name='nocount', arms=2, combine=True,
                                        ratios=[0.5, 0.5*gamma_er])
+    # ==================================================================
+    @staticmethod
+    def transfer_function(time: np.ndarray, v_pi: List[float],
+                          v_bias: List[float],
+                          v_mod: List[Union[float, Callable]]) -> np.ndarray:
+
+        v_pi = util.make_list(v_pi, 2)
+        v_bias = util.make_list(v_bias, 2)
+        v_mod = util.make_list(v_mod, 2)
+        v_mod_: List[Callable] = []
+        for v in v_mod:
+            if (callable(v)):
+                v_mod_.append(v)
+            else:
+                v_mod_.append(lambda t: v)
+        print(v_pi, v_bias, v_mod_)
+        phase_shift = [lambda t: cst.PI * (v_bias[0]+v_mod_[0](t)) / v_pi[0],
+                       lambda t: cst.PI * (v_bias[1]+v_mod_[1](t)) / v_pi[1]]
+        tf = np.cos((phase_shift[0](time) - phase_shift[1](time))/ 2.)
+
+        return Field.temporal_power(tf)
     # ==================================================================
     @call_decorator
     def __call__(self, domain: Domain, ports: List[int], fields: List[Field]
