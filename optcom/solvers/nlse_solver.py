@@ -740,14 +740,9 @@ if __name__ == "__main__":
 
     from typing import List, Optional
 
-    import optcom.config as cfg
-    import optcom.utils.constant_values.solver_cst as scst
-    import optcom.utils.plot as plot
-    from optcom.components.fiber import Fiber
-    from optcom.components.gaussian import Gaussian
-    from optcom.domain import Domain
-    from optcom.layout import Layout
-    from optcom.field import Field
+    import numpy as np
+
+    import optcom as oc
 
     plot_groups: List[int] = []
     line_labels: List[Optional[str]] = []
@@ -759,20 +754,20 @@ if __name__ == "__main__":
                                "ssfm_opti_reduced", "ssfm_super_sym",
                                "ssfm_opti_super_sym", "rk4ip", "rk4ip"]
     # ---------------- NLSE solvers test -------------------------------
-    lt: Layout = Layout(Domain(bit_width=100.0, samples_per_bit=4096))
+    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=100.0, samples_per_bit=4096))
 
-    pulse: Gaussian = Gaussian(channels=2, peak_power=[0.5, 1.0], width=[0.5, 0.8])
+    pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[0.5, 1.0], width=[0.5, 0.8])
 
     steps: int = int(5e3)
-    fiber: Fiber
+    fiber: oc.Fiber
     SS: bool = True
     for j, nlse_method in enumerate(nlse_methods):
         if (j == len(nlse_methods)-2):  # To compute rk4ip and rk4ip_gnlse
-            cfg.RK4IP_OPTI_GNLSE = False   # Can make slighty diff. output
+            oc.set_rk4ip_opti_gnlse(False)   # Can make slighty diff. output
         else:
-            cfg.RK4IP_OPTI_GNLSE = True
+            oc.set_rk4ip_opti_gnlse(True)
         # Propagation
-        fiber = Fiber(length=0.2, nlse_method=nlse_method, alpha=[0.5],
+        fiber = oc.Fiber(length=0.2, nlse_method=nlse_method, alpha=[0.5],
                       beta_order=3, gamma=4.0, nl_approx=False, SPM=True,
                       XPM=True, SS=True, RS=True, steps=steps, save=True)
         lt.add_link(pulse[0], fiber[0])
@@ -780,12 +775,12 @@ if __name__ == "__main__":
         lt.reset()
         # Plot parameters and get waves
         x_datas.append(fiber[1][0].time)
-        y_datas.append(Field.temporal_power(fiber[1][0].channels))
+        y_datas.append(oc.temporal_power(fiber[1][0].channels))
         plot_groups.append(0)
 
     line_labels.extend(nlse_methods[:-1] + ["rk4ip_gnlse"])
     plot_titles.extend(["NLSE solvers test with n={}".format(str(steps))])
     # -------------------- Plotting results ------------------------
-    plot.plot2d(x_datas, y_datas, plot_groups=plot_groups,
-                plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
-                line_labels=line_labels, line_opacities=[0.3])
+    oc.plot2d(x_datas, y_datas, plot_groups=plot_groups,
+              plot_titles=plot_titles, x_labels=['t'], y_labels=['P_t'],
+              line_labels=line_labels, line_opacities=[0.3])
