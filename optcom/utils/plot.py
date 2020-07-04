@@ -34,12 +34,13 @@ linecolors = ['violet', 'orange', 'red', 'greenyellow', 'silver', 'brown',
 
 
 plot3d_types = {"plot_surface": ("mesh", "color"),
-                "plot_wireframe": ("mesh", "nocolor"),
+                "plot_wireframe": ("mesh", "color"),
                 "contour3D": ("mesh", "nocolor"),
                 "contourf3D": ("mesh", "nocolor"),
                 "plot_trisurf": ("ravel", "color"),
                 "plot3D": ("ravel", "color"), "scatter3D": ("ravel", "color")}
 
+DEFAULT_3D_PLOT = "plot_surface"
 
 axis_labels = { "t" : r"Time, $t \, (ps)$", \
                "nu" : r"Frequency, $\nu \, (THz)$", \
@@ -156,6 +157,12 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
                    z_label, x_range, y_range, z_range, plot_title, line_color,
                    line_opacity, plot_type):
     """Plot a 3D graph."""
+    #x_data_ = np.array([x_data]) if (x_data.ndim < 2) else x_data
+    #y_data_ = np.array([y_data]) if (y_data.ndim < 2) else y_data
+    #z_data_ = np.array([z_data]) if (z_data.ndim < 3) else z_data
+    #x_data_ = util.modify_length_ndarray(x_data_, len(z_data_))
+    #y_data_ = util.modify_length_ndarray(y_data_, len(z_data_))
+    '''
     x_data_temp = np.asarray(x_data)
     if (x_data_temp.ndim > 1):  # Else single time array, nothing to pad
         if (x_data_temp.ndim == 2):
@@ -164,30 +171,35 @@ def add_3D_subplot(plt_to_add, x_data, y_data, z_data, x_label, y_label,
                 temp[i] = (np.ones((z_data.shape[1], z_data.shape[2]))
                            * x_data_temp)
             x_data_temp = temp
-        x_data = np.array([])
+        x_data_ = np.array([])
         z_data_temp = np.asarray(z_data)
-        z_data = np.array([])
-        x_data, z_data = util.auto_pad(x_data_temp, z_data_temp)
+        z_data_ = np.array([])
+        x_data_, z_data_ = util.auto_pad(x_data_temp, z_data_temp)
+        y_data_ = y_data
+    '''
+    x_data_, y_data_, z_data_ = util.crop_array_from_ranges(x_data, y_data,
+                                                            z_data, x_range,
+                                                            y_range, z_range)
     colors_on_plot = line_color is not None
-    for i in range(len(z_data)):
-        mesh_x, mesh_y = np.meshgrid(x_data, y_data[0])
+    for i in range(len(z_data_)):
+        mesh_x, mesh_y = np.meshgrid(x_data_, y_data_)
         if (not colors_on_plot):
             line_color = linecolors[add_3D_subplot.counter]
             add_3D_subplot.counter += 1
         if (plot3d_types[plot_type][0] == 'mesh'):
             if (plot3d_types[plot_type][1] == 'color'):
-                getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data[i],
+                getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data_[i],
                                                color=line_color,
                                                rcount=100, ccount=100,
                                                alpha=line_opacity)
             else:
-                getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data[i],
+                getattr(plt_to_add, plot_type)(mesh_x, mesh_y, z_data_[i],
                                                rcount=100, ccount=100,
                                                alpha=line_opacity)
         else:
             ravel_x = np.ravel(mesh_x)
             ravel_y = np.ravel(mesh_y)
-            ravel_z = np.ravel(z_data[i])
+            ravel_z = np.ravel(z_data_[i])
             if (plot3d_types[plot_type][1] == 'color'):
                 getattr(plt_to_add, plot_type)(ravel_x, ravel_y, ravel_z,
                                                color=line_color,
@@ -384,7 +396,7 @@ def plot2d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
 
 
 def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
-           z_datas: Optional[List[np.ndarray]] = None,
+           z_datas: Optional[List[np.ndarray]],
            x_labels: Optional[List[str]] = None,
            y_labels: Optional[List[str]] = None,
            z_labels: Optional[List[str]] = None,
@@ -397,18 +409,19 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
            plot_groups: Optional[List[int]] = None, split: bool = False,
            fig_title: Optional[str] = None, filename: str = "",
            resolution: Tuple[float, float] = (1920., 1080.),
-           plot_types: List[str] = [cst.DEF_3D_PLOT],
+           plot_types: List[str] = [DEFAULT_3D_PLOT],
            triangle_layout: bool = False) -> None:
     """Plot an 3D graph.
 
     Parameters
     ----------
     x_datas :
-        The data on the x axis.
+        The data on the x axis, must be a list of 1 or 2 dim numpy
+        array.
     y_datas :
-        The data on the y axis.
+        The data on the y axis, must be a list of 1 dim numpy array.
     z_datas :
-        The data on the z axis.
+        The data on the z axis, must be a list of 3 dim numpy array.
     x_label :
         The labels for each axis on each plot along the x axis.
     y_label :
@@ -488,8 +501,8 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
     for i in range(len(plot_types_)):
         if (plot3d_types.get(plot_types_[i]) is None):
             util.warning_terminal("3D plot type '{}' does not exist, replace "
-                "by '{}'.".format(plot_types_[i], cst.DEF_3D_PLOT))
-            plot_types_[i] = cst.DEF_3D_PLOT
+                "by '{}'.".format(plot_types_[i], DEFAULT_3D_PLOT))
+            plot_types_[i] = DEFAULT_3D_PLOT
     plot_groups_: Optional[List[int]]
     if (plot_groups is not None):
         plot_groups_= util.make_list(plot_groups, len(x_datas_))
@@ -509,14 +522,6 @@ def plot3d(x_datas: List[np.ndarray], y_datas: List[np.ndarray],
     z_ranges = util.make_list(z_ranges, nbr_graphs, None)
     plot_titles_: List[Optional[str]]
     plot_titles_ = util.make_list(plot_titles, nbr_graphs, '')
-    # Nonexistent field  management (no field recorded in component) ---
-    for i in range(len(x_datas_)):
-        if ((y_datas_[i] is None) or (z_datas_[i] is None)):
-            util.warning_terminal("Try to plot a nonexistent field! (graph at "
-                "position {} will be ignored)".format(i))
-            x_datas_[i] = np.zeros(0)
-            y_datas_[i] = np.zeros(0)
-            z_datas_[i] = np.zeros(0)
     # Plot graph -------------------------------------------------------
     nbr_row: int
     nbr_col: int

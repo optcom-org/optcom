@@ -199,3 +199,26 @@ def array_equal_duo_map(array_ref: np.ndarray, array_new: np.ndarray
             map_ = np.append(map_, np.argwhere(array_new==array_ref[i]))
 
     return map, map_
+
+
+def crop_array_from_ranges(x_data: np.ndarray, y_data: np.ndarray,
+                           z_data: np.ndarray,
+                           x_range: Optional[Tuple[float, float]],
+                           y_range: Optional[Tuple[float, float]],
+                           z_range: Optional[Tuple[float, float]],
+                           ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Helper for 3d graph data, crop the x, y, z data depending on the
+    provided ranges.
+    """
+    if (x_range is not None):
+        x_to_keep = np.where((x_data>x_range[0]) & (x_data<x_range[1]))
+        x_data = x_data[x_to_keep[0]]
+        z_data = z_data[:,:,x_to_keep[0]]
+    if (y_range is not None):
+        y_to_keep = np.where((y_data>y_range[0]) & (y_data<y_range[1]))
+        y_data = y_data[y_to_keep[0]]
+        z_data = z_data[:,y_to_keep[0]]
+    if (z_range is not None):
+        z_data = z_data[np.where((z_data>z_range[0]) & z_data<z_range[1])]
+
+    return x_data, y_data, z_data

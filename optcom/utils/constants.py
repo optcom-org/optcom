@@ -35,7 +35,5 @@ NPFT = np.clongdouble
 AUTO_PAD_PLOT: bool = True # pad the different channels array of one field
                     # automatically to display all channel on one graph
 
-DEF_3D_PLOT = "plot_surface"
-
 
 DEFAULT_FIELD_NAME = 'Field'

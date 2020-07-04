@@ -119,7 +119,7 @@ class Storage(object):
     # ------------------------------------------------------------------
     @space.setter
     def space(self, space: np.ndarray) -> None:
-        self._space = space[0]
+        self._space = space
     # ==================================================================
     @property
     def time(self) -> np.ndarray:
@@ -133,12 +133,14 @@ class Storage(object):
     def get_copy(self, start_channel: int = 0, stop_channel: int = -1,
                  start_step: int = 0, stop_step: int = -1) -> Storage:
         new_storage = copy.deepcopy(self)
-        indices_to_delete = [i for i in range(0,start_channel)]
-        if (stop_step != -1):
+        indices_to_delete = [i for i in range(0, start_channel)]
+        if (stop_channel != -1):
             indices_to_delete += [i for i in range(stop_channel,
                                                    self.nbr_channels)]
         new_storage.delete_channel(indices_to_delete)
-        indices_to_delete = [i for i in range(0,start_step)]
+        indices_to_delete = [i for i in range(0, start_step)]
+        if (start_step):    # start new space array at zero
+            new_storage.space -= self.space[start_step]
         if (stop_step != -1):
             indices_to_delete += [i for i in range(stop_step, self.steps)]
         new_storage.delete_space_step(indices_to_delete)
@@ -216,7 +218,7 @@ class Storage(object):
             self.channels = np.hstack((self.channels, channels))
             self.noises = np.vstack((self.noises, noises))
             self.time = np.hstack((self.time, time))
-            space_to_add = storage.space[0] + np.sum(self._space)
+            space_to_add = storage.space + self._space[-1]
             self._space = np.hstack((self._space, space_to_add))
         else:
             warning_message: str = ("Storages extension aborted: same number "
