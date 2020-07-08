@@ -132,6 +132,7 @@ make clean && make html
   * 0.3.1 : New parameters + additional doc
   * 0.3.2 : New components + multi-processing for Taylor series
   * 0.3.3 : New components + new parameters + 3D plot refactoring
+  * 0.3.4 : Optical filter update
 
 ## Hosting
 
