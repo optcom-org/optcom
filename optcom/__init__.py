@@ -1,5 +1,5 @@
 __name__ = "optcom"
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 # need Docstring doc
 
 # from components
