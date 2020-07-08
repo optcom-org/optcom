@@ -183,12 +183,22 @@ class Port(object):
         return res
     # ==================================================================
     @property
-    def channels(self) -> np.ndarray:
+    def channels(self) -> List[np.ndarray]:
         """Return a list of all channels arrays of all fields.
         """
         res = []
         for i in range(len(self._fields)):
             res.append(self._fields[i].channels)
+
+        return res
+    # ==================================================================
+    @property
+    def noises(self) -> List[np.ndarray]:
+        """Return a list of all noises arrays of all fields.
+        """
+        res = []
+        for i in range(len(self._fields)):
+            res.append(self._fields[i].noise)
 
         return res
     # ==================================================================
@@ -203,7 +213,7 @@ class Port(object):
         return res
     # ==================================================================
     @property
-    def omega(self) -> np.ndarray:
+    def omega(self) -> List[np.ndarray]:
         """Return a list of all angular frequency arrays of all fields.
         """
         res = []
@@ -213,7 +223,7 @@ class Port(object):
         return res
     # ==================================================================
     @property
-    def nu(self) -> np.ndarray:
+    def nu(self) -> List[np.ndarray]:
         """Return a list of all frequency arrays of all fields.
         """
         res = []
