@@ -15,6 +15,7 @@
 """.. moduleauthor:: Sacha Medaer"""
 
 DEF_LAMBDA: float = 1552.0 # nm
+DEF_NU: float = 193.16  # Thz
 
 # domain boundaries (range)
 MAX_BITS: int = 4096

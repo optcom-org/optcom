@@ -63,6 +63,8 @@ class FlatTopFilter(AbstractPassComp):
         A string containing code which will be executed posterior to
         the call to the function :func:`__call__`. The two parameters
         `output_ports` and `output_fields` are available.
+    center_nu :
+        The center frequency. :math:`[ps^{-1}]`
     nu_bw : float
         The frequency spectral bandwidth. :math:`[ps^{-1}]`
     nu_offset : float
@@ -79,7 +81,7 @@ class FlatTopFilter(AbstractPassComp):
     _nbr_instances: int = 0
     _nbr_instances_with_default_name: int = 0
 
-    def __init__(self, name: str = default_name,
+    def __init__(self, name: str = default_name, center_nu: float = cst.DEF_NU,
                  nu_bw: float = 1.0, nu_offset: float = 0.0,
                  save: bool = False, max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
@@ -88,6 +90,8 @@ class FlatTopFilter(AbstractPassComp):
         ----------
         name :
             The name of the component.
+        center_nu :
+            The center frequency. :math:`[ps^{-1}]`
         nu_bw :
             The spectral bandwidth. :math:`[ps^{-1}]`  Correspond to
             the FWHM of the Flat Top window.
@@ -119,27 +123,31 @@ class FlatTopFilter(AbstractPassComp):
         util.check_attr_type(nu_bw, 'nu_bw', float)
         util.check_attr_type(nu_offset, 'nu_offset', float)
         # Attr ---------------------------------------------------------
+        self.center_nu = center_nu
         self.nu_bw = nu_bw
         self.nu_offset = nu_offset
         # Policy -------------------------------------------------------
         self.add_port_policy(([0],[1],True))
     # ==================================================================
     @staticmethod
-    def transfer_function(nu: np.ndarray, center_nu: float, nu_bw: float,
-                          nu_offset: float = 0.):
-        """The transfer function of the flat top window.
+    def amplitude_transfer_function(nu: np.ndarray, center_nu: float,
+                                    nu_bw: float, nu_offset: float = 0.):
+        """The amplitude transfer function of the flat top window.
 
         Parameters
         ----------
         nu :
-            The frequency components.
+            The frequency components. :math:`[ps^{-1}]`
         center_nu :
-            The center frequency.
+            The center frequency. :math:`[ps^{-1}]`
+        nu_bw :
+            The spectral bandwith. :math:`[ps^{-1}]`
+        nu_offset :
+            The offset frequency. :math:`[ps^{-1}]`
 
         """
         period = MUL*nu_bw
         delta_nu = nu - center_nu - nu_offset - (period/2.)
-        print(delta_nu)
         window = np.zeros(delta_nu.shape, dtype=complex)
         window = (FLAT_TOP_COEFF[0]
                   - (FLAT_TOP_COEFF[1]*np.cos(2*np.pi*delta_nu/(MUL*nu_bw)))
@@ -150,6 +158,28 @@ class FlatTopFilter(AbstractPassComp):
         window = np.where((delta_nu < (-nu_offset - period/2.))
                           | (delta_nu > (-nu_offset + period/2.)), .0, window)
 
+        return window
+    # ==================================================================
+    @staticmethod
+    def transfer_function(nu: np.ndarray, center_nu: float, nu_bw: float,
+                          nu_offset: float = 0.):
+        """The transfer function of the flat top window.
+
+        Parameters
+        ----------
+        nu :
+            The frequency components. :math:`[ps^{-1}]`
+        center_nu :
+            The center frequency. :math:`[ps^{-1}]`
+        nu_bw :
+            The spectral bandwith. :math:`[ps^{-1}]`
+        nu_offset :
+            The offset frequency. :math:`[ps^{-1}]`
+
+        """
+        window = FlatTopFilter.amplitude_transfer_function(nu, center_nu,
+                                                           nu_bw, nu_offset)
+
         return Field.temporal_power(window)
     # ==================================================================
     @call_decorator
@@ -159,21 +189,16 @@ class FlatTopFilter(AbstractPassComp):
         output_fields: List[Field] = []
 
         for field in fields:
-            period = MUL*self.nu_bw
-            nu = domain.nu - self.nu_offset - (period/2.)
+            # Channels
             for i in range(len(field)):
-                window = np.zeros(nu.shape, dtype=complex)
-                window = (FLAT_TOP_COEFF[0]
-                  - (FLAT_TOP_COEFF[1]*np.cos(2*np.pi*nu/(MUL*self.nu_bw)))
-                  + (FLAT_TOP_COEFF[2]*np.cos(4*np.pi*nu/(MUL*self.nu_bw)))
-                  - (FLAT_TOP_COEFF[3]*np.cos(6*np.pi*nu/(MUL*self.nu_bw)))
-                  + (FLAT_TOP_COEFF[4]*np.cos(8*np.pi*nu/(MUL*self.nu_bw))))
-                delta_nu = domain.nu - self.nu_offset
-                window = np.where((delta_nu < (-self.nu_offset - (period/2.)))
-                            | (delta_nu > (-self.nu_offset + (period/2.))),
-                            0.0, window)
+                window = np.zeros(field[i].shape, dtype=complex)
+                window = FlatTopFilter.amplitude_transfer_function(field.nu[i],
+                                self.center_nu, self.nu_bw, self.nu_offset)
                 window_shift = FFT.ifftshift(window)
                 field[i] = FFT.ifft(window_shift * FFT.fft(field[i]))
+            # Noise
+            field.noise *= FlatTopFilter.transfer_function(domain.noise_nu,
+                                self.center_nu, self.nu_bw, self.nu_offset)
             output_fields.append(field)
 
         return self.output_ports(ports), output_fields
@@ -208,13 +233,16 @@ if __name__ == "__main__":
     # Apply on pulse and plot
     bit_width = 1000.
     lt: oc.Layout = oc.Layout(oc.Domain(samples_per_bit=2**13,
-                                        bit_width=bit_width))
+                                        bit_width=bit_width,
+                                        noise_range=(1028., 1032.)))
     lambda_bw = 0.05 # nm
     nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, center_lambda)
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
                                      width=[10., 6.],
-                                     center_lambda=[center_lambda])
-    filter: oc.FlatTopFilter = oc.FlatTopFilter(nu_bw=nu_bw, nu_offset=0.)
+                                     center_lambda=[center_lambda],
+                                     noise=250*np.ones(domain.noise_samples))
+    filter: oc.FlatTopFilter = oc.FlatTopFilter(nu_bw=nu_bw, nu_offset=0.,
+                                                center_nu=center_nu)
     lt.add_link(pulse[0], filter[0])
     lt.run(pulse)
     plot_titles: List[str] = ["Original pulse", r"After flat top filter with "
@@ -224,14 +252,18 @@ if __name__ == "__main__":
     y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
                                  oc.temporal_power(filter[1][0].channels),
                                  oc.spectral_power(pulse[0][0].channels),
-                                 oc.spectral_power(filter[1][0].channels)]
+                                 oc.spectral_power(filter[1][0].channels),
+                                 pulse[0][0].noise, filter[1][0].noise]
     x_datas: List[np.ndarray] = [pulse[0][0].time, filter[1][0].time,
-                                 pulse[0][0].nu, filter[1][0].nu]
-    x_labels: List[str] = ['t', 't', 'nu', 'nu']
-    y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu']
+                                 pulse[0][0].nu, filter[1][0].nu,
+                                 pulse[0][0].domain.noise_omega,
+                                 filter[1][0].domain.noise_omega]
+    x_labels: List[str] = ['t', 't', 'nu', 'nu', 'omega', 'omega']
+    y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu', 'P_nu', 'P_nu']
     nu_range = (center_nu-.1, center_nu+.1)
     time_range = (bit_width/2.+75., bit_width/2.-75.)
-    x_ranges = [time_range, time_range, nu_range, nu_range]
+    noise_range = (x_datas[-1][0], x_datas[-1][-1])
+    x_ranges = [time_range, time_range, nu_range, nu_range, noise_range]
 
     oc.plot2d(x_datas, y_datas, plot_titles=plot_titles, x_labels=x_labels,
               y_labels=y_labels, split=True, line_opacities=[0.3],

@@ -60,6 +60,8 @@ class IdealFilter(AbstractPassComp):
         A string containing code which will be executed posterior to
         the call to the function :func:`__call__`. The two parameters
         `output_ports` and `output_fields` are available.
+    center_nu :
+        The center frequency. :math:`[ps^{-1}]`
     nu_bw : float
         The frequency spectral bandwidth. :math:`[ps^{-1}]`
     nu_offset : float
@@ -82,7 +84,7 @@ class IdealFilter(AbstractPassComp):
     _nbr_instances: int = 0
     _nbr_instances_with_default_name: int = 0
 
-    def __init__(self, name: str = default_name,
+    def __init__(self, name: str = default_name, center_nu: float = cst.DEF_NU,
                  nu_bw: float = 1.0, nu_offset: float = 0.0,
                  gain_in_bw: float = -1.0, gain_out_bw: float = -50.0,
                  save: bool = False, max_nbr_pass: Optional[List[int]] = None,
@@ -92,6 +94,8 @@ class IdealFilter(AbstractPassComp):
         ----------
         name :
             The name of the component.
+        center_nu :
+            The center frequency. :math:`[ps^{-1}]`
         nu_bw :
             The spectral bandwidth. :math:`[ps^{-1}]`
         nu_offset :
@@ -130,6 +134,7 @@ class IdealFilter(AbstractPassComp):
         util.check_attr_type(gain_in_bw, 'gain_in_bw', float)
         util.check_attr_type(gain_out_bw, 'gain_out_bw', float)
         # Attr ---------------------------------------------------------
+        self.center_nu = center_nu
         self.nu_bw = nu_bw
         self.nu_offset = nu_offset
         self.gain_in_bw = gain_in_bw
@@ -145,14 +150,15 @@ class IdealFilter(AbstractPassComp):
         gain_in_bw_lin = cmath.sqrt(util.db_to_linear(self.gain_in_bw))
         gain_out_bw_lin = cmath.sqrt(util.db_to_linear(self.gain_out_bw))
         for field in fields:
+            # Pulse
             for i in range(len(field)):
-                center_nu: float = Domain.omega_to_nu(field.center_omega[i])
                 nu: np.ndarray = field.nu[i] - self.nu_offset
-                nu_gains = np.where((nu>(center_nu+self.nu_bw)) |
-                                    (nu<(center_nu-self.nu_bw)),
+                nu_gains = np.where((nu>(self.center_nu+self.nu_bw)) |
+                                    (nu<(self.center_nu-self.nu_bw)),
                                     gain_out_bw_lin, gain_in_bw_lin)
                 nu_gains_shift = FFT.ifftshift(nu_gains)
                 field[i] = FFT.ifft(nu_gains_shift * FFT.fft(field[i]))
+            # Noise
             output_fields.append(field)
 
         return self.output_ports(ports), output_fields
@@ -173,9 +179,13 @@ if __name__ == "__main__":
     lt: oc.Layout = oc.Layout(oc.Domain(bit_width=600.))
 
     nu_bw: float = 0.01
+    center_lambda = 1030.
+    center_nu = oc.lambda_to_nu(center_lambda)
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
-                                     width=[10., 6.])
-    filter: oc.IdealFilter = oc.IdealFilter(nu_bw=nu_bw, nu_offset=0.)
+                                     width=[10., 6.],
+                                     center_lambda=[center_lambda])
+    filter: oc.IdealFilter = oc.IdealFilter(nu_bw=nu_bw, nu_offset=0.,
+                                            center_nu=center_nu)
     lt.add_link(pulse[0], filter[0])
     lt.run(pulse)
     plot_titles: List[str] = ["Original pulse", r"After filter with "
