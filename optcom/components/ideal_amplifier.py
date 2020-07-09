@@ -141,11 +141,16 @@ class IdealAmplifier(AbstractPassComp):
             for i in range(len(domain.time)):
                 if (callable(self.gain)):
                     gain_ = self.gain(domain.time[i])
+                    # Temp hardcoding
+                    gain_noise = 0.0
                 else:
                     gain_ = self.gain
+                    # Temp hardcoding
+                    gain_noise = 10**(0.1*self.gain)
                 gain[i]  = cmath.sqrt(10**(0.1*gain_)) # dB -> m^{-1}
             for i in range(len(fields)):
                 output_fields.append(fields[i] * gain)
+                output_fields[-1].noise *= gain_noise
 
         return self.output_ports(ports), output_fields
 
