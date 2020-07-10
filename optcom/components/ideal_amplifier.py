@@ -96,6 +96,9 @@ class IdealAmplifier(AbstractPassComp):
             The target peak power to reach. :math:`[W]`
         NOISE :
             If True, the noise is handled, otherwise is unchanged.
+            (will be ignored if peak poewr is provided). If callable
+            gain is provided and noise enabled, take value at mid domain
+            time point.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -142,21 +145,24 @@ class IdealAmplifier(AbstractPassComp):
                     field[i] = field[i] * np.sqrt(self.peak_power/max_power)
                 output_fields.append(field)
         else:
-            gain: np.ndarray = np.zeros_like(domain.time, dtype=complex)
-            gain_: float = 0.0
-            for i in range(len(domain.time)):
-                if (callable(self.gain)):
-                    gain_ = self.gain(domain.time[i])
-                    # Temp hardcoding
-                    gain_noise = 0.0
-                else:
-                    gain_ = self.gain
-                    # Temp hardcoding
-                    gain_noise = 10**(0.1*self.gain)
-                gain[i]  = cmath.sqrt(10**(0.1*gain_)) # dB -> m^{-1}
-            for i in range(len(fields)):
-                output_fields.append(fields[i] * gain)
-                output_fields[-1].noise *= gain_noise
+            gain: np.ndarray = np.ones_like(domain.time, dtype=complex)
+            gain_noise: float = 0.0
+            for field in fields:
+                for i in range(len(field)):
+                    gain = np.ones_like(domain.time, dtype=complex)
+                    if (callable(self.gain)):
+                        for j in range(len(field.time[i])):
+                            gain[j] = self.gain(field.time[i][j])
+                    else:
+                        gain *= self.gain
+                    field[i] *= np.sqrt(util.db_to_linear(gain))
+                if (self.NOISE):
+                    if (callable(self.gain)):
+                        gain_noise = self.gain(domain.time[domain.samples//2])
+                    else:
+                        gain_noise = self.gain
+                    fields[i].noise *= util.db_to_linear(gain_noise)
+                output_fields.append(fields[i])
 
         return self.output_ports(ports), output_fields
 
@@ -177,7 +183,7 @@ if __name__ == "__main__":
     lt.add_link(pulse[0], amp[0])
     lt.run(pulse)
     plot_titles: List[str] = (["Original pulse", "Pulses coming out of the "
-                               "ideal amplifier with gain {} dB."
+                               "ideal amplifier with gain {} dB"
                                .format(gain)])
     y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
                                  oc.temporal_power(amp[1][0].channels)]
@@ -190,18 +196,18 @@ if __name__ == "__main__":
     lt.add_link(pulse[0], amp[0])
     lt.run(pulse)
     plot_titles.extend(["Pulses coming out of the ideal amplifier with target "
-                        "peak power {} W.".format(peak_power)])
+                        "peak power {} W".format(peak_power)])
     y_datas.extend([oc.temporal_power(amp[1][0].channels)])
     x_datas.extend([amp[1][0].time])
 
     pulse = oc.Gaussian(channels=1, peak_power=[10.0])
-    gain_fct: Callable = lambda t: 1e-1*t
+    gain_fct: Callable = lambda t: (0.001 * t**2 + 1.0)
     amp = oc.IdealAmplifier(gain=gain_fct)
     lt.reset()
     lt.add_link(pulse[0], amp[0])
     lt.run(pulse)
-    plot_titles.extend(["Pulses coming out of the ideal amplifier with gain: "
-                        "f(t) = t."])
+    plot_titles.extend([r"Pulses coming out of the ideal amplifier with gain: "
+                        r"$f(t) = (0.001*t^2) + 1.0$"])
     y_datas.extend([oc.temporal_power(amp[1][0].channels)])
     x_datas.extend([amp[1][0].time])
 
