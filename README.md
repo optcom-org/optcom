@@ -134,6 +134,7 @@ make clean && make html
   * 0.3.3 : New components + new parameters + 3D plot refactoring
   * 0.3.4 : Optical filter update
   * 0.3.5 : Noise management in ideal components
+  * 0.3.6 : New components
 
 ## Hosting
 
