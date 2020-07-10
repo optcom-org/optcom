@@ -66,6 +66,8 @@ class IdealCoupler(AbstractPassComp):
         contain a list composed of the two dividing ratio
         for the two output ports. The ratio represents the
         fraction of the power that will be taken from the field.
+    NOISE :
+        If True, the noise is handled, otherwise is unchanged.
 
     Notes
     -----
@@ -82,7 +84,8 @@ class IdealCoupler(AbstractPassComp):
 
     def __init__(self, name: str = default_name,
                  port_ratios: List[List[float]] = [[0.5, 0.5]],
-                 save: bool = False, max_nbr_pass: Optional[List[int]] = None,
+                 NOISE: bool = False, save: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
@@ -94,6 +97,8 @@ class IdealCoupler(AbstractPassComp):
             contain a list composed of the two dividing ratio
             for the two output ports. The ratio represents the
             fraction of the power that will be taken from the field.
+        NOISE :
+            If True, the noise is handled, otherwise is unchanged.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -118,7 +123,9 @@ class IdealCoupler(AbstractPassComp):
                          post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
         util.check_attr_type(port_ratios, 'port_ratios', list)
+        util.check_attr_type(NOISE, 'NOISE', bool)
         # Attr ---------------------------------------------------------
+        self.NOISE = NOISE
         self._port_ratios: List[List[float]]
         self.port_ratios = port_ratios
     # ==================================================================
@@ -132,13 +139,13 @@ class IdealCoupler(AbstractPassComp):
         port_ratios = util.make_list(port_ratios, 4)
         # N.B. name='nocount' to avoid inc. default name counter
         self._divider_0 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=port_ratios[0])
+                                       ratios=port_ratios[0], NOISE=self.NOISE)
         self._divider_1 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=port_ratios[1])
+                                       ratios=port_ratios[1], NOISE=self.NOISE)
         self._divider_2 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=port_ratios[2])
+                                       ratios=port_ratios[2], NOISE=self.NOISE)
         self._divider_3 = IdealDivider(name='nocount', arms=2, divide=True,
-                                       ratios=port_ratios[3])
+                                       ratios=port_ratios[3], NOISE=self.NOISE)
     # ==================================================================
     def output_ports(self, input_ports: List[int]) -> List[int]:
         output_ports: List[int] = []

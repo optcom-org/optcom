@@ -88,8 +88,8 @@ class IdealPhaseMod(AbstractPassComp):
         name :
             The name of the component.
         phase_shift :
-            The phase_shift induced by the modulator. Can be a callable
-            with time variable. :math:`[ps]`
+            The phase_shift induced by the modulator.  If a callable is
+            provided, variable must be time. :math:`[ps]`
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :

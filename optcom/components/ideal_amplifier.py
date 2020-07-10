@@ -64,6 +64,8 @@ class IdealAmplifier(AbstractPassComp):
     peak_power : float
         The target peak power to reach. (gain will be ignored if target
         power is provided) :math:`[W]`
+    NOISE :
+        If True, the noise is handled, otherwise is unchanged.
 
     Notes
     -----
@@ -78,8 +80,8 @@ class IdealAmplifier(AbstractPassComp):
 
     def __init__(self, name: str = default_name,
                  gain: Union[float, Callable] = 1.0,
-                 peak_power: Optional[float] = None, save: bool = False,
-                 max_nbr_pass: Optional[List[int]] = None,
+                 peak_power: Optional[float] = None, NOISE: bool = True,
+                 save: bool = False, max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
@@ -92,6 +94,8 @@ class IdealAmplifier(AbstractPassComp):
             (will be ignored if peak power is provided))
         peak_power :
             The target peak power to reach. :math:`[W]`
+        NOISE :
+            If True, the noise is handled, otherwise is unchanged.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -117,10 +121,12 @@ class IdealAmplifier(AbstractPassComp):
         # Attr types check ---------------------------------------------
         util.check_attr_type(gain, 'gain', int, float, Callable)
         util.check_attr_type(peak_power, 'peak_power', None, int, float)
+        util.check_attr_type(NOISE, 'NOISE', bool)
         # Attr ---------------------------------------------------------
         # Use cmath to allow complex expo
         self.gain: Union[float, Callable] = gain
         self.peak_power: Optional[float] = peak_power
+        self.NOISE = NOISE
         # Policy -------------------------------------------------------
         self.add_port_policy(([0],[1],True))
     # ==================================================================

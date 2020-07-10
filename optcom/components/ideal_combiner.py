@@ -72,6 +72,8 @@ class IdealCombiner(AbstractPassComp):
         arms, if not it will be pad to it. The ratio represents the
         fraction of the power that will be taken from the field
         arriving at the corresponding arm.
+    NOISE :
+        If True, the noise is handled, otherwise is unchanged.
 
     Notes
     -----
@@ -91,7 +93,7 @@ class IdealCombiner(AbstractPassComp):
 
     def __init__(self, name: str = default_name, arms: int = 2,
                  combine: bool = False, ratios: List[float] = [],
-                 wait: bool = True, save: bool = False,
+                 NOISE: bool = False, wait: bool = True, save: bool = False,
                  max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
         """
@@ -112,6 +114,8 @@ class IdealCombiner(AbstractPassComp):
             arms, if not it will be pad to it. The ratio represents the
             fraction of the power that will be taken from the field
             arriving at the corresponding arm.
+        NOISE :
+            If True, the noise is handled, otherwise is unchanged.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -138,6 +142,7 @@ class IdealCombiner(AbstractPassComp):
         util.check_attr_type(arms, 'arms', int)
         util.check_attr_type(combine, 'combine', bool)
         util.check_attr_type(ratios, 'ratios', list)
+        util.check_attr_type(NOISE, 'NOISE', bool)
         # Attr ---------------------------------------------------------
         self.arms: int = arms
         self.ratios: List[float] = []
@@ -147,6 +152,7 @@ class IdealCombiner(AbstractPassComp):
             self.ratios = ratios
         self._combine: bool
         self.combine = combine  # also add a part of port policy
+        self.NOISE = NOISE
         # Policy -------------------------------------------------------
         self.add_wait_policy([i for i in range(arms)])
     # ==================================================================
@@ -179,13 +185,16 @@ class IdealCombiner(AbstractPassComp):
             fields[0] *= math.sqrt(self.ratios[ports[0]])
             for i in range(1, len(fields)):
                 fields[i] *= math.sqrt(self.ratios[ports[i]])
+                if (self.NOISE):
+                    fields[i].noise *= self.ratios[ports[i]]
                 fields[0].operator_or_extend('__iadd__', fields[i])
-
             output_fields = fields
         else:               # Propagate all scaled fields
             for i in range(len(fields)):
                 output_fields.append(fields[i]
                                      * math.sqrt(self.ratios[ports[i]]))
+                if (self.NOISE):
+                    output_fields[-1].noise *= self.ratios[ports[i]]
 
         return self.output_ports(ports), output_fields
 

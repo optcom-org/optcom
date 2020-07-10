@@ -72,6 +72,8 @@ class IdealFilter(AbstractPassComp):
     gain_out_bw :
         The spectral power gain outside of the specified bandwidth.
         :math:`[dB]`
+    NOISE :
+        If True, the noise is handled, otherwise is unchanged.
 
     Notes
     -----
@@ -87,7 +89,8 @@ class IdealFilter(AbstractPassComp):
     def __init__(self, name: str = default_name, center_nu: float = cst.DEF_NU,
                  nu_bw: float = 1.0, nu_offset: float = 0.0,
                  gain_in_bw: float = -1.0, gain_out_bw: float = -50.0,
-                 save: bool = False, max_nbr_pass: Optional[List[int]] = None,
+                 NOISE: bool = True, save: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
@@ -106,6 +109,8 @@ class IdealFilter(AbstractPassComp):
         gain_out_bw :
             The spectral power gain outside of the specified bandwidth.
             :math:`[dB]`
+        NOISE :
+            If True, the noise is handled, otherwise is unchanged.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -129,16 +134,19 @@ class IdealFilter(AbstractPassComp):
                          pre_call_code=pre_call_code,
                          post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
+        util.check_attr_type(center_nu, 'center_nu', float)
         util.check_attr_type(nu_bw, 'nu_bw', float)
         util.check_attr_type(nu_offset, 'nu_offset', float)
         util.check_attr_type(gain_in_bw, 'gain_in_bw', float)
         util.check_attr_type(gain_out_bw, 'gain_out_bw', float)
+        util.check_attr_type(NOISE, 'NOISE', bool)
         # Attr ---------------------------------------------------------
         self.center_nu = center_nu
         self.nu_bw = nu_bw
         self.nu_offset = nu_offset
         self.gain_in_bw = gain_in_bw
         self.gain_out_bw = gain_out_bw
+        self.NOISE = NOISE
         # Policy -------------------------------------------------------
         self.add_port_policy(([0],[1],True))
     # ==================================================================
@@ -159,6 +167,15 @@ class IdealFilter(AbstractPassComp):
                 nu_gains_shift = FFT.ifftshift(nu_gains)
                 field[i] = FFT.ifft(nu_gains_shift * FFT.fft(field[i]))
             # Noise
+            if (self.NOISE):
+                gain_in_bw_lin_ = util.db_to_linear(self.gain_in_bw)
+                gain_out_bw_lin_ = util.db_to_linear(self.gain_out_bw)
+                nu_noise: np.ndarray = domain.noise_nu
+                nu_gains_ = np.where((nu_noise>(self.center_nu+self.nu_bw)) |
+                                     (nu_noise<(self.center_nu-self.nu_bw)),
+                                     gain_out_bw_lin_, gain_in_bw_lin_)
+                print(nu_gains_)
+                field.noise *= nu_gains_
             output_fields.append(field)
 
         return self.output_ports(ports), output_fields
@@ -176,16 +193,20 @@ if __name__ == "__main__":
 
     import optcom as oc
 
-    lt: oc.Layout = oc.Layout(oc.Domain(bit_width=600.))
+    center_lambda = 1030.
+
+    domain = oc.Domain(bit_width=600., noise_samples=int(1e3),
+                       noise_range=(center_lambda-1.0, center_lambda+1.0))
+    lt: oc.Layout = oc.Layout(domain)
 
     nu_bw: float = 0.01
-    center_lambda = 1030.
     center_nu = oc.lambda_to_nu(center_lambda)
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
                                      width=[10., 6.],
-                                     center_lambda=[center_lambda])
+                                     center_lambda=[center_lambda],
+                                     noise=100*np.ones(domain.noise_samples))
     filter: oc.IdealFilter = oc.IdealFilter(nu_bw=nu_bw, nu_offset=0.,
-                                            center_nu=center_nu)
+                                            center_nu=center_nu, NOISE=True)
     lt.add_link(pulse[0], filter[0])
     lt.run(pulse)
     plot_titles: List[str] = ["Original pulse", r"After filter with "
@@ -194,11 +215,14 @@ if __name__ == "__main__":
     y_datas: List[np.ndarray] = [oc.temporal_power(pulse[0][0].channels),
                                  oc.temporal_power(filter[1][0].channels),
                                  oc.spectral_power(pulse[0][0].channels),
-                                 oc.spectral_power(filter[1][0].channels)]
+                                 oc.spectral_power(filter[1][0].channels),
+                                 pulse[0][0].noise, filter[1][0].noise]
     x_datas: List[np.ndarray] = [pulse[0][0].time, filter[1][0].time,
-                                 pulse[0][0].nu, filter[1][0].nu]
-    x_labels: List[str] = ['t', 't', 'nu', 'nu']
-    y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu']
+                                 pulse[0][0].nu, filter[1][0].nu,
+                                 pulse[0][0].domain.noise_nu,
+                                 filter[1][0].domain.noise_nu]
+    x_labels: List[str] = ['t', 't', 'nu', 'nu', 'nu', 'nu']
+    y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu', 'P (W)', 'P (W)']
 
     oc.plot2d(x_datas, y_datas, plot_titles=plot_titles, x_labels=x_labels,
               y_labels=y_labels, split=True, line_opacities=[0.3])

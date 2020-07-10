@@ -68,6 +68,8 @@ class GaussianFilter(AbstractPassComp):
         The offset frequency. :math:`[ps^{-1}]`
     order :
         The order of the gaussian filter.
+    NOISE :
+        If True, the noise is handled, otherwise is unchanged.
 
     Notes
     -----
@@ -82,7 +84,8 @@ class GaussianFilter(AbstractPassComp):
 
     def __init__(self, name: str = default_name, center_nu: float = cst.DEF_NU,
                  nu_bw: float = 1.0, nu_offset: float = 0.0, order: int = 1,
-                 save: bool = False, max_nbr_pass: Optional[List[int]] = None,
+                 NOISE: bool = True, save: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
@@ -98,6 +101,8 @@ class GaussianFilter(AbstractPassComp):
             The offset frequency. :math:`[ps^{-1}]`
         order :
             The order of the gaussian filter.
+        NOISE :
+            If True, the noise is handled, otherwise is unchanged.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -121,14 +126,17 @@ class GaussianFilter(AbstractPassComp):
                          pre_call_code=pre_call_code,
                          post_call_code=post_call_code)
         # Attr types check ---------------------------------------------
+        util.check_attr_type(center_nu, 'center_nu', float)
         util.check_attr_type(nu_bw, 'nu_bw', float)
         util.check_attr_type(nu_offset, 'nu_offset', float)
         util.check_attr_type(order, 'order', int)
+        util.check_attr_type(NOISE, 'NOISE', bool)
         # Attr ---------------------------------------------------------
         self.center_nu = center_nu
         self.nu_bw = nu_bw
         self.nu_offset = nu_offset
         self.order = order
+        self.NOISE = NOISE
         # Policy -------------------------------------------------------
         self.add_port_policy(([0],[1],True))
     # ==================================================================
@@ -197,9 +205,10 @@ class GaussianFilter(AbstractPassComp):
                 window_shift = FFT.ifftshift(window)
                 field[i] = FFT.ifft(window_shift * FFT.fft(field[i]))
             # Noise
-            field.noise *= GaussianFilter.transfer_function(domain.noise_nu,
-                                self.center_nu, self.nu_bw, self.nu_offset,
-                                self.order)
+            if (self.NOISE):
+                field.noise *= GaussianFilter.transfer_function(
+                                    domain.noise_nu, self.center_nu,
+                                    self.nu_bw, self.nu_offset, self.order)
             output_fields.append(field)
 
         return self.output_ports(ports), output_fields
@@ -232,16 +241,16 @@ if __name__ == "__main__":
                            .format(round(center_lambda, 2), round(lambda_bw))])
     # Apply on pulse and plot
     bit_width = 1000.
-    lt: oc.Layout = oc.Layout(oc.Domain(samples_per_bit=2**13,
-                                        bit_width=bit_width,
-                                        noise_range=(1028., 1032.)))
-
+    domain = oc.Domain(samples_per_bit=2**13, bit_width=bit_width,
+                       noise_samples=int(1e3),
+                       noise_range=(center_lambda-1.0, center_lambda+1.0))
+    lt: oc.Layout = oc.Layout(domain)
     lambda_bw = 0.05 # nm
     nu_bw = oc.lambda_bw_to_nu_bw(lambda_bw, center_lambda)
     pulse: oc.Gaussian = oc.Gaussian(channels=2, peak_power=[10.0, 19.0],
                                      width=[10., 6.],
                                      center_lambda=[center_lambda],
-                                     noise=250*np.ones(domain.noise_samples))
+                                     noise=100*np.ones(domain.noise_samples))
     filter: oc.GaussianFilter = oc.GaussianFilter(nu_bw=nu_bw, nu_offset=0.,
                                                   order=1, center_nu=center_nu)
     lt.add_link(pulse[0], filter[0])
@@ -257,10 +266,10 @@ if __name__ == "__main__":
                                  pulse[0][0].noise, filter[1][0].noise]
     x_datas: List[np.ndarray] = [pulse[0][0].time, filter[1][0].time,
                                  pulse[0][0].nu, filter[1][0].nu,
-                                 pulse[0][0].domain.noise_omega,
-                                 filter[1][0].domain.noise_omega]
-    x_labels: List[str] = ['t', 't', 'nu', 'nu', 'omega', 'omega']
-    y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu', 'P_nu', 'P_nu']
+                                 pulse[0][0].domain.noise_nu,
+                                 filter[1][0].domain.noise_nu]
+    x_labels: List[str] = ['t', 't', 'nu', 'nu', 'nu', 'nu']
+    y_labels: List[str] = ['P_t', 'P_t', 'P_nu', 'P_nu', 'P (W)', 'P (W)']
     nu_range = (center_nu-.1, center_nu+.1)
     time_range = (bit_width/2.+75., bit_width/2.-75.)
     noise_range = (x_datas[-1][0], x_datas[-1][-1])

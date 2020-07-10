@@ -72,6 +72,8 @@ class IdealDivider(AbstractPassComp):
         fraction of the power that will be taken from the field
         arriving at the corresponding arm. If None is provided and
         divide is set to True, dispatch equally among arms.
+    NOISE :
+        If True, the noise is handled, otherwise is unchanged.
 
     Notes
     -----
@@ -91,7 +93,8 @@ class IdealDivider(AbstractPassComp):
 
     def __init__(self, name: str = default_name, arms: int = 2,
                  divide: bool = True, ratios: List[float] = [],
-                 save: bool = False, max_nbr_pass: Optional[List[int]] = None,
+                 NOISE: bool = False, save: bool = False,
+                 max_nbr_pass: Optional[List[int]] = None,
                  pre_call_code: str = '', post_call_code: str = '') -> None:
         """
         Parameters
@@ -111,6 +114,8 @@ class IdealDivider(AbstractPassComp):
             fraction of the power that will be taken from the field
             arriving at the corresponding arm. If None is provided and
             divide is set to True, dispatch equally among arms.
+        NOISE :
+            If True, the noise is handled, otherwise is unchanged.
         save :
             If True, the last wave to enter/exit a port will be saved.
         max_nbr_pass :
@@ -137,6 +142,7 @@ class IdealDivider(AbstractPassComp):
         util.check_attr_type(arms, 'arms', int)
         util.check_attr_type(divide, 'combine', bool)
         util.check_attr_type(ratios, 'ratios', list)
+        util.check_attr_type(NOISE, 'NOISE', bool)
         # Attr ---------------------------------------------------------
         self.divide: bool = divide
         self.arms: int = arms
@@ -145,6 +151,7 @@ class IdealDivider(AbstractPassComp):
             self.ratios = [1.0/arms for i in range(arms)]
         else:
             self.ratios = util.make_list(ratios, arms)
+        self.NOISE = NOISE
     # ==================================================================
     def output_ports(self, input_ports: List[int]) -> List[int]:
 
@@ -159,6 +166,8 @@ class IdealDivider(AbstractPassComp):
                 output_fields.append(copy.deepcopy(field))
                 if (self.divide):   # Consider ratio if need to divide
                     output_fields[-1] *= math.sqrt(self.ratios[i])
+                    if (self.NOISE):
+                        output_fields[-1].noise *= self.ratios[i]
 
         return self.output_ports(ports), output_fields
 
